@@ -1,6 +1,6 @@
-# AWS-LESS-10.md
+# AWS06-LESS-10.md
 
-**REF-ID:** AWS-LESS-10  
+**REF-ID:** AWS06-LESS-10  
 **Category:** AWS06 (External Knowledge - Serverless Patterns)  
 **Topic:** API Boundary - Data Transformation Strategies  
 **Complexity:** Intermediate  
