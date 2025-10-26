@@ -5,7 +5,7 @@
 ```
 Version: 3.1.0
 Status: Production-Ready
-Created: 2024-2025
+Created: 10-21-2025
 Purpose: Overcome Claude's memory limitations through structured knowledge architecture
 ```
 
@@ -583,10 +583,10 @@ Knowledge Preservation Permanent
 **Project:** Lambda execution engine with 12 interfaces, gateway pattern
 
 **Timeline:**
-- Started: August 2024
-- SIMA v1: October 2024 (monolithic)
-- SIMA v2: October 2024 (category split)
-- SIMA v3: October 2025 (full atomization)
+- Started: October 21, 2025
+- SIMA v1: October 21, 2025 (monolithic)
+- SIMA v2: October 23, 2025 (category split)
+- SIMA v3: October 24-25, 2025 (full atomization)
 
 **Before SIMA (Months 1-2):**
 
@@ -694,6 +694,8 @@ cd sima
    • /nmap/NM07/ (26 files)
    • /nmap/Support/ (30 files)
    • /nmap/Docs/ (4 files)
+   • /nmap/AWS/AWS00
+   • /nmap/AWS/AWS06
 ```
 
 **Step 3: Add Custom Instructions**
@@ -1922,7 +1924,7 @@ A: Update when:
 
 **Apache License 2.0**
 
-Copyright (c) 2024-2025 Joseph Hersey Sr.
+Copyright (c) 2025 Joseph Hersey Sr.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -1942,9 +1944,9 @@ limitations under the License.
 
 ## Credits
 
-**Created by:** Development team working with Claude Sonnet 4.5  
-**Project:** SUGA-ISP Lambda Execution Engine  
-**Dates:** August 2024 - October 2025  
+**Created by:** Joseph Hersey Sr
+**Project:** Lambda Execution Engine with Home Assistant Support
+**Dates:** October 2025  
 **Purpose:** Overcome Claude's short-term memory limitations
 
 **Inspiration:**
@@ -1960,24 +1962,25 @@ limitations under the License.
 - Developers who value good documentation
 - Knowledge management pioneers
 - Open source community
+- My dog named "Pup" for pressuring me to constantly get off the computer.
 
 ---
 
 ## Contact & Support
 
 **Documentation:** See `/nmap/Docs/` directory  
-**GitHub:** [Your repository URL]  
-**Issues:** [GitHub Issues URL]  
-**Discussions:** [GitHub Discussions URL]
+**GitHub:** [https://github.com/dizzybeaver/SIMA]
+**Issues:** [https://github.com/dizzybeaver/SIMA/issues] 
+**Discussions:** Not enabled
 
-**Commercial Support:** Available upon request  
-**Training:** Documentation and video tutorials available
+**Commercial Support:** Just load this in Claude.ai as a project and ask him to "Please Load Context". He will anwser all your questions.
+**Training:** Man did this sub project run a train on me.
 
 ---
 
 ## Version History
 
-### v3.0.0 (2025-10-25) - Current
+### v3.1.0 (2025-10-25) - Current
 
 **Major Release: Full Atomization**
 
@@ -1997,7 +2000,7 @@ limitations under the License.
 - Token efficiency: 3x improvement
 - Development velocity: 2.5-4x faster
 
-### v2.0.0 (2024-10) - Category Split
+### v2.0.0 (2025-10-23) - Category Split
 
 **Improvements:**
 - Split into 7 category files
@@ -2009,7 +2012,7 @@ limitations under the License.
 - Slow navigation (60+ seconds)
 - Not scalable
 
-### v1.0.0 (2024-08) - Initial Release
+### v1.0.0 (2025-10-21) - Initial Release
 
 **Features:**
 - Monolithic documentation structure
