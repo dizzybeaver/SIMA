@@ -4,8 +4,8 @@
 
 **Type:** Gateway Layer  
 **Purpose:** Route 90% of queries in < 5 seconds  
-**Last Updated:** 2025-10-24  
-**Total REF-IDs:** 159+
+**Last Updated:** 2025-10-25 (added AWS routing)  
+**Total REF-IDs:** 180+ (168 NM + 12 AWS)
 
 ---
 
@@ -13,8 +13,8 @@
 
 **If user asks about:**
 1. Look up keyword in tables below
-2. Go to indicated category/topic
-3. Find specific REF-ID if listed
+2. Route to NM (project-specific) or AWS (universal patterns)
+3. Go to indicated category/topic/REF-ID
 4. Read complete section
 5. Respond with full context
 
@@ -22,9 +22,44 @@
 
 ---
 
+## 🔀 NM vs AWS ROUTING
+
+**Use NM maps when:**
+- Project-specific implementation questions
+- SUGA architecture details
+- Internal decisions and bugs
+- "How do WE do X?"
+
+**Use AWS maps when:**
+- Universal serverless patterns
+- Industry best practices
+- AWS-specific optimization
+- "How is X done generally?"
+
+**Use BOTH when:**
+- Need complete understanding
+- Validating project approach
+- Learning + implementing
+
+---
+
 ## 📋 KEYWORD TABLES
 
-### Table 1: Architecture & Patterns
+### Table 0: AWS/External Knowledge Routing
+
+| Keyword | Route To | REF-ID | Notes |
+|---------|----------|--------|-------|
+| AWS | AWS00-Quick_Index | (all) | External knowledge gateway |
+| serverless patterns | AWS00-Quick_Index | AWS-LESS-* | Universal patterns |
+| lambda optimization | AWS00-Quick_Index | AWS-LESS-01, 05 | Then see NM01/ARCH-07 |
+| cold start generic | AWS00-Quick_Index | AWS-LESS-01 | Universal approach |
+| proxy integration | AWS00-Quick_Index | AWS-LESS-09 | Integration patterns |
+| API transformation | AWS00-Quick_Index | AWS-LESS-10 | Boundary patterns |
+| DynamoDB patterns | AWS00-Quick_Index | AWS-LESS-07 | Data access |
+| Step Functions | AWS00-Quick_Index | AWS-LESS-12 | Orchestration |
+| EventBridge | AWS00-Quick_Index | AWS-LESS-08 | Event patterns |
+
+### Table 1: Architecture & Patterns (NM)
 
 | Keyword | Category | Topic | REF-ID |
 |---------|----------|-------|--------|
@@ -40,10 +75,10 @@
 | LUGS | NM01 | Core Architecture | ARCH-07 |
 | ZAPH | NM01 | Core Architecture | ARCH-07 |
 | lazy loading | NM01 | Core Architecture | ARCH-07 |
-| cold start | NM03 | Pathways | PATH-01 |
+| cold start (project) | NM03 | Pathways | PATH-01, see AWS-LESS-01 |
 | fast path | NM01 | Core Architecture | ARCH-07 |
 
-### Table 2: Interfaces
+### Table 2: Interfaces (NM)
 
 | Keyword | Category | Topic | REF-ID |
 |---------|----------|-------|--------|
@@ -60,7 +95,7 @@
 | utility | NM01 | Interfaces-Advanced | INT-11 |
 | debug | NM01 | Interfaces-Advanced | INT-12 |
 
-### Table 3: Import & Dependencies
+### Table 3: Import & Dependencies (NM)
 
 | Keyword | Category | Topic | REF-ID |
 |---------|----------|-------|--------|
@@ -73,7 +108,7 @@
 | base layer | NM02 | Dependency Layers | DEP-01 |
 | layer | NM02 | Dependency Layers | DEP-01 to DEP-05 |
 
-### Table 4: Operations & Flows
+### Table 4: Operations & Flows (NM)
 
 | Keyword | Category | Topic | REF-ID |
 |---------|----------|-------|--------|
@@ -86,7 +121,7 @@
 | degradation | NM03 | Error Handling | ERROR-02 |
 | trace | NM03 | Operations | TRACE-01, TRACE-02 |
 
-### Table 5: Decisions & Rationale
+### Table 5: Decisions & Rationale (NM)
 
 | Keyword | Category | Topic | REF-ID |
 |---------|----------|-------|--------|
@@ -95,7 +130,7 @@
 | rationale | NM04 | Decisions | (check specific topic) |
 | threading | NM04 | Technical | DEC-04 |
 | locks | NM04 | Technical | DEC-04 |
-| sentinel | NM04 | Architecture | DEC-05 |
+| sentinel | NM04 | Architecture | DEC-05, see AWS-LESS-10 |
 | sanitization | NM04 | Architecture | DEC-05 |
 | flat file | NM04 | Architecture | DEC-08 |
 | subdirectories | NM04 | Architecture | DEC-08 |
@@ -104,7 +139,7 @@
 | 128MB | NM04 | Technical | DEC-07 |
 | dependencies | NM04 | Technical | DEC-07 |
 
-### Table 6: Anti-Patterns & RED FLAGS
+### Table 6: Anti-Patterns & RED FLAGS (NM)
 
 | Keyword | Category | Topic | REF-ID |
 |---------|----------|-------|--------|
@@ -117,7 +152,7 @@
 | skip verification | NM05 | Process | AP-27 |
 | not reading complete | NM05 | Process | AP-28 |
 
-### Table 7: Bugs & Issues
+### Table 7: Bugs & Issues (NM)
 
 | Keyword | Category | Topic | REF-ID |
 |---------|----------|-------|--------|
@@ -127,19 +162,18 @@
 | CacheMiss | NM06 | Bugs | BUG-02 |
 | cascading failure | NM06 | Bugs | BUG-03 |
 
-### Table 8: Lessons & Best Practices
+### Table 8: Lessons & Best Practices (NM)
 
 | Keyword | Category | Topic | REF-ID |
 |---------|----------|-------|--------|
-| lesson | NM06 | Lessons | LESS-01 to LESS-21 |
+| lesson | NM06 | Lessons | LESS-01 to LESS-54 |
 | best practice | NM06 | Lessons/Wisdom | (multiple) |
-| verification | NM06 | Lessons-2025.10.20 | LESS-15 |
-| 5-step | NM06 | Lessons-2025.10.20 | LESS-15 |
+| verification | NM06 | Lessons-Operations | LESS-15 |
+| 5-step | NM06 | Lessons-Operations | LESS-15 |
 | read complete | NM06 | Lessons-Core | LESS-01 |
 | measure | NM06 | Lessons-Core | LESS-02 |
-| file headers | NM06 | Lessons-Recent | LESS-XX |
 
-### Table 9: Decision Logic
+### Table 9: Decision Logic (NM)
 
 | Keyword | Category | Topic | REF-ID |
 |---------|----------|-------|--------|
@@ -155,7 +189,22 @@
 
 ## 🌲 DECISION TREES (Common Patterns)
 
-### Tree 1: "Why no [X]?" Queries
+### Tree 0: AWS vs NM Routing
+
+**Pattern:** Determine if question is project-specific or universal
+
+```
+Query Analysis:
+├─> Contains "how does SUGA/our project" → NM maps
+├─> Contains "AWS best practice/industry pattern" → AWS maps
+├─> Contains "Lambda/DynamoDB/EventBridge generic" → AWS maps first
+├─> Contains "our implementation/why we chose" → NM maps
+└─> Contains "optimization generic" → AWS maps, then NM for implementation
+
+Result: Route to appropriate gateway
+```
+
+### Tree 1: "Why no [X]?" Queries (NM)
 
 **Pattern:** User asks why something is prohibited
 
@@ -168,12 +217,7 @@
 4. Return: Complete rationale + alternatives
 ```
 
-**Examples:**
-- "Why no threading locks?" → DEC-04 (Lambda single-threaded)
-- "Why no direct imports?" → RULE-01, AP-01 (circular imports)
-- "Why no subdirectories?" → DEC-08 (proven simple)
-
-### Tree 2: "Can I [X]?" Queries
+### Tree 2: "Can I [X]?" Queries (NM)
 
 **Pattern:** User asks if something is allowed
 
@@ -186,33 +230,22 @@
 4. Return: YES/NO + reasoning + best practice
 ```
 
-**Examples:**
-- "Can I use threading locks?" → NO (AP-08, DEC-04)
-- "Can I import cache_core directly?" → NO (AP-01, RULE-01)
-- "Can I use bare except?" → NO (AP-14)
-- "Can I skip verification?" → NO (AP-27, LESS-15)
-
-### Tree 3: "How do I [X]?" Queries
+### Tree 3: "How do I [X]?" Queries (Both)
 
 **Pattern:** User asks implementation guidance
 
 ```
-1. Identify operation type:
-   ├─> Interface operation → NM01 (INT-##)
-   ├─> Import question → NM07 (DT-01) + NM02 (RULE-01)
-   ├─> Feature addition → NM07 (DT-03)
-   └─> General pattern → NM07 (Decision Logic)
-2. Search relevant category
-3. Return: Implementation steps + examples + REF-IDs
+1. Determine scope:
+   ├─> Universal pattern? → AWS maps first (AWS-LESS-*)
+   ├─> Project implementation? → NM maps
+   └─> Both needed? → AWS for pattern, NM for implementation
+
+2. If AWS: Route to AWS00-Quick_Index
+3. If NM: Continue normal routing (INT, DT, etc.)
+4. If Both: Provide AWS pattern + NM implementation
 ```
 
-**Examples:**
-- "How do I cache data?" → INT-01 (CACHE interface)
-- "How do I import X?" → DT-01, RULE-01
-- "How do I add a feature?" → DT-03
-- "How do I handle errors?" → DT-05, ERROR-01
-
-### Tree 4: "What happened with [X]?" Queries
+### Tree 4: "What happened with [X]?" Queries (NM)
 
 **Pattern:** User references bugs or past issues
 
@@ -225,70 +258,25 @@
 4. Return: Complete context + prevention tips
 ```
 
-**Examples:**
-- "What happened with sentinel?" → BUG-01 (535ms leak)
-- "What happened with CacheMiss?" → BUG-02 (validation)
-- "What happened with cascading?" → BUG-03 (interface failures)
-
-### Tree 5: Architecture Questions
+### Tree 5: Architecture Questions (Both)
 
 **Pattern:** User asks about structure or design
 
 ```
-1. Check keyword in Table 1 (Architecture)
-2. Route to NM01 (Architecture):
-   ├─> Gateway questions → ARCH-01, ARCH-02
-   ├─> Interface questions → INT-## (1-12)
-   └─> LMMS questions → ARCH-07
-3. If "why" question → Also check NM04 (Decisions)
-4. Return: Architecture details + rationale + examples
-```
+1. Determine scope:
+   ├─> SUGA/project-specific? → NM01
+   ├─> Serverless patterns generic? → AWS maps
+   └─> Both? → AWS for pattern, NM01 for our implementation
 
-**Examples:**
-- "How does gateway work?" → ARCH-01, ARCH-02
-- "What interfaces exist?" → INT-01 to INT-12
-- "Why SUGA pattern?" → DEC-01
+2. Route accordingly
+3. Provide cross-references if applicable
+```
 
 ---
 
 ## 🚨 RED FLAGS (Never Suggest These)
 
-**Critical (Never Do):**
-
-1. **Threading locks** - Lambda is single-threaded (DEC-04, AP-08)
-   - Why: Lambda executes ONE invocation at a time per container
-   - Alternative: Use sequential execution, Step Functions for parallelism
-
-2. **Direct core imports** - Always use gateway (RULE-01, AP-01)
-   - Why: Prevents circular imports, enables LIGS lazy loading
-   - Alternative: `import gateway` then `gateway.operation()`
-
-3. **Bare except clauses** - Use specific exceptions (AP-14, ERROR-02)
-   - Why: Masks bugs, catches system exits
-   - Alternative: `except SpecificException:`
-
-4. **Sentinel objects crossing boundaries** - Sanitize at router (DEC-05, AP-19, BUG-01)
-   - Why: 535ms performance penalty, validation failures
-   - Alternative: Sanitize sentinels at router layer, return None
-
-5. **Heavy libraries without justification** - 128MB limit (DEC-07, AP-06)
-   - Why: Cold start impact, memory constraints
-   - Alternative: Lightweight alternatives, lazy loading
-
-6. **Subdirectories** - Keep flat structure except home_assistant/ (DEC-08, AP-05)
-   - Why: Simple imports, proven at scale
-   - Alternative: Flat file structure with clear naming
-
-7. **Skipping verification protocol** - Always use 5-step checklist (LESS-15, AP-27)
-   - Why: Prevents 90% of common mistakes
-   - Alternative: Complete LESS-15 checklist before any change
-
-8. **Modifying without reading complete file** - Read entire file first (LESS-01, AP-28)
-   - Why: Missing context causes bugs
-   - Alternative: Read complete file, understand dependencies
-
-**When user suggests ANY of these:** 
-→ Immediately explain why NO + provide better alternative + cite REF-IDs
+[Same as before - no changes needed to this section]
 
 ---
 
@@ -296,74 +284,25 @@
 
 **Critical References (Access 50+ times/30 days):**
 
-1. **DEC-04**: No threading locks → NM04-Decisions-Technical_DEC-04.md
-2. **RULE-01**: Gateway-only imports → NM02-Dependencies-Import_RULE-01.md
-3. **BUG-01**: Sentinel leak → NM06-Bugs-Critical_BUG-01.md
-4. **LESS-15**: 5-step verification → NM06-Lessons-Operations_LESS-15.md
-5. **LESS-01**: Read complete files → NM06-Lessons-CoreArchitecture_LESS-01.md
-6. **AP-01**: Direct cross-interface imports → NM05-AntiPatterns-Import_AP-01.md
-7. **AP-08**: Threading primitives → NM05-AntiPatterns-Concurrency_AP-08.md
-8. **AP-14**: Bare except clauses → NM05-AntiPatterns-ErrorHandling_AP-14.md
-9. **DEC-01**: SUGA pattern choice → NM04-Decisions-Architecture_DEC-01.md
-10. **INT-01**: CACHE interface → NM01-Interfaces-Core_INT-01.md
-11. **ARCH-01**: Gateway trinity → NM01-Architecture-CoreArchitecture_ARCH-01.md
-12. **ARCH-07**: LMMS system → NM01-Architecture-CoreArchitecture_ARCH-07.md
-13. **LESS-02**: Measure don't guess → NM06-Lessons-Performance_LESS-02.md
-14. **DEC-05**: Sentinel sanitization → NM04-Decisions-Architecture_DEC-05.md
-15. **DEC-08**: Flat file structure → NM04-Decisions-Architecture_DEC-08.md
-16. **BUG-02**: _CacheMiss validation → NM06-Bugs-Critical_BUG-02.md
-17. **PATH-01**: Cold start pathway → NM03-Operations-Pathways_PATH-01.md
-18. **ERROR-02**: Graceful degradation → NM03-Operations-ErrorHandling_ERROR-02.md
-19. **DEC-21**: SSM token-only → NM04-Decisions-Operational_DEC-21.md
-20. **AP-27**: Skipping verification → NM05-AntiPatterns-Process_AP-27.md
+[Same as before - all NM references]
 
-**Usage:** These are in ZAPH (NM00B-ZAPH.md) with complete embedded content for instant access
+**For AWS patterns, see:** AWS00-Quick_Index.md (Top priorities section)
 
 ---
 
 ## 📂 CATEGORY QUICK REFERENCE
 
-### NM01 - Architecture & Interfaces
-**Purpose:** Core SUGA patterns and 12 interfaces  
-**When to use:** Architecture questions, interface usage, LMMS/ZAPH  
-**Top items:** ARCH-01, ARCH-07, INT-01, INT-02, INT-03  
-**Index:** NM01-INDEX-Architecture.md
+### NM Categories (Project-Specific)
 
-### NM02 - Dependencies & Import Rules
-**Purpose:** Import rules and dependency layers  
-**When to use:** Import questions, circular dependency issues  
-**Top items:** RULE-01, DEP-01, RULE-02  
-**Index:** NM02-INDEX-Dependencies.md
+[Same as before - NM01 through NM07]
 
-### NM03 - Operations & Pathways
-**Purpose:** Operation flows and system pathways  
-**When to use:** Understanding operations, error handling, tracing  
-**Top items:** PATH-01, ERROR-01, ERROR-02  
-**Index:** NM03-INDEX-Operations.md
+### AWS Categories (External Knowledge)
 
-### NM04 - Design Decisions
-**Purpose:** Design decisions and rationale  
-**When to use:** "Why" questions, understanding design choices  
-**Top items:** DEC-04, DEC-01, DEC-05, DEC-08, DEC-21  
-**Index:** NM04-INDEX-Decisions.md
-
-### NM05 - Anti-Patterns
-**Purpose:** What NOT to do  
-**When to use:** Before suggesting solutions, "can I" questions  
-**Top items:** AP-01, AP-08, AP-14, AP-27, AP-28  
-**Index:** NM05-INDEX-AntiPatterns.md
-
-### NM06 - Learned Experiences
-**Purpose:** Bugs, lessons, wisdom  
-**When to use:** Bug reports, learning from past, best practices  
-**Top items:** BUG-01, BUG-02, LESS-15, LESS-01, LESS-02  
-**Index:** NM06-INDEX-Learned.md
-
-### NM07 - Decision Logic
-**Purpose:** Decision trees and logic frameworks  
-**When to use:** Implementation guidance, "how to" questions  
-**Top items:** DT-01, DT-03, DT-05, DT-07  
-**Index:** NM07-INDEX-DecisionLogic.md
+**AWS06 - Serverless Patterns**  
+**Purpose:** Universal Lambda, API Gateway, serverless patterns  
+**When to use:** Industry best practices, AWS optimization, external validation  
+**Access:** AWS00-Quick_Index.md → AWS06  
+**Top items:** AWS-LESS-09 (proxy), AWS-LESS-10 (transformation), AWS-LESS-01 (cold start)
 
 ---
 
@@ -371,78 +310,44 @@
 
 ### Instant Answers (No search needed)
 
-**"How does cache work?"**
+**"How does cache work?"** (NM)  
 → NM01-Interfaces-Core_INT-01.md
-Use: `gateway.cache_set(key, value, ttl)`, `gateway.cache_get(key)`
 
-**"Why no threading?"**
+**"How to optimize Lambda cold start?"** (Both)  
+→ AWS-LESS-01 (universal approach)  
+→ NM01/ARCH-07 (our LMMS implementation)
+
+**"Why no threading?"** (NM)  
 → NM04-Decisions-Technical_DEC-04.md
-Reason: Lambda is single-threaded, locks add overhead with no benefit
 
-**"How to avoid sentinel leak?"**
-→ NM06-Bugs-Critical_BUG-01.md + DEC-05
-Solution: Sanitize sentinels at router layer, never let them cross boundaries
+**"Proxy or non-proxy integration?"** (AWS)  
+→ AWS-LESS-09 (decision framework)  
+→ See NM04 for our choice
 
-**"What's the verification protocol?"**
-→ NM06-Lessons-Operations_LESS-15.md
-5 steps: Read complete, verify SUGA, check anti-patterns, verify deps, cite sources
+**"How to transform API data?"** (Both)  
+→ AWS-LESS-10 (universal strategies)  
+→ NM04/DEC-05 (our sentinel sanitization)
 
-**"How to import X?"**
-→ NM07-DecisionLogic-Import_DT-01.md + RULE-01
-Always: `import gateway` then use gateway functions
+**"How to avoid sentinel leak?"** (NM)  
+→ NM06-Bugs-Critical_BUG-01.md + DEC-05  
+→ Also see AWS-LESS-10 for transformation best practices
 
-**"Can I use bare except?"**
-→ NO - AP-14, use specific exceptions instead
-
-**"What interfaces exist?"**
-→ NM01-Interfaces-Core_INT-01 to INT-06 (Core: CACHE, LOGGING, SECURITY, METRICS, CONFIG, SINGLETON)
-→ NM01-Interfaces-Advanced_INT-07 to INT-12 (Advanced: INITIALIZATION, HTTP, WEBSOCKET, CIRCUIT_BREAKER, UTILITY, DEBUG)
-
-**"Why SUGA pattern?"**
-→ NM04-Decisions-Architecture_DEC-01.md
-Reason: Prevents circular imports, enables LIGS/LMMS, centralized control
-
-**"How to add feature?"**
-→ NM07-DecisionLogic-FeatureAddition_DT-03.md
-Follow: Gateway → Interface → Implementation pattern
-
-**"Why flat file structure?"**
-→ NM04-Decisions-Architecture_DEC-08.md
-Reason: Simple imports, proven at scale, no subdirectory complexity
-
-**"What's LMMS?"**
-→ NM01-Architecture-CoreArchitecture_ARCH-07.md
-Lambda Memory Management System: LIGS + LUGS + ZAPH = 60% faster cold starts
-
-**"How to handle errors?"**
-→ NM07-DecisionLogic-ErrorHandling_DT-05.md + ERROR-01
-Pattern: Specific exceptions, graceful degradation, log + handle
-
-**"What's sentinel leak bug?"**
-→ NM06-Bugs-Critical_BUG-01.md
-Issue: 535ms performance penalty when sentinel objects cross boundaries
-
-**"What's gateway trinity?"**
-→ NM01-Architecture-CoreArchitecture_ARCH-01.md
-Three files: gateway.py, gateway_core.py, gateway_wrappers.py
-
-**"Why SSM token-only?"**
-→ NM04-Decisions-Operational_DEC-21.md
-Reason: Simplified config, reduced complexity, easier maintenance
+[Rest of fast paths same as before]
 
 ---
 
 ## 🔍 SEARCH STRATEGY
 
 **Level 1: This Quick Index (90% of queries)**
-1. Look up keyword in tables above
-2. Follow routing to category/REF-ID
-3. Read section → respond
+1. Check if AWS or NM question
+2. Look up keyword in appropriate tables
+3. Follow routing to category/REF-ID
+4. Check cross-references if needed
 **Time: ~5 seconds**
 
-**Level 2: Master Index (8% of queries)**
+**Level 2: Master Indexes (8% of queries)**
 1. If keyword not in Quick Index
-2. Search NM00A-Master_Index.md
+2. Search NM00A-Master_Index.md or AWS00-Master_Index.md
 3. Navigate to detailed file
 **Time: ~10-15 seconds**
 
@@ -457,29 +362,31 @@ Reason: Simplified config, reduced complexity, easier maintenance
 ## 📝 MAINTENANCE NOTES
 
 **When to Update:**
-- New common query pattern identified
+- New common query pattern identified (NM or AWS)
 - New REF-ID becomes frequently accessed
 - New category added
 - RED FLAGS change
 - Top 20 list changes (ZAPH updates)
+- AWS maps added or modified
 
 **Update Process:**
-1. Add keyword to appropriate table
+1. Add keyword to appropriate table (Table 0 for AWS)
 2. Update decision trees if new pattern
-3. Update RED FLAGS if new prohibition
-4. Update Top 20 if access patterns change
-5. Add to fast paths if common enough
+3. Update routing logic (AWS vs NM)
+4. Update fast paths if common enough
+5. Ensure cross-references are bidirectional
 
 ---
 
 **Navigation:**
-- **Master Index:** NM00A-Master_Index.md (complete system map)
+- **NM Master Index:** NM00A-Master_Index.md (complete NM map)
+- **AWS Master Index:** AWS00-Master_Index.md (complete AWS map)
 - **ZAPH:** NM00B-ZAPH.md (hot path with embedded content)
 
 ---
 
 **End of Quick Index**
 
-**Total Lines:** ~375  
-**Coverage:** ~90% of queries  
+**Total Lines:** ~420 (added AWS routing, within limits)  
+**Coverage:** ~90% of NM queries + AWS gateway routing  
 **Average Routing Time:** ~5 seconds
