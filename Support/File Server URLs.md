@@ -2,7 +2,7 @@
 
 **Updated:** 2025-10-25  
 **Purpose:** URL inventory for web_fetch access  
-**Total Files:** 268 files across 13 directories
+**Total Files:** 270 files across 14 directories
 
 **⚠️ KEEP THIS FILE MINIMAL:** URLs only, no descriptions or statistics
 
@@ -13,6 +13,9 @@
 ```
 https://claude.dizzybeaver.com/src
 https://claude.dizzybeaver.com/nmap
+https://claude.dizzybeaver.com/AWS
+https://claude.dizzybeaver.com/nmap/AWS/AWS00
+https://claude.dizzybeaver.com/nmap/AWS/AWS06
 https://claude.dizzybeaver.com/nmap/Context
 https://claude.dizzybeaver.com/nmap/NM00
 https://claude.dizzybeaver.com/nmap/NM01
@@ -29,7 +32,29 @@ https://claude.dizzybeaver.com/nmap/Testing
 
 ---
 
-## 🐍 Python Source Files (/src - 93 files)
+## 📂 AWS00 Directory (2 files)
+
+https://claude.dizzybeaver.com/nmap/AWS/AWS00/AWS00-Master_Index.md
+https://claude.dizzybeaver.com/nmap/AWS/AWS00/AWS00-Quick_Index.md
+
+---
+
+## 📂 AWS06 Directory (12 files)
+
+https://claude.dizzybeaver.com/nmap/AWS/AWS06/AWS06-LESS-01.md
+https://claude.dizzybeaver.com/nmap/AWS/AWS06/AWS06-LESS-03.md
+https://claude.dizzybeaver.com/nmap/AWS/AWS06/AWS06-LESS-05.md
+https://claude.dizzybeaver.com/nmap/AWS/AWS06/AWS06-LESS-06.md
+https://claude.dizzybeaver.com/nmap/AWS/AWS06/AWS06-LESS-07.md
+https://claude.dizzybeaver.com/nmap/AWS/AWS06/AWS06-LESS-08.md
+https://claude.dizzybeaver.com/nmap/AWS/AWS06/AWS06-LESS-09.md
+https://claude.dizzybeaver.com/nmap/AWS/AWS06/AWS06-LESS-10.md
+https://claude.dizzybeaver.com/nmap/AWS/AWS06/AWS06-LESS-11.md
+https://claude.dizzybeaver.com/nmap/AWS/AWS06/AWS06-LESS-12.md
+
+---
+
+## 📂 Python Source Files (/src - 93 files)
 
 https://claude.dizzybeaver.com/src/__init__.py
 https://claude.dizzybeaver.com/src/cache_core.py
