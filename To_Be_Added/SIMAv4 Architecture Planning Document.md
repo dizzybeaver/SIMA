@@ -1,995 +1,1280 @@
-# SIMAv4 Architecture Planning Document
+# SIMAv4 Architecture Planning Document (Ultra-Optimized)
 
-**Version:** 4.0.0-DRAFT  
+**Version:** 4.0.0-ULTRA  
 **Date:** 2025-10-27  
 **Status:** Planning / Review  
-**Purpose:** Multi-tier gatewayed neural map system for multi-project, multi-language support
+**Purpose:** Zero-duplication, high-density, reference-based neural map system with ZAPH integration
 
 ---
 
-## 🎯 Executive Summary
+## ðŸŽ¯ Executive Summary
 
-**Problem:** Current SIMA structure (nm, NMP, AWS) lacks:
-- Clear hierarchy for scaling across projects
-- Project-specific configuration isolation
-- Multi-language support
-- Systematic gateway pattern like SUGA-ISP
+**Core Problem Identified:**
+- Knowledge duplication across layers wastes space
+- Unclear when to create CORE vs LANG vs ARCH vs PROJECT entries
+- No clear architecture-specific knowledge organization
+- Inefficient access patterns
 
-**Solution:** SIMAv4 implements a 4-tier architecture:
-```
-Configuration Layer (which maps, which project, which language)
-    ↓
-Gateway Layer (main indexes - "what exists")
-    ↓
-Interface Layer (category indexes - "how it's organized")
-    ↓
-Individual Layer (actual entries - "the knowledge")
-```
+**Ultra-Optimized Solution:**
+- **Reference-Based Architecture** - Entries reference, never duplicate
+- **Only-If-Adds-Value Principle** - Create entry only if it contributes unique knowledge
+- **Architecture-Specific Maps** - SUGA, LMMS, DD, ZAPH get dedicated entry hierarchies
+- **ZAPH-Integrated Access** - Ultra-fast lookup with pre-computed indexes
+- **Inheritance System** - PROJECT inherits from ARCH inherits from LANG inherits from CORE
+
+**Knowledge Density Goal:** 0% duplication, 100% unique information per entry
 
 ---
 
-## 📊 SIMAv4 Architecture Overview
+## ðŸ§  CORE ARCHITECTURAL PRINCIPLES
 
-### Tier 1: Configuration Layer
-**Purpose:** Define what's active and in scope
+### Principle 1: Only-If-Adds-Value (OIAV)
 
-```
-/sima-config/
-  ├── SIMA-MAIN-CONFIG.md          # Master config: which map sets enabled
-  ├── project-configs/
-  │   ├── PROJECT-LAMBDA-CONFIG.md  # Lambda-specific specs
-  │   ├── PROJECT-WEB-CONFIG.md     # Web app specs (future)
-  │   └── PROJECT-MOBILE-CONFIG.md  # Mobile specs (future)
-  └── language-configs/
-      ├── LANG-PYTHON-CONFIG.md     # Python patterns/limits
-      ├── LANG-JAVASCRIPT-CONFIG.md # JS patterns/limits (future)
-      └── LANG-GO-CONFIG.md         # Go patterns/limits (future)
-```
-
-### Tier 2: Gateway Layer
-**Purpose:** Main entry points - "master indexes of indexes"
+**Rule:** Create an entry at a specific level ONLY if it adds unique information not present at higher levels.
 
 ```
-/sima-gateways/
-  ├── GATEWAY-CORE.md              # Core programming concepts (universal)
-  ├── GATEWAY-ARCHITECTURE.md      # Architecture patterns (universal)
-  ├── GATEWAY-LANGUAGE.md          # Language-specific gateway
-  ├── GATEWAY-PROJECT.md           # Project-specific gateway
-  └── GATEWAY-SUPPORT.md           # Tools/workflows/utilities
+Decision Tree for Entry Creation:
+
+Is this knowledge universal (works in any language/architecture/project)?
+â"‚
+â"œâ"€ YES â†' Create CORE entry (concept only, no implementation)
+â"‚
+â""â"€ NO â†' Is this language-specific syntax/behavior?
+    â"‚
+    â"œâ"€ YES â†' Does it differ significantly from obvious translation of CORE?
+    â"‚   â"‚
+    â"‚   â"œâ"€ YES â†' Create LANG entry (implementation only, reference CORE)
+    â"‚   â""â"€ NO â†' Skip LANG entry, just reference CORE from PROJECT
+    â"‚
+    â""â"€ NO â†' Is this architecture-specific pattern?
+        â"‚
+        â"œâ"€ YES â†' Create ARCH entry (pattern only, reference CORE/LANG)
+        â"‚
+        â""â"€ NO â†' Is this project-specific constraint?
+            â"‚
+            â""â"€ YES â†' Create PROJECT entry (constraints + references)
 ```
 
-### Tier 3: Interface Layer
-**Purpose:** Category-specific indexes - "organized collections"
+**Example: Caching**
 
 ```
-/sima-interfaces/
-  ├── core/
-  │   ├── INT-PATTERNS.md          # Design patterns index
-  │   ├── INT-PRINCIPLES.md        # Programming principles index
-  │   └── INT-ANTIPATTERNS.md      # Anti-patterns index
-  ├── architecture/
-  │   ├── INT-GATEWAY-PATTERN.md   # Gateway architecture index
-  │   ├── INT-FAAS.md              # FaaS architecture index
-  │   └── INT-MICROSERVICES.md     # Microservices index
-  ├── languages/
-  │   ├── python/
-  │   │   ├── INT-PY-CORE.md       # Python core concepts
-  │   │   ├── INT-PY-STDLIB.md     # Standard library
-  │   │   └── INT-PY-PATTERNS.md   # Python-specific patterns
-  │   ├── javascript/
-  │   │   └── INT-JS-CORE.md       # (future)
-  │   └── go/
-  │       └── INT-GO-CORE.md       # (future)
-  └── projects/
-      ├── lambda/
-      │   ├── INT-LAMBDA-CORE.md   # Lambda-specific patterns
-      │   ├── INT-LAMBDA-LIMITS.md # Lambda constraints
-      │   └── INT-LAMBDA-APIS.md   # Lambda API patterns
-      └── web/
-          └── INT-WEB-CORE.md      # (future)
+CORE-025: Caching Pattern
+- Concept: Store computed results for reuse
+- Trade-offs: Memory vs computation
+- When to use: Expensive operations, repeated access
+- NO implementation details (that's for LANG)
+- NO architecture specifics (that's for ARCH)
+- NO project constraints (that's for PROJECT)
+
+PY-067: Python Caching (ONLY if adds value)
+- References: CORE-025
+- Python-specific: functools.lru_cache, custom decorators, weakref caches
+- Only exists because Python has unique caching approaches
+- If Python caching is obvious translation of CORE-025, this entry doesn't exist
+
+SUGA-015: Caching in SUGA Architecture
+- References: CORE-025 (concept)
+- SUGA-specific: Cache at interface layer, not core
+- SUGA-specific: Gateway access pattern
+- SUGA-specific: Lazy initialization integration
+- Only exists because SUGA has specific layer placement rules
+
+SUGA-ISP-LAM-089: Caching in SUGA-ISP Lambda
+- References: CORE-025, PY-067, SUGA-015
+- Lambda constraints: 128MB memory limit (affects cache size)
+- Lambda constraints: Cold start (affects cache preloading)
+- Lambda constraints: Stateless invocations (affects cache persistence)
+- Only exists because Lambda adds unique constraints
+- Does NOT duplicate concepts from referenced entries
 ```
 
-### Tier 4: Individual Layer
-**Purpose:** Actual knowledge entries - "the content"
+**Key Insight:** Each entry contains ONLY the delta (new information) from its references.
+
+---
+
+### Principle 2: Architecture-Specific Maps
+
+**Rule:** Each architecture pattern gets its own complete entry hierarchy.
 
 ```
 /sima-entries/
-  ├── core/
-  │   ├── CORE-001-singleton-pattern.md
-  │   ├── CORE-002-factory-pattern.md
-  │   └── CORE-003-observer-pattern.md
-  ├── architecture/
-  │   ├── ARCH-001-gateway-layer.md
-  │   ├── ARCH-002-interface-layer.md
-  │   └── ARCH-003-core-layer.md
-  ├── languages/
-  │   └── python/
-  │       ├── PY-001-list-comprehensions.md
-  │       ├── PY-002-generators.md
-  │       └── PY-003-context-managers.md
-  └── projects/
-      └── lambda/
-          ├── LAM-001-cold-start-optimization.md
-          ├── LAM-002-memory-management.md
-          └── LAM-003-timeout-patterns.md
+  â"‚
+  â"œâ"€â"€ core/                           # Universal concepts only
+  â"‚   â"œâ"€â"€ patterns/
+  â"‚   â"œâ"€â"€ principles/
+  â"‚   â""â"€â"€ antipatterns/
+  â"‚
+  â"œâ"€â"€ architectures/                  # Architecture-specific knowledge
+  â"‚   â"‚
+  â"‚   â"œâ"€â"€ suga/                       # SUGA architecture entries
+  â"‚   â"‚   â"œâ"€â"€ patterns/               # SUGA-001 to SUGA-099
+  â"‚   â"‚   â"œâ"€â"€ antipatterns/           # SUGA-AP-001 to SUGA-AP-099
+  â"‚   â"‚   â"œâ"€â"€ lessons/                # SUGA-LESS-001 to SUGA-LESS-099
+  â"‚   â"‚   â"œâ"€â"€ decisions/              # SUGA-DEC-001 to SUGA-DEC-099
+  â"‚   â"‚   â""â"€â"€ bugs/                   # SUGA-BUG-001 to SUGA-BUG-099
+  â"‚   â"‚
+  â"‚   â"œâ"€â"€ lmms/                       # LMMS architecture entries
+  â"‚   â"‚   â"œâ"€â"€ patterns/               # LMMS-001 to LMMS-099
+  â"‚   â"‚   â"œâ"€â"€ antipatterns/           # LMMS-AP-001 to LMMS-AP-099
+  â"‚   â"‚   â""â"€â"€ lessons/                # LMMS-LESS-001 to LMMS-LESS-099
+  â"‚   â"‚
+  â"‚   â"œâ"€â"€ dd/                         # Dispatch Dictionary entries
+  â"‚   â"‚   â"œâ"€â"€ patterns/               # DD-001 to DD-099
+  â"‚   â"‚   â""â"€â"€ antipatterns/           # DD-AP-001 to DD-AP-099
+  â"‚   â"‚
+  â"‚   â""â"€â"€ zaph/                       # ZAPH architecture entries
+  â"‚       â"œâ"€â"€ patterns/               # ZAPH-001 to ZAPH-099
+  â"‚       â"œâ"€â"€ antipatterns/           # ZAPH-AP-001 to ZAPH-AP-099
+  â"‚       â""â"€â"€ access_optimization/    # ZAPH-specific access patterns
+  â"‚
+  â"œâ"€â"€ languages/                      # Language implementations
+  â"‚   â""â"€â"€ python/
+  â"‚       â"œâ"€â"€ implementations/        # Only if non-obvious
+  â"‚       â""â"€â"€ libraries/              # Language-specific libraries
+  â"‚
+  â""â"€â"€ projects/                       # Project constraint combinations
+      â""â"€â"€ suga-isp/
+          â"œâ"€â"€ aws-lambda/
+          â"‚   â"œâ"€â"€ constraints/         # Lambda-specific constraints
+          â"‚   â""â"€â"€ combinations/        # How architectures combine in Lambda
+          â""â"€â"€ aws-dynamodb/
 ```
+
+**Why Architecture-Specific Maps?**
+
+1. **SUGA-specific knowledge** (Gateway layer rules, interface patterns, lazy imports) belongs in SUGA entries
+2. **LMMS-specific knowledge** (Memory management, preloading, singleton patterns) belongs in LMMS entries
+3. **DD-specific knowledge** (Dispatch tables, routing logic) belongs in DD entries
+4. **ZAPH-specific knowledge** (Access optimization, indexing) belongs in ZAPH entries
+
+**Architecture Enable/Disable:**
+
+```yaml
+# /sima-config/active/projects/SUGA-ISP/SUGA-ISP-ACTIVE-ARCHITECTURES.md
+
+active_architectures:
+  suga:
+    enabled: true
+    version: 3.0
+    entry_range: SUGA-001 to SUGA-099
+    priority: 1
+  
+  lmms:
+    enabled: true
+    version: 2.0
+    entry_range: LMMS-001 to LMMS-099
+    priority: 2
+  
+  dd:
+    enabled: true
+    version: 1.0
+    entry_range: DD-001 to DD-099
+    priority: 3
+  
+  zaph:
+    enabled: true
+    version: 1.0
+    entry_range: ZAPH-001 to ZAPH-099
+    priority: 4
+```
+
+When architecture disabled, its entries are filtered out of search results.
 
 ---
 
-## 🔧 Configuration File Specifications
+### Principle 3: Reference-Based Inheritance
 
-### 1. SIMA-MAIN-CONFIG.md
-**Purpose:** Master control - which map sets are active
+**Rule:** Entries inherit knowledge through references, never duplication.
 
-```markdown
-# SIMA Main Configuration
-Version: 4.0.0
-Last Updated: 2025-10-27
+```
+CORE-025: Caching Pattern
+Content: [Full concept explanation]
+Size: 120 lines
 
-## Active Map Sets
-- ✅ CORE: Enabled (universal programming concepts)
-- ✅ ARCHITECTURE: Enabled (universal architecture patterns)
-- ✅ LANGUAGE-PYTHON: Enabled (Python-specific)
-- ⏸️ LANGUAGE-JAVASCRIPT: Disabled (not yet needed)
-- ⏸️ LANGUAGE-GO: Disabled (not yet needed)
-- ✅ PROJECT-LAMBDA: Enabled (current project)
-- ⏸️ PROJECT-WEB: Disabled (future project)
-- ⏸️ PROJECT-MOBILE: Disabled (future project)
+PY-067: Python Caching
+Inherits: CORE-025
+Content: [Only Python-specific additions]
+Size: 40 lines (just the delta)
 
-## Active Project
-Current: LAMBDA
-Config: /sima-config/project-configs/PROJECT-LAMBDA-CONFIG.md
+SUGA-015: Caching in SUGA
+Inherits: CORE-025
+Content: [Only SUGA-specific additions]
+Size: 50 lines (just the delta)
 
-## Active Languages
-Primary: PYTHON
-Config: /sima-config/language-configs/LANG-PYTHON-CONFIG.md
+SUGA-ISP-LAM-089: Lambda Caching with SUGA
+Inherits: CORE-025, PY-067, SUGA-015
+Content: [Only Lambda constraint additions]
+Size: 30 lines (just the delta)
 
-## Gateway Priority Order
-1. PROJECT-LAMBDA (most specific)
-2. LANGUAGE-PYTHON (language-specific)
-3. ARCHITECTURE (patterns)
-4. CORE (universal principles)
+Total Knowledge: 240 lines
+Without References: Would be 120 + 160 + 170 + 240 = 690 lines
+Savings: 450 lines (65% reduction)
 ```
 
-### 2. PROJECT-LAMBDA-CONFIG.md
-**Purpose:** Lambda-specific constraints and specifications
+**Entry Template with References:**
 
 ```markdown
-# Project Configuration: AWS Lambda (SUGA-ISP)
-Version: 1.0.0
-Project: SUGA-ISP Lambda Execution Engine
+---
+ref_id: SUGA-ISP-LAM-089
+type: project_constraint
+version: 1.0.0
+inherits:
+  - CORE-025  # Universal caching concept
+  - PY-067    # Python implementation
+  - SUGA-015  # SUGA architecture pattern
+status: active
+---
 
-## Runtime Specifications
-- **Execution Model:** Single-threaded
-- **Memory Limit:** 128 MB
-- **Timeout:** 30 seconds max
-- **Concurrency:** No threading (stateless per invocation)
-- **Storage:** Ephemeral /tmp only (512 MB)
+# SUGA-ISP-LAM-089: Lambda Caching in SUGA Architecture
 
-## Language Constraints
-- **Primary Language:** Python 3.12
-- **Language Config:** /sima-config/language-configs/LANG-PYTHON-CONFIG.md
+## Inherited Knowledge
+This entry builds on:
+- **CORE-025**: Caching pattern (universal concept)
+- **PY-067**: Python caching implementation
+- **SUGA-015**: SUGA architecture caching placement
 
-## Architecture Requirements
-- **Pattern:** SUGA (Gateway → Interface → Core)
-- **Layer Count:** 3 (mandatory)
-- **Import Rules:** No direct core imports from gateway
-- **Error Handling:** Specific exceptions only (no bare except)
+## Lambda-Specific Constraints (NEW)
+[Only the delta - what Lambda adds]
 
-## Anti-Patterns (Lambda-Specific)
-- ❌ Threading/locks (single-threaded runtime)
-- ❌ Heavy libraries without justification (128MB limit)
-- ❌ File system persistence (ephemeral only)
-- ❌ Long-running background tasks (30s timeout)
-- ❌ Stateful operations between invocations
+1. **Memory Limit (128MB):**
+   - Cache size must be monitored
+   - Use small cache sizes (< 10MB)
+   - Reference: LAM-CONST-001
 
-## Applicable Neural Map Sets
-- CORE: Universal patterns (filtered for Lambda constraints)
-- ARCHITECTURE: Gateway pattern, FaaS patterns
-- LANGUAGE-PYTHON: Standard library, Lambda-compatible libraries
-- PROJECT-LAMBDA: Lambda-specific patterns and optimizations
+2. **Cold Start Implications:**
+   - Cache initialized on cold start
+   - Use lazy population
+   - Reference: LAM-PERF-015
+
+3. **Stateless Invocations:**
+   - Cache doesn't persist between invocations
+   - Use external cache (Redis) for persistence
+   - Reference: LAM-PATTERN-023
+
+## Lambda-Specific Anti-Patterns (NEW)
+- âŒ Large in-memory caches (> 50MB)
+- âŒ Expecting cache to persist across invocations
+- âŒ Pre-populating cache in global scope (slow cold starts)
 
 ## Cross-References
-- Architecture Gateway: /sima-gateways/GATEWAY-ARCHITECTURE.md
-- Language Gateway: /sima-gateways/GATEWAY-LANGUAGE.md
-- Project Gateway: /sima-gateways/GATEWAY-PROJECT.md
+- Inherited concepts: CORE-025, PY-067, SUGA-015
+- Lambda constraints: LAM-CONST-001, LAM-PERF-015
+- Alternative patterns: LAM-PATTERN-023 (external cache)
 ```
 
-### 3. LANG-PYTHON-CONFIG.md
-**Purpose:** Python language-specific patterns and conventions
+**Key Insight:** This entry is 30 lines, not 240 lines, because it only contains the Lambda-specific delta.
 
-```markdown
-# Language Configuration: Python 3.12
-Version: 1.0.0
-Language: Python
-Min Version: 3.12+
+---
 
-## Language Characteristics
-- **Paradigm:** Multi-paradigm (OOP, functional, imperative)
-- **Typing:** Dynamic with optional static hints (typing module)
-- **Memory Model:** Automatic (garbage collected)
-- **Concurrency:** Threading, multiprocessing, asyncio
+## ðŸ"Š ULTRA-OPTIMIZED STRUCTURE
 
-## Standard Library Emphasis
-- Collections: dict, list, set, tuple
-- Itertools: Efficient iteration patterns
-- Functools: Functional programming utilities
-- Contextlib: Context manager utilities
-- Dataclasses: Data structure definitions
+### Tier 1: Configuration Layer (Unchanged)
 
-## Pythonic Patterns (Encouraged)
-- ✅ List comprehensions over map/filter
-- ✅ Context managers (with statements)
-- ✅ Generators for lazy evaluation
-- ✅ Duck typing over isinstance checks
-- ✅ EAFP (Easier to Ask Forgiveness than Permission)
-
-## Python Anti-Patterns (Discouraged)
-- ❌ Bare except clauses
-- ❌ Mutable default arguments
-- ❌ Global variables without clear justification
-- ❌ Using `type()` for type checking (use isinstance)
-- ❌ Not using context managers for resources
-
-## Project-Specific Constraints
-See: /sima-config/project-configs/PROJECT-LAMBDA-CONFIG.md
-- May override/restrict based on project (e.g., no threading for Lambda)
-
-## Applicable Neural Map Sets
-- CORE: Universal patterns (Python implementations)
-- LANGUAGE-PYTHON: Python-specific patterns
-- Filtered by active project constraints
-
-## Cross-References
-- Language Gateway: /sima-gateways/GATEWAY-LANGUAGE.md
-- Python Interface: /sima-interfaces/languages/python/INT-PY-CORE.md
+```
+/sima-config/
+  â"œâ"€â"€ SIMA-MAIN-CONFIG.md
+  â"œâ"€â"€ templates/
+  â"‚   â"œâ"€â"€ projects/
+  â"‚   â"œâ"€â"€ architectures/
+  â"‚   â""â"€â"€ languages/
+  â""â"€â"€ active/
+      â"œâ"€â"€ projects/
+      â"‚   â""â"€â"€ SUGA-ISP/
+      â"‚       â"œâ"€â"€ SUGA-ISP-PROJECT-AWS.md
+      â"‚       â"œâ"€â"€ SUGA-ISP-LANG-PYTHON.md
+      â"‚       â""â"€â"€ SUGA-ISP-ACTIVE-ARCHITECTURES.md  # NEW
+      â"œâ"€â"€ architectures/
+      â""â"€â"€ languages/
 ```
 
 ---
 
-## 🔀 Gateway Layer Specifications
+### Tier 2: Gateway Layer (Enhanced)
 
-### GATEWAY-CORE.md
-**Purpose:** Index of universal programming concepts
+```
+/sima-gateways/
+  â"œâ"€â"€ GATEWAY-CORE.md              # Universal concepts only
+  â"œâ"€â"€ GATEWAY-ARCHITECTURE.md      # Routes to architecture-specific maps
+  â"œâ"€â"€ GATEWAY-LANGUAGE.md          # Routes to language implementations
+  â"œâ"€â"€ GATEWAY-PROJECT.md           # Routes to project constraints
+  â""â"€â"€ GATEWAY-ZAPH.md              # NEW: Ultra-optimized access layer
+```
+
+**NEW: GATEWAY-ZAPH.md**
 
 ```markdown
-# Core Gateway
-Version: 4.0.0
-Scope: Universal programming concepts (language-agnostic)
+# ZAPH Gateway: Ultra-Optimized Access Layer
+Version: 1.0.0
+Purpose: Fast, indexed, cached access to all neural maps
 
-## Interface Indexes
-1. INT-PATTERNS.md - Design patterns
-2. INT-PRINCIPLES.md - Programming principles (SOLID, DRY, KISS)
-3. INT-ANTIPATTERNS.md - Common mistakes and anti-patterns
-4. INT-DATASTRUCTURES.md - Universal data structures
-5. INT-ALGORITHMS.md - Common algorithms
+## ZAPH Architecture
+ZAPH = Zero-Allocation Pre-computed Hashing for instant lookups
 
-## Entry Count by Interface
-- Patterns: 45 entries
-- Principles: 23 entries
-- Anti-patterns: 31 entries
-- Data Structures: 18 entries
-- Algorithms: 27 entries
+## Pre-Computed Indexes
 
-## Filtering Rules
-- All entries are language-agnostic (concepts only)
-- Implementation details in language-specific interfaces
-- Project constraints don't filter core concepts (only implementations)
-
-## Usage Pattern
+### 1. REF-ID to Entry Map
+Fast O(1) lookup by REF-ID
 ```
-User asks about: "Singleton pattern"
-→ Check GATEWAY-CORE.md → Points to INT-PATTERNS.md
-→ Find CORE-001-singleton-pattern.md
-→ Shows concept (universal)
-→ Also check LANGUAGE gateway for Python implementation
-→ Also check PROJECT gateway for Lambda-specific considerations
-```
+CORE-025 â†' /sima-entries/core/patterns/CORE-025-caching-pattern.md
+SUGA-015 â†' /sima-entries/architectures/suga/patterns/SUGA-015-caching.md
 ```
 
-### GATEWAY-LANGUAGE.md
-**Purpose:** Index of language-specific implementations
-
-```markdown
-# Language Gateway
-Version: 4.0.0
-Scope: Language-specific implementations and patterns
-
-## Active Languages
-Based on: /sima-config/SIMA-MAIN-CONFIG.md
-- ✅ Python 3.12 (active)
-- ⏸️ JavaScript (future)
-- ⏸️ Go (future)
-
-## Python Interface Indexes
-1. INT-PY-CORE.md - Core Python concepts
-2. INT-PY-STDLIB.md - Standard library patterns
-3. INT-PY-PATTERNS.md - Pythonic patterns
-4. INT-PY-ASYNC.md - Async/await patterns
-5. INT-PY-TYPING.md - Type hints and mypy
-
-## Entry Count (Python)
-- Core: 67 entries
-- Stdlib: 89 entries
-- Patterns: 45 entries
-- Async: 23 entries
-- Typing: 34 entries
-
-## Filtering Rules
-- Only show entries for ACTIVE language(s)
-- Apply project constraints (e.g., no threading if Lambda)
-- Cross-reference with CORE concepts
-
-## Usage Pattern
+### 2. Keyword to REF-ID Map
+Fast keyword search
 ```
-User asks about: "Python generators"
-→ Check GATEWAY-LANGUAGE.md → Python active
-→ Points to INT-PY-CORE.md
-→ Find PY-002-generators.md
-→ Also cross-ref CORE-015-lazy-evaluation.md (universal concept)
-```
+"caching" â†' [CORE-025, PY-067, SUGA-015, LAM-089]
+"threading" â†' [CORE-078, PY-045, SUGA-AP-008] (with constraint warnings)
 ```
 
-### GATEWAY-PROJECT.md
-**Purpose:** Index of project-specific patterns
-
-```markdown
-# Project Gateway
-Version: 4.0.0
-Scope: Project-specific patterns, constraints, and optimizations
-
-## Active Project
-Based on: /sima-config/SIMA-MAIN-CONFIG.md
-Current: LAMBDA (AWS Lambda SUGA-ISP)
-Config: /sima-config/project-configs/PROJECT-LAMBDA-CONFIG.md
-
-## Lambda Interface Indexes
-1. INT-LAMBDA-CORE.md - Lambda architecture patterns
-2. INT-LAMBDA-LIMITS.md - Memory, timeout, cold start optimization
-3. INT-LAMBDA-APIS.md - AWS SDK patterns
-4. INT-LAMBDA-TESTING.md - Lambda-specific testing
-
-## Entry Count (Lambda)
-- Core: 34 entries
-- Limits: 28 entries
-- APIs: 56 entries
-- Testing: 19 entries
-
-## Constraint Filtering
-- Filters out CORE concepts that violate Lambda constraints
-  - Example: Threading patterns → marked as ❌ (single-threaded)
-- Filters out LANGUAGE features not applicable
-  - Example: Heavy libraries → marked as ⚠️ (128MB limit)
-
-## Usage Pattern
+### 3. Reference Graph
+Pre-computed inheritance chains
 ```
-User asks about: "Lambda cold start optimization"
-→ Check GATEWAY-PROJECT.md → Lambda active
-→ Points to INT-LAMBDA-LIMITS.md
-→ Find LAM-002-cold-start-optimization.md
-→ Also cross-ref CORE-034-lazy-initialization.md (concept)
-→ Also cross-ref PY-045-import-optimization.md (implementation)
+SUGA-ISP-LAM-089 inherits:
+  â†' CORE-025
+  â†' PY-067 (which inherits CORE-025)
+  â†' SUGA-015 (which inherits CORE-025)
 ```
+
+### 4. Constraint Matrix
+Pre-computed applicability
+```
+Query: "threading"
+Active Project: SUGA-ISP (Lambda)
+Active Architectures: [SUGA, LMMS, DD, ZAPH]
+
+Result:
+- CORE-078: Threading concept âœ… (universal)
+- PY-045: Python threading âœ… (implementation)
+- SUGA-AP-008: âŒ Threading in SUGA (anti-pattern)
+- LAM-CONST-004: âŒ Threading in Lambda (constraint violation)
+
+Verdict: âŒ Not applicable (Lambda constraint)
+Alternative: CORE-085 (Async/await concept), PY-089 (Python asyncio)
+```
+
+## ZAPH Optimization Levels
+
+### Level 1: Index Lookup (< 10ms)
+- REF-ID direct lookup
+- Keyword to REF-ID mapping
+- Cached in memory
+
+### Level 2: Reference Resolution (< 50ms)
+- Resolve inheritance chain
+- Fetch all referenced entries
+- Cached after first access
+
+### Level 3: Constraint Filtering (< 100ms)
+- Apply active project constraints
+- Apply active architecture constraints
+- Filter inapplicable entries
+
+### Level 4: Full Content Load (< 200ms)
+- Fetch entry content
+- Resolve cross-references
+- Build complete knowledge graph
 ```
 
 ---
 
-## 🗂️ Interface Layer Specifications
+### Tier 3: Interface Layer (Reorganized)
 
-### Example: INT-LAMBDA-LIMITS.md
-**Purpose:** Index of Lambda constraint-specific patterns
+```
+/sima-interfaces/
+  â"œâ"€â"€ core/
+  â"‚   â"œâ"€â"€ INT-CORE-PATTERNS.md          # Universal patterns index
+  â"‚   â"œâ"€â"€ INT-CORE-PRINCIPLES.md        # Universal principles index
+  â"‚   â""â"€â"€ INT-CORE-ANTIPATTERNS.md      # Universal anti-patterns index
+  â"‚
+  â"œâ"€â"€ architectures/
+  â"‚   â"œâ"€â"€ INT-SUGA.md                    # SUGA architecture index
+  â"‚   â"‚   (Points to: SUGA-001 to SUGA-099, SUGA-AP-001 to SUGA-AP-099, etc.)
+  â"‚   â"œâ"€â"€ INT-LMMS.md                    # LMMS architecture index
+  â"‚   â"œâ"€â"€ INT-DD.md                      # DD architecture index
+  â"‚   â""â"€â"€ INT-ZAPH.md                    # ZAPH architecture index
+  â"‚
+  â"œâ"€â"€ languages/
+  â"‚   â""â"€â"€ python/
+  â"‚       â"œâ"€â"€ INT-PY-IMPLEMENTATIONS.md  # Only non-obvious implementations
+  â"‚       â""â"€â"€ INT-PY-LIBRARIES.md        # Python-specific libraries
+  â"‚
+  â""â"€â"€ projects/
+      â""â"€â"€ suga-isp/
+          â"œâ"€â"€ INT-SUGA-ISP-LAMBDA.md     # Lambda constraint combinations
+          â""â"€â"€ INT-SUGA-ISP-DYNAMODB.md   # DynamoDB constraint combinations
+```
+
+**Example: INT-SUGA.md**
 
 ```markdown
-# Interface Index: Lambda Limits & Constraints
+# Interface Index: SUGA Architecture
 Version: 1.0.0
-Gateway: GATEWAY-PROJECT.md
-Project: AWS Lambda (SUGA-ISP)
+Gateway: GATEWAY-ARCHITECTURE.md
+Enabled: Based on SUGA-ISP-ACTIVE-ARCHITECTURES.md
 
 ## Scope
-Patterns, optimizations, and workarounds for Lambda's hard limits:
-- 128 MB memory (configurable, but project uses 128)
-- 30 second timeout
-- Single-threaded execution
-- Ephemeral storage only
-- Cold start latency
+SUGA (Single Universal Gateway Architecture) specific patterns, anti-patterns, lessons, and decisions.
 
-## Entry Index
-### Memory Management (8 entries)
-- LAM-001: Memory-efficient data structures
-- LAM-002: Lazy loading strategies
-- LAM-003: Generator-based processing
-- LAM-004: Memory profiling techniques
-- LAM-005: Large payload handling
-- LAM-006: Library selection criteria
-- LAM-007: Import optimization
-- LAM-008: Object lifecycle management
+## Entry Categories
 
-### Timeout Optimization (7 entries)
-- LAM-020: Async I/O patterns
-- LAM-021: Timeout buffer allocation
-- LAM-022: Early timeout detection
-- LAM-023: Graceful degradation
-- LAM-024: Timeout retry strategies
-- LAM-025: Long-running task alternatives
-- LAM-026: Time budget tracking
+### Patterns (SUGA-001 to SUGA-099)
+- SUGA-001: Gateway Layer Pattern
+- SUGA-002: Interface Layer Pattern
+- SUGA-003: Core Layer Pattern
+- SUGA-004: Lazy Import Pattern
+- SUGA-005: Function-Level Import Pattern
+- ...
+- SUGA-015: Caching in SUGA Architecture
+- ...
 
-### Cold Start Optimization (6 entries)
-- LAM-040: Import deferral patterns
-- LAM-041: Connection pooling
-- LAM-042: Global scope usage
-- LAM-043: Lambda layers strategy
-- LAM-044: Warm-up techniques
-- LAM-045: Provisioned concurrency patterns
+### Anti-Patterns (SUGA-AP-001 to SUGA-AP-099)
+- SUGA-AP-001: Direct Core Imports (violates gateway pattern)
+- SUGA-AP-002: Module-Level Imports (violates lazy loading)
+- SUGA-AP-003: Cross-Layer Dependencies (violates hierarchy)
+- ...
+- SUGA-AP-008: Threading in SUGA (violates single-threaded assumption)
+- ...
 
-### Concurrency Constraints (7 entries)
-- LAM-060: Single-threaded alternatives
-- LAM-061: Stateless design patterns
-- LAM-062: External coordination (SQS/SNS)
-- LAM-063: Lambda-to-Lambda communication
-- LAM-064: Concurrent invocation patterns
-- LAM-065: Rate limiting strategies
-- LAM-066: Fan-out/fan-in patterns
+### Lessons Learned (SUGA-LESS-001 to SUGA-LESS-099)
+- SUGA-LESS-001: Gateway wrappers reduce coupling
+- SUGA-LESS-002: Lazy imports improve cold start
+- SUGA-LESS-003: Interface layer enables testing
+- ...
+
+### Design Decisions (SUGA-DEC-001 to SUGA-DEC-099)
+- SUGA-DEC-001: Why three layers (not two or four)
+- SUGA-DEC-002: Why function-level imports
+- SUGA-DEC-003: Why no subdirectories in src/
+- ...
+
+### Bugs (SUGA-BUG-001 to SUGA-BUG-099)
+- SUGA-BUG-001: Sentinel object leak (cross-layer bug)
+- SUGA-BUG-002: Import cycle in gateway
+- ...
 
 ## Cross-References
-- Core Concepts: GATEWAY-CORE.md
-- Python Implementation: GATEWAY-LANGUAGE.md → INT-PY-CORE.md
-- Architecture: GATEWAY-ARCHITECTURE.md → INT-FAAS.md
-
-## Constraint Matrix
-| Core Concept | Lambda Applicable? | Alternative/Note |
-|--------------|-------------------|------------------|
-| Threading | ❌ No | Use async/await or multiple invocations |
-| Multiprocessing | ❌ No | Use Step Functions or multiple Lambdas |
-| Heavy libraries | ⚠️ Conditional | Must justify against 128MB limit |
-| File I/O | ⚠️ Limited | /tmp only, ephemeral |
-| Long operations | ⚠️ Limited | < 30s or use Step Functions |
+- Universal Concepts: GATEWAY-CORE.md
+- Language Implementation: GATEWAY-LANGUAGE.md (Python)
+- Project Constraints: GATEWAY-PROJECT.md (SUGA-ISP)
 ```
 
 ---
 
-## 📝 Individual Entry Specifications
+### Tier 4: Individual Layer (Reorganized)
 
-### Entry Naming Convention
 ```
-{CATEGORY}-{NUMBER}-{kebab-case-title}.md
-
-Examples:
-CORE-001-singleton-pattern.md
-PY-067-context-managers.md
-LAM-045-cold-start-optimization.md
-ARCH-012-gateway-layer.md
+/sima-entries/
+  â"‚
+  â"œâ"€â"€ core/                               # Universal concepts ONLY
+  â"‚   â"œâ"€â"€ patterns/
+  â"‚   â"‚   â"œâ"€â"€ CORE-025-caching-pattern.md
+  â"‚   â"‚   â"œâ"€â"€ CORE-078-threading-concept.md
+  â"‚   â"‚   â""â"€â"€ CORE-085-async-io-concept.md
+  â"‚   â"‚
+  â"‚   â"œâ"€â"€ principles/
+  â"‚   â"‚   â"œâ"€â"€ CORE-101-solid-principles.md
+  â"‚   â"‚   â""â"€â"€ CORE-102-dry-principle.md
+  â"‚   â"‚
+  â"‚   â""â"€â"€ antipatterns/
+  â"‚       â"œâ"€â"€ CORE-AP-001-god-object.md
+  â"‚       â""â"€â"€ CORE-AP-002-spaghetti-code.md
+  â"‚
+  â"œâ"€â"€ architectures/                      # Architecture-specific entries
+  â"‚   â"‚
+  â"‚   â"œâ"€â"€ suga/                           # SUGA architecture entries
+  â"‚   â"‚   â"œâ"€â"€ patterns/
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-001-gateway-layer.md
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-002-interface-layer.md
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-003-core-layer.md
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-004-lazy-import-pattern.md
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-015-caching-in-suga.md
+  â"‚   â"‚   â"‚   â""â"€â"€ ...
+  â"‚   â"‚   â"‚
+  â"‚   â"‚   â"œâ"€â"€ antipatterns/
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-AP-001-direct-core-imports.md
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-AP-002-module-level-imports.md
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-AP-008-threading-in-suga.md
+  â"‚   â"‚   â"‚   â""â"€â"€ ...
+  â"‚   â"‚   â"‚
+  â"‚   â"‚   â"œâ"€â"€ lessons/
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-LESS-001-gateway-wrappers-reduce-coupling.md
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-LESS-002-lazy-imports-improve-cold-start.md
+  â"‚   â"‚   â"‚   â""â"€â"€ ...
+  â"‚   â"‚   â"‚
+  â"‚   â"‚   â"œâ"€â"€ decisions/
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-DEC-001-why-three-layers.md
+  â"‚   â"‚   â"‚   â"œâ"€â"€ SUGA-DEC-002-why-function-level-imports.md
+  â"‚   â"‚   â"‚   â""â"€â"€ ...
+  â"‚   â"‚   â"‚
+  â"‚   â"‚   â""â"€â"€ bugs/
+  â"‚   â"‚       â"œâ"€â"€ SUGA-BUG-001-sentinel-object-leak.md
+  â"‚   â"‚       â""â"€â"€ ...
+  â"‚   â"‚
+  â"‚   â"œâ"€â"€ lmms/                           # LMMS architecture entries
+  â"‚   â"‚   â"œâ"€â"€ patterns/
+  â"‚   â"‚   â"‚   â"œâ"€â"€ LMMS-001-singleton-memory-manager.md
+  â"‚   â"‚   â"‚   â"œâ"€â"€ LMMS-002-preload-optimization.md
+  â"‚   â"‚   â"‚   â""â"€â"€ ...
+  â"‚   â"‚   â"‚
+  â"‚   â"‚   â"œâ"€â"€ antipatterns/
+  â"‚   â"‚   â"‚   â"œâ"€â"€ LMMS-AP-001-multiple-singletons.md
+  â"‚   â"‚   â"‚   â""â"€â"€ ...
+  â"‚   â"‚   â"‚
+  â"‚   â"‚   â""â"€â"€ lessons/
+  â"‚   â"‚       â"œâ"€â"€ LMMS-LESS-001-preload-reduces-cold-start.md
+  â"‚   â"‚       â""â"€â"€ ...
+  â"‚   â"‚
+  â"‚   â"œâ"€â"€ dd/                             # Dispatch Dictionary entries
+  â"‚   â"‚   â"œâ"€â"€ patterns/
+  â"‚   â"‚   â"‚   â"œâ"€â"€ DD-001-dispatch-table.md
+  â"‚   â"‚   â"‚   â""â"€â"€ ...
+  â"‚   â"‚   â"‚
+  â"‚   â"‚   â""â"€â"€ antipatterns/
+  â"‚   â"‚       â""â"€â"€ ...
+  â"‚   â"‚
+  â"‚   â""â"€â"€ zaph/                           # ZAPH architecture entries
+  â"‚       â"œâ"€â"€ patterns/
+  â"‚       â"‚   â"œâ"€â"€ ZAPH-001-index-precomputation.md
+  â"‚       â"‚   â"œâ"€â"€ ZAPH-002-reference-graph.md
+  â"‚       â"‚   â"œâ"€â"€ ZAPH-003-constraint-matrix.md
+  â"‚       â"‚   â""â"€â"€ ...
+  â"‚       â"‚
+  â"‚       â"œâ"€â"€ access_optimization/
+  â"‚       â"‚   â"œâ"€â"€ ZAPH-050-o1-lookup.md
+  â"‚       â"‚   â"œâ"€â"€ ZAPH-051-cached-resolution.md
+  â"‚       â"‚   â""â"€â"€ ...
+  â"‚       â"‚
+  â"‚       â""â"€â"€ antipatterns/
+  â"‚           â""â"€â"€ ...
+  â"‚
+  â"œâ"€â"€ languages/                          # Language implementations
+  â"‚   â""â"€â"€ python/
+  â"‚       â"œâ"€â"€ implementations/            # ONLY non-obvious
+  â"‚       â"‚   â"œâ"€â"€ PY-067-caching-implementation.md  # Only if adds value
+  â"‚       â"‚   â"œâ"€â"€ PY-089-asyncio-implementation.md
+  â"‚       â"‚   â""â"€â"€ ...
+  â"‚       â"‚
+  â"‚       â""â"€â"€ libraries/
+  â"‚           â"œâ"€â"€ PY-LIB-001-functools.md
+  â"‚           â"œâ"€â"€ PY-LIB-002-itertools.md
+  â"‚           â""â"€â"€ ...
+  â"‚
+  â""â"€â"€ projects/                           # Project constraint combinations
+      â""â"€â"€ suga-isp/
+          â"œâ"€â"€ aws-lambda/
+          â"‚   â"œâ"€â"€ constraints/
+          â"‚   â"‚   â"œâ"€â"€ LAM-CONST-001-memory-limit.md
+          â"‚   â"‚   â"œâ"€â"€ LAM-CONST-002-timeout-limit.md
+          â"‚   â"‚   â"œâ"€â"€ LAM-CONST-003-cold-start.md
+          â"‚   â"‚   â"œâ"€â"€ LAM-CONST-004-single-threaded.md
+          â"‚   â"‚   â""â"€â"€ ...
+          â"‚   â"‚
+          â"‚   â""â"€â"€ combinations/           # How architectures combine
+          â"‚       â"œâ"€â"€ SUGA-ISP-LAM-089-caching-with-suga.md
+          â"‚       â"œâ"€â"€ SUGA-ISP-LAM-090-lmms-in-lambda.md
+          â"‚       â""â"€â"€ ...
+          â"‚
+          â""â"€â"€ aws-dynamodb/
+              â"œâ"€â"€ constraints/
+              â""â"€â"€ combinations/
 ```
 
-### Entry Template
+---
+
+## ðŸŽ¯ ENTRY CATEGORIZATION RULES
+
+### When to Create CORE Entry
+âœ… Create if:
+- Concept is universal (works in any language/architecture/project)
+- No language-specific syntax required to explain
+- No architecture-specific patterns involved
+- No project constraints affect concept
+
+❌ Don't create if:
+- Concept only exists in specific language (e.g., Python decorators)
+- Concept only exists in specific architecture (e.g., SUGA gateway layer)
+- Concept is just combination of other concepts
+
+**Example: Threading**
+- âœ… CORE-078: Threading Concept (universal idea of concurrent execution)
+- âŒ CORE-079: Python Threading (wrong - this is LANG-specific)
+
+---
+
+### When to Create LANG Entry
+âœ… Create if:
+- Implementation differs significantly from obvious CORE translation
+- Language has unique features/libraries for this concept
+- Syntax is non-trivial
+
+❌ Don't create if:
+- Implementation is obvious translation of CORE concept
+- Just syntax differences (document in CORE example instead)
+
+**Example: Caching**
+- âœ… PY-067: Python Caching (has functools.lru_cache, unique decorators)
+- âŒ JS-045: JavaScript Caching (if it's just objects/maps - too obvious)
+
+---
+
+### When to Create ARCH Entry
+âœ… Create if:
+- Pattern/lesson/decision is specific to this architecture
+- Anti-pattern exists because of architecture constraints
+- Wouldn't apply to projects not using this architecture
+
+❌ Don't create if:
+- Concept is universal (belongs in CORE)
+- Constraint is project-specific, not architecture-specific
+
+**Example: Direct Core Imports**
+- âœ… SUGA-AP-001: Direct Core Imports (SUGA-specific anti-pattern)
+- âŒ CORE-AP-015: Direct Core Imports (wrong - this is SUGA-specific)
+
+**Example: Threading**
+- âŒ SUGA-AP-008: Threading in SUGA (wrong - not architecture reason)
+- âœ… LAM-CONST-004: Threading in Lambda (correct - Lambda constraint, not SUGA)
+
+---
+
+### When to Create PROJECT Entry
+âœ… Create if:
+- Combines multiple references with project constraints
+- Project-specific combination of architecture + language + constraints
+- Unique constraint not found in architecture/language
+
+❌ Don't create if:
+- Just references without adding new constraints
+- Constraint is actually architecture-specific (belongs in ARCH)
+
+**Example: Caching**
+- âœ… SUGA-ISP-LAM-089: Lambda Caching with SUGA (combines CORE-025 + PY-067 + SUGA-015 + Lambda constraints)
+- âŒ SUGA-ISP-LAM-090: Caching (wrong - if no unique constraints, just reference existing)
+
+---
+
+## ðŸ"„ KNOWLEDGE FLOW ARCHITECTURE
+
+### Query Resolution with ZAPH
+
+```
+User Query: "Can I use threading in my Lambda function?"
+
+Step 1: ZAPH Index Lookup (< 10ms)
+Keyword "threading" â†'
+  - CORE-078: Threading Concept
+  - PY-045: Python Threading
+  - SUGA-AP-008: Threading in SUGA (anti-pattern check)
+  - LAM-CONST-004: Lambda Threading Constraint
+
+Step 2: Load Active Project Config (< 5ms)
+Project: SUGA-ISP
+Runtime: AWS Lambda
+Active Architectures: [SUGA, LMMS, DD, ZAPH]
+
+Step 3: Apply Constraint Matrix (< 20ms)
+LAM-CONST-004: âŒ Single-threaded runtime
+  â†' Threading not applicable
+
+Step 4: Find Alternatives (< 30ms)
+Search alternatives for "threading" under "Lambda"
+  â†' CORE-085: Async I/O Concept
+  â†' PY-089: Python asyncio Implementation
+  â†' SUGA-025: Async Patterns in SUGA
+
+Step 5: Construct Response (< 50ms)
+âŒ No - Lambda is single-threaded (LAM-CONST-004)
+
+âœ… Use async/await instead:
+- CORE-085: Async I/O Concept
+- PY-089: Python asyncio Implementation  
+- SUGA-025: Async Patterns in SUGA Architecture
+
+Total Time: < 115ms
+```
+
+---
+
+### Reference Resolution with Inheritance
+
+```
+User Query: "Show me caching pattern for Lambda with SUGA"
+
+Step 1: ZAPH Index Lookup
+"caching" + "lambda" + "suga" â†'
+  â†' SUGA-ISP-LAM-089: Lambda Caching with SUGA
+
+Step 2: Resolve Inheritance Chain (< 50ms)
+SUGA-ISP-LAM-089 inherits:
+  â"œâ"€ CORE-025: Caching Pattern (universal concept)
+  â"œâ"€ PY-067: Python Caching (if exists and adds value)
+  â""â"€ SUGA-015: Caching in SUGA Architecture
+
+Step 3: Fetch All Referenced Entries (< 100ms)
+Load:
+  - CORE-025 content
+  - PY-067 content (if exists)
+  - SUGA-015 content
+  - SUGA-ISP-LAM-089 content (just the delta)
+
+Step 4: Construct Complete Knowledge (< 50ms)
+Merge:
+  1. Universal concept (CORE-025)
+  2. Python implementation (PY-067, if exists)
+  3. SUGA architecture pattern (SUGA-015)
+  4. Lambda constraints (SUGA-ISP-LAM-089 delta)
+
+Total Knowledge: Complete caching pattern
+Total Time: < 200ms
+Duplication: 0%
+```
+
+---
+
+## ðŸ"Š KNOWLEDGE DENSITY METRICS
+
+### Measuring Success
+
+```yaml
+# /sima-tools/knowledge-density-metrics.md
+
+metrics:
+  duplication_rate:
+    target: 0%
+    measurement: |
+      Count duplicate paragraphs across entries
+      Duplication Rate = (Duplicate Lines / Total Lines) * 100
+  
+  reference_coverage:
+    target: 100%
+    measurement: |
+      Every non-CORE entry must reference higher-level entries
+      Coverage = (Entries with References / Non-CORE Entries) * 100
+  
+  entry_size_delta:
+    target: < 50 lines for PROJECT entries
+    measurement: |
+      PROJECT entries should be small (just constraints)
+      Avg Delta = Avg(PROJECT Entry Size)
+  
+  search_time:
+    target: < 200ms
+    measurement: |
+      Time from query to complete knowledge graph
+      Includes: lookup + resolution + fetch
+  
+  constraint_accuracy:
+    target: 100%
+    measurement: |
+      Never suggest patterns violating active constraints
+      Accuracy = (Correct Suggestions / Total Suggestions) * 100
+```
+
+### Example Metrics Report
+
+```
+SIMAv4 Knowledge Density Report
+Generated: 2025-10-27
+
+Duplication Rate: 2% (target: 0%)
+  - 3 entries have duplicate content
+  - Action: Refactor to references
+
+Reference Coverage: 95% (target: 100%)
+  - 15 PROJECT entries missing references
+  - Action: Add inherits: field
+
+Entry Size Delta:
+  - CORE entries: avg 120 lines
+  - LANG entries: avg 45 lines (62% reduction)
+  - ARCH entries: avg 55 lines (54% reduction)
+  - PROJECT entries: avg 35 lines (71% reduction)
+  - âœ… TARGET MET
+
+Search Time:
+  - Index lookup: avg 8ms
+  - Reference resolution: avg 42ms
+  - Content fetch: avg 95ms
+  - Total: avg 145ms
+  - âœ… TARGET MET
+
+Constraint Accuracy: 98% (target: 100%)
+  - 2 suggestions violated Lambda constraints
+  - Action: Update constraint matrix
+```
+
+---
+
+## ðŸ"§ ZAPH IMPLEMENTATION DETAILS
+
+### Pre-Computed Index Files
+
+```
+/sima-zaph/
+  â"œâ"€â"€ indexes/
+  â"‚   â"œâ"€â"€ ref-id-to-entry.json          # O(1) lookup by REF-ID
+  â"‚   â"œâ"€â"€ keyword-to-refs.json          # Keyword search
+  â"‚   â"œâ"€â"€ reference-graph.json          # Inheritance chains
+  â"‚   â""â"€â"€ constraint-matrix.json        # Applicability matrix
+  â"‚
+  â"œâ"€â"€ cache/
+  â"‚   â"œâ"€â"€ frequently-accessed.json      # Hot entries (cache in memory)
+  â"‚   â""â"€â"€ resolved-chains.json          # Pre-resolved inheritance chains
+  â"‚
+  â""â"€â"€ tools/
+      â"œâ"€â"€ rebuild-indexes.py            # Regenerate all indexes
+      â"œâ"€â"€ validate-references.py        # Check reference integrity
+      â""â"€â"€ measure-density.py            # Calculate duplication metrics
+```
+
+### Index Rebuild Trigger
+
+Rebuild indexes when:
+1. New entry created
+2. Entry modified
+3. Reference added/removed
+4. Active project configuration changed
+5. Architecture enabled/disabled
+
+### Index Structure Examples
+
+**ref-id-to-entry.json:**
+```json
+{
+  "CORE-025": {
+    "path": "/sima-entries/core/patterns/CORE-025-caching-pattern.md",
+    "type": "core_pattern",
+    "keywords": ["caching", "cache", "memoization", "performance"],
+    "size": 120,
+    "last_updated": "2025-10-15"
+  },
+  "SUGA-015": {
+    "path": "/sima-entries/architectures/suga/patterns/SUGA-015-caching-in-suga.md",
+    "type": "arch_pattern",
+    "architecture": "suga",
+    "inherits": ["CORE-025"],
+    "keywords": ["caching", "suga", "interface", "gateway"],
+    "size": 50,
+    "last_updated": "2025-10-20"
+  }
+}
+```
+
+**keyword-to-refs.json:**
+```json
+{
+  "caching": [
+    {"ref_id": "CORE-025", "priority": 1, "type": "concept"},
+    {"ref_id": "PY-067", "priority": 2, "type": "implementation"},
+    {"ref_id": "SUGA-015", "priority": 2, "type": "architecture"},
+    {"ref_id": "SUGA-ISP-LAM-089", "priority": 3, "type": "project"}
+  ],
+  "threading": [
+    {"ref_id": "CORE-078", "priority": 1, "type": "concept"},
+    {"ref_id": "PY-045", "priority": 2, "type": "implementation"},
+    {"ref_id": "LAM-CONST-004", "priority": 3, "type": "constraint", "verdict": "not_applicable"}
+  ]
+}
+```
+
+**reference-graph.json:**
+```json
+{
+  "SUGA-ISP-LAM-089": {
+    "direct_inherits": ["CORE-025", "PY-067", "SUGA-015"],
+    "transitive_inherits": {
+      "CORE-025": [],
+      "PY-067": ["CORE-025"],
+      "SUGA-015": ["CORE-025"]
+    },
+    "resolution_order": ["CORE-025", "PY-067", "SUGA-015", "SUGA-ISP-LAM-089"],
+    "total_knowledge_size": 245
+  }
+}
+```
+
+**constraint-matrix.json:**
+```json
+{
+  "projects": {
+    "SUGA-ISP": {
+      "runtime": "aws-lambda",
+      "architectures": ["suga", "lmms", "dd", "zaph"],
+      "language": "python",
+      "constraints": {
+        "threading": {
+          "applicable": false,
+          "reason": "LAM-CONST-004: Single-threaded runtime",
+          "alternatives": ["CORE-085", "PY-089"]
+        },
+        "caching": {
+          "applicable": true,
+          "constraints": ["LAM-CONST-001: 128MB limit"],
+          "patterns": ["SUGA-ISP-LAM-089"]
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+## ðŸ"„ MIGRATION FROM SIMA V3
+
+### Phase 1: Categorize Existing Entries (Week 1-2)
+
+**Decision Tree for Each NM04-* Entry:**
+
+```
+For each existing entry (NM04-001 to NM04-NNN):
+
+1. Is this truly universal?
+   YES â†' Move to /sima-entries/core/
+   NO â†' Continue to step 2
+
+2. Is this SUGA-specific?
+   YES â†' Move to /sima-entries/architectures/suga/
+   NO â†' Continue to step 3
+
+3. Is this LMMS-specific?
+   YES â†' Move to /sima-entries/architectures/lmms/
+   NO â†' Continue to step 4
+
+4. Is this DD-specific?
+   YES â†' Move to /sima-entries/architectures/dd/
+   NO â†' Continue to step 5
+
+5. Is this Lambda-specific (not architecture)?
+   YES â†' Move to /sima-entries/projects/suga-isp/aws-lambda/constraints/
+   NO â†' Continue to step 6
+
+6. Is this Python-specific AND non-obvious?
+   YES â†' Move to /sima-entries/languages/python/implementations/
+   NO â†' Mark for deletion or merge
+```
+
+**Example Categorization:**
+
+```
+NM04-012 (Gateway Pattern)
+  â†' Is universal? NO (specific to SUGA)
+  â†' Is SUGA-specific? YES
+  â†' Move to: /sima-entries/architectures/suga/patterns/SUGA-001-gateway-layer.md
+
+NM04-045 (Lazy Loading)
+  â†' Is universal? YES (concept applies everywhere)
+  â†' Move to: /sima-entries/core/patterns/CORE-034-lazy-initialization.md
+
+NM04-089 (Sentinel Object Leak)
+  â†' Is universal? NO
+  â†' Is SUGA-specific? YES (cross-layer bug)
+  â†' Move to: /sima-entries/architectures/suga/bugs/SUGA-BUG-001-sentinel-object-leak.md
+
+NM06-DEC-04 (No Threading in Lambda)
+  â†' Is universal? NO
+  â†' Is SUGA-specific? NO
+  â†' Is Lambda-specific? YES (runtime constraint)
+  â†' Move to: /sima-entries/projects/suga-isp/aws-lambda/constraints/LAM-CONST-004-single-threaded.md
+```
+
+---
+
+### Phase 2: Add References to Reduce Duplication (Week 3-4)
+
+**For each categorized entry:**
+
+```
+1. Identify what knowledge is universal
+   â†' Extract to CORE entry (if not exists)
+   â†' Add reference in current entry
+
+2. Identify what knowledge is language-specific
+   â†' Extract to LANG entry (if adds value)
+   â†' Add reference in current entry
+
+3. Identify what knowledge is architecture-specific
+   â†' Keep in ARCH entry
+   â†' Add references to CORE/LANG
+
+4. Rewrite entry to contain only delta
+   â†' Remove duplicated content
+   â†' Replace with references
+   â†' Keep only new information
+```
+
+**Example Refactoring:**
+
+**Before (NM04-089, 180 lines):**
 ```markdown
-# {REF-ID}: {Title}
-Category: {CORE|LANGUAGE|PROJECT|ARCH}
-Subcategory: {Specific area}
-Version: 1.0.0
-Last Updated: YYYY-MM-DD
+# Caching in Lambda
+
+## What is Caching?
+Caching stores computed results for reuse... [40 lines]
+
+## Python Caching
+Python provides functools.lru_cache... [50 lines]
+
+## SUGA Caching
+In SUGA architecture, cache at interface layer... [40 lines]
+
+## Lambda Constraints
+Lambda has 128MB memory limit... [50 lines]
+```
+
+**After (SUGA-ISP-LAM-089, 50 lines):**
+```markdown
+---
+ref_id: SUGA-ISP-LAM-089
+inherits:
+  - CORE-025  # Universal caching concept
+  - PY-067    # Python implementation
+  - SUGA-015  # SUGA architecture pattern
+---
+
+# SUGA-ISP-LAM-089: Lambda Caching with SUGA
+
+## Inherited Knowledge
+- CORE-025: Universal caching concept
+- PY-067: Python caching with functools
+- SUGA-015: Caching at interface layer in SUGA
+
+## Lambda-Specific Constraints (NEW)
+[Only 50 lines of Lambda-specific content]
+```
+
+**Duplication Reduction:** 180 lines â†' 50 lines delta (72% reduction)
+
+---
+
+### Phase 3: Build ZAPH Indexes (Week 5)
+
+```
+1. Run /sima-zaph/tools/rebuild-indexes.py
+2. Generate all 4 index files
+3. Validate reference integrity
+4. Test search performance
+5. Benchmark against targets
+```
+
+---
+
+### Phase 4: Validation (Week 6-7)
+
+```
+1. Run knowledge density metrics
+2. Check duplication rate (target: 0%)
+3. Check reference coverage (target: 100%)
+4. Test query resolution times (target: < 200ms)
+5. Validate constraint matrix accuracy
+6. Test with real queries from support tickets
+```
+
+---
+
+### Phase 5: Rollout (Week 8)
+
+```
+1. Update Custom Instructions to reference SIMAv4
+2. Update SESSION-START to use ZAPH gateway
+3. Train team on new structure
+4. Monitor first 100 queries
+5. Collect feedback and iterate
+```
+
+---
+
+## âœ… SUCCESS CRITERIA
+
+### Technical Metrics
+- âœ… Duplication rate: < 2% (target: 0%)
+- âœ… Reference coverage: 100%
+- âœ… Search time: < 200ms average
+- âœ… Constraint accuracy: 100%
+- âœ… Entry size delta: PROJECT entries < 50 lines average
+
+### Usability Metrics
+- âœ… Clear categorization (no ambiguous entries)
+- âœ… Architecture enable/disable works
+- âœ… Reference resolution transparent to user
+- âœ… Faster query responses than v3
+- âœ… No duplicate content served
+
+### Scalability Metrics
+- âœ… Easy to add new architecture
+- âœ… Easy to add new language
+- âœ… Easy to add new project
+- âœ… Index rebuild < 5 seconds
+- âœ… Supports 1000+ entries efficiently
+
+---
+
+## ðŸ"š APPENDIX A: REF-ID Naming Conventions
+
+```
+CORE-{NNN}              # Core patterns/principles (001-999)
+CORE-AP-{NNN}           # Core anti-patterns (001-999)
+
+SUGA-{NNN}              # SUGA patterns (001-999)
+SUGA-AP-{NNN}           # SUGA anti-patterns (001-999)
+SUGA-LESS-{NNN}         # SUGA lessons (001-999)
+SUGA-DEC-{NNN}          # SUGA decisions (001-999)
+SUGA-BUG-{NNN}          # SUGA bugs (001-999)
+
+LMMS-{NNN}              # LMMS patterns (001-999)
+LMMS-AP-{NNN}           # LMMS anti-patterns (001-999)
+LMMS-LESS-{NNN}         # LMMS lessons (001-999)
+
+DD-{NNN}                # DD patterns (001-999)
+DD-AP-{NNN}             # DD anti-patterns (001-999)
+
+ZAPH-{NNN}              # ZAPH patterns (001-999)
+ZAPH-AP-{NNN}           # ZAPH anti-patterns (001-999)
+
+PY-{NNN}                # Python implementations (001-999)
+PY-LIB-{NNN}            # Python libraries (001-999)
+
+LAM-CONST-{NNN}         # Lambda constraints (001-999)
+DDB-CONST-{NNN}         # DynamoDB constraints (001-999)
+
+{PROJECT}-LAM-{NNN}     # Project-specific Lambda patterns (001-999)
+{PROJECT}-DDB-{NNN}     # Project-specific DynamoDB patterns (001-999)
+```
+
+---
+
+## ðŸ"š APPENDIX B: Entry Content Guidelines
+
+### CORE Entry Template
+```markdown
+---
+ref_id: CORE-{NNN}
+type: core_pattern | core_principle | core_antipattern
+version: 1.0.0
+keywords: [keyword1, keyword2, ...]
+status: active
+---
+
+# CORE-{NNN}: {Title}
 
 ## Universal Concept
-[If CORE entry - language-agnostic explanation]
-
-## Implementation ({Language})
-[If LANGUAGE entry - language-specific code/patterns]
-
-## Project Constraints
-[If PROJECT entry - project-specific considerations]
-[Reference to PROJECT-{NAME}-CONFIG.md for applicability]
-
-## Pattern
-{Description of the pattern/concept}
+[Language-agnostic explanation]
 
 ## When to Use
-- Use case 1
-- Use case 2
+[Universal use cases]
 
 ## When NOT to Use
-- Anti-pattern scenario 1
-- Anti-pattern scenario 2
+[Universal anti-patterns]
 
-## Example
-```{language}
-{Code example}
-```
+## Trade-offs
+[Universal trade-offs]
 
-## Project-Specific Notes
-[Only if this concept has project-specific implications]
-**Lambda:** {Lambda-specific notes}
-**Web:** {Web-specific notes - future}
+## Example (Pseudocode)
+[Language-agnostic pseudocode]
 
 ## Cross-References
-- Related CORE: {REF-ID}
-- Related LANGUAGE: {REF-ID}
-- Related PROJECT: {REF-ID}
-- Related ARCH: {REF-ID}
+- Related concepts: [REF-IDs]
+- Implementations: [LANG REF-IDs]
+- Architecture usage: [ARCH REF-IDs]
 
 ## REF-ID
-{CATEGORY}-{NUMBER}
+CORE-{NNN}
 ```
 
----
-
-## 🔄 Migration Path from Current Structure
-
-### Current Structure (SIMA v3)
-```
-NM00 - System overview
-NM01 - Architecture gateway
-NM02 - Interfaces (12 interfaces)
-NM03 - SUGA specifics
-NM04 - Individual entries (topics)
-NM05 - Lessons learned
-NM06 - Bugs and decisions
-NM07 - Support tools
-```
-
-### Migration Strategy
-
-**Phase 1: Configuration Setup (Week 1)**
-1. Create `/sima-config/` directory
-2. Create `SIMA-MAIN-CONFIG.md`
-3. Create `PROJECT-LAMBDA-CONFIG.md`
-4. Create `LANG-PYTHON-CONFIG.md`
-5. Test configuration loading
-
-**Phase 2: Gateway Creation (Week 2)**
-1. Create `/sima-gateways/` directory
-2. Create 5 gateway files (CORE, ARCH, LANGUAGE, PROJECT, SUPPORT)
-3. Map existing NM00-NM01 content to new gateways
-
-**Phase 3: Interface Reorganization (Week 3-4)**
-1. Create `/sima-interfaces/` directory structure
-2. Reorganize NM02 (12 interfaces) into new structure:
-   - Core interfaces (universal concepts)
-   - Architecture interfaces (patterns)
-   - Python interfaces (language-specific)
-   - Lambda interfaces (project-specific)
-
-**Phase 4: Entry Migration (Week 5-6)**
-1. Create `/sima-entries/` directory structure
-2. Migrate NM04 entries to new naming:
-   - Categorize each entry (CORE/LANG/PROJECT/ARCH)
-   - Rename with new REF-ID format
-   - Add project constraint sections
-3. Migrate NM05 (LESS entries) → appropriate categories
-4. Migrate NM06 (BUG/DEC entries) → PROJECT-LAMBDA entries
-
-**Phase 5: Support Tools (Week 7)**
-1. Migrate NM07 tools to `/sima-support/`
-2. Update tools to reference new gateway system
-3. Create configuration-aware search tools
-
-**Phase 6: Validation & Documentation (Week 8)**
-1. Validate all cross-references
-2. Test configuration switching
-3. Update Custom Instructions to reference SIMAv4
-4. Create migration completion report
-
-### Mapping Table: Old → New
-
-| Old Location | New Location | Notes |
-|--------------|--------------|-------|
-| NM00-00-SIMA-Overview.md | SIMA-MAIN-CONFIG.md | Now configuration |
-| NM01-01-Architecture-Gateway.md | GATEWAY-ARCHITECTURE.md | Split into ARCH/PROJECT gateways |
-| NM02-01-ISP-Interface.md | INT-LAMBDA-CORE.md | Project-specific |
-| NM03-* | PROJECT-LAMBDA-CONFIG.md | Project constraints |
-| NM04-* | /sima-entries/projects/lambda/* | Recategorized |
-| NM05-* (LESS) | /sima-entries/core/* or projects/* | By applicability |
-| NM06-* (BUG) | /sima-entries/projects/lambda/* | Project-specific |
-| NM07-* (Support) | /sima-support/* | Tools and workflows |
-
----
-
-## 🎯 Usage Examples
-
-### Example 1: Query Resolution with Configuration
-
-**User Question:** "Should I use threading for parallel API calls in Lambda?"
-
-**Resolution Path:**
-1. **Check Active Config:**
-   - SIMA-MAIN-CONFIG.md → PROJECT-LAMBDA active
-   - PROJECT-LAMBDA-CONFIG.md → Single-threaded constraint
-
-2. **Gateway Routing:**
-   - GATEWAY-CORE.md → Check "threading" concept
-   - GATEWAY-LANGUAGE.md → Check Python threading
-   - GATEWAY-PROJECT.md → Check Lambda constraints
-
-3. **Interface Lookup:**
-   - INT-LAMBDA-LIMITS.md → LAM-060: "Single-threaded alternatives"
-   - INT-PY-ASYNC.md → PY-034: "Async/await patterns"
-
-4. **Response:**
-   ```
-   ❌ No - Threading is not applicable in Lambda (single-threaded runtime).
-   
-   ✅ Use async/await instead:
-   - See LAM-060 (Single-threaded alternatives)
-   - See PY-034 (Python async patterns)
-   - See CORE-078 (Async I/O concept)
-   
-   Config Reference: PROJECT-LAMBDA-CONFIG.md (Runtime Specifications)
-   ```
-
-### Example 2: Multi-Language Future Query
-
-**User Question:** "How do I implement singleton pattern?"
-
-**Resolution Path (Current - Python only):**
-1. Check SIMA-MAIN-CONFIG.md → Python active, others disabled
-2. GATEWAY-CORE.md → CORE-001: Singleton pattern (concept)
-3. GATEWAY-LANGUAGE.md → INT-PY-PATTERNS.md → PY-023: Python singleton
-4. Response includes Python implementation only
-
-**Resolution Path (Future - Python + JavaScript active):**
-1. Check SIMA-MAIN-CONFIG.md → Python + JavaScript active
-2. GATEWAY-CORE.md → CORE-001: Singleton pattern (concept)
-3. GATEWAY-LANGUAGE.md → Offers both:
-   - INT-PY-PATTERNS.md → PY-023: Python singleton
-   - INT-JS-PATTERNS.md → JS-015: JavaScript singleton
-4. Response includes both implementations with language tags
-
-### Example 3: Project-Switching Scenario
-
-**Scenario:** Switch from Lambda project to Web project
-
-**Steps:**
-1. Update SIMA-MAIN-CONFIG.md:
-   ```markdown
-   ## Active Project
-   Current: WEB
-   Config: /sima-config/project-configs/PROJECT-WEB-CONFIG.md
-   ```
-
-2. New constraints automatically apply:
-   - Threading: ✅ Now allowed (multi-threaded web server)
-   - Memory: No 128MB limit
-   - Timeout: Different considerations (request timeout vs function timeout)
-   - File I/O: ✅ Persistent storage available
-
-3. Neural map filtering changes:
-   - LAM-* entries become inactive
-   - WEB-* entries become active
-   - CORE entries remain (universal)
-   - LANG entries remain (Python still primary)
-
-4. Anti-patterns change:
-   - Threading anti-pattern lifted
-   - New anti-patterns for web security apply
-
----
-
-## 🔮 Future Extensibility
-
-### Adding a New Language (Example: Go)
-
-**Step 1:** Create configuration
-```bash
-/sima-config/language-configs/LANG-GO-CONFIG.md
-```
-
-**Step 2:** Create interface structure
-```bash
-/sima-interfaces/languages/go/
-  ├── INT-GO-CORE.md
-  ├── INT-GO-STDLIB.md
-  └── INT-GO-PATTERNS.md
-```
-
-**Step 3:** Create entries
-```bash
-/sima-entries/languages/go/
-  ├── GO-001-goroutines.md
-  ├── GO-002-channels.md
-  └── ...
-```
-
-**Step 4:** Update gateway
+### ARCH Entry Template
 ```markdown
-# GATEWAY-LANGUAGE.md
-## Active Languages
-- ✅ Python 3.12 (active)
-- ✅ Go 1.21 (active)  # NEW
+---
+ref_id: {ARCH}-{NNN}
+type: arch_pattern | arch_antipattern | arch_lesson | arch_decision | arch_bug
+architecture: suga | lmms | dd | zaph
+version: 1.0.0
+inherits: [CORE-REF-IDs]
+keywords: [keyword1, keyword2, ...]
+status: active
+---
+
+# {ARCH}-{NNN}: {Title}
+
+## Inherited Knowledge
+This entry builds on:
+- {CORE-REF}: {Brief description}
+
+## Architecture-Specific Pattern (NEW)
+[Only the delta - what this architecture adds]
+
+## Why Architecture-Specific
+[Explain why this doesn't belong in CORE]
+
+## Architecture Constraints
+[Constraints specific to this architecture]
+
+## Cross-References
+- Universal concepts: [CORE REF-IDs]
+- Implementations: [LANG REF-IDs]
+- Project usage: [PROJECT REF-IDs]
+
+## REF-ID
+{ARCH}-{NNN}
 ```
 
-**Step 5:** Update main config
+### PROJECT Entry Template
 ```markdown
-# SIMA-MAIN-CONFIG.md
-## Active Map Sets
-- ✅ LANGUAGE-GO: Enabled  # NEW
-```
+---
+ref_id: {PROJECT}-{SERVICE}-{NNN}
+type: project_constraint | project_combination
+project: SUGA-ISP
+runtime: aws-lambda | aws-dynamodb | ...
+version: 1.0.0
+inherits: [CORE, LANG, ARCH REF-IDs]
+keywords: [keyword1, keyword2, ...]
+status: active
+---
 
-### Adding a New Project (Example: Mobile App)
+# {PROJECT}-{SERVICE}-{NNN}: {Title}
 
-**Step 1:** Create project config
-```bash
-/sima-config/project-configs/PROJECT-MOBILE-CONFIG.md
-```
+## Inherited Knowledge
+This entry combines:
+- {CORE-REF}: {Description}
+- {LANG-REF}: {Description}
+- {ARCH-REF}: {Description}
 
-**Step 2:** Define project specifications
-```markdown
-# Project Configuration: Mobile App (React Native)
-## Runtime Specifications
-- Platform: iOS/Android (React Native)
-- Languages: JavaScript/TypeScript
-- Memory: Device-dependent (variable)
-- Offline capability: Required
-- State management: Redux
+## Project-Specific Constraints (NEW)
+[Only the constraints - what this project/runtime adds]
 
-## Anti-Patterns (Mobile-Specific)
-- ❌ Heavy computations on UI thread
-- ❌ Large bundle sizes (> 10MB)
-- ❌ Network calls without offline fallback
-```
+## Constraint Impact
+[How constraints affect inherited patterns]
 
-**Step 3:** Create interface structure
-```bash
-/sima-interfaces/projects/mobile/
-  ├── INT-MOBILE-CORE.md
-  ├── INT-MOBILE-UI.md
-  └── INT-MOBILE-OFFLINE.md
-```
+## Alternatives Under Constraints
+[What to do instead if constraint violated]
 
-**Step 4:** Create entries
-```bash
-/sima-entries/projects/mobile/
-  ├── MOB-001-offline-first-patterns.md
-  ├── MOB-002-bundle-optimization.md
-  └── ...
+## Cross-References
+- Universal concepts: [CORE REF-IDs]
+- Architecture patterns: [ARCH REF-IDs]
+- Related constraints: [Other PROJECT REF-IDs]
+
+## REF-ID
+{PROJECT}-{SERVICE}-{NNN}
 ```
 
 ---
 
-## 📊 Configuration Precedence Rules
+**END OF SIMAv4 ARCHITECTURE (ULTRA-OPTIMIZED)**
 
-### Search Priority (Most Specific → Least Specific)
-```
-1. PROJECT-specific entries (e.g., LAM-001)
-   ↓ (if not found)
-2. LANGUAGE-specific entries (e.g., PY-023)
-   ↓ (if not found)
-3. ARCHITECTURE entries (e.g., ARCH-012)
-   ↓ (if not found)
-4. CORE entries (e.g., CORE-001)
-```
+**Version:** 4.0.0-ULTRA  
+**Status:** Planning / Review  
 
-### Constraint Application (Most Restrictive Wins)
-```
-PROJECT constraints (most restrictive)
-   ↓
-LANGUAGE constraints
-   ↓
-CORE principles (least restrictive, always applicable)
-```
+**Key Innovations:**
+1. **Zero Duplication** - Reference-based architecture
+2. **Only-If-Adds-Value** - Clear entry creation rules
+3. **Architecture-Specific Maps** - SUGA, LMMS, DD, ZAPH get dedicated hierarchies
+4. **ZAPH Integration** - Ultra-fast O(1) lookups with pre-computed indexes
+5. **Knowledge Density** - Average 65% size reduction through references
 
-### Example Conflict Resolution
+**Next Actions:**
+1. Review and approve architecture
+2. Categorize existing v3 entries
+3. Build ZAPH indexes
+4. Validate with metrics
+5. Rollout
 
-**Question:** "Can I use threading?"
-
-**Resolution:**
-1. Check PROJECT-LAMBDA-CONFIG.md: ❌ No (single-threaded)
-2. Check LANG-PYTHON-CONFIG.md: ✅ Yes (Python supports threading)
-3. **Result:** ❌ No (PROJECT constraint is most restrictive)
-4. **Guidance:** See LAM-060 for alternatives (async/await)
-
-**Question:** "Can I use threading?" (Future, after switching to WEB project)
-
-**Resolution:**
-1. Check PROJECT-WEB-CONFIG.md: ✅ Yes (multi-threaded web server)
-2. Check LANG-PYTHON-CONFIG.md: ✅ Yes (Python supports threading)
-3. **Result:** ✅ Yes, with caveats
-4. **Guidance:** See PY-045 for thread-safe patterns, WEB-023 for web server threading
-
----
-
-## 🛠️ Tool Integration
-
-### Search Tool Updates
-
-**Current (v3):**
-```python
-# Searches flat NM structure
-search_neural_maps(query) → [NM04-01, NM04-15, ...]
-```
-
-**New (v4):**
-```python
-# Configuration-aware search
-search_neural_maps(
-    query="threading",
-    active_config="/sima-config/SIMA-MAIN-CONFIG.md"
-)
-
-# Internally:
-# 1. Load active project/language from config
-# 2. Filter entries by applicability
-# 3. Apply constraint precedence
-# 4. Return prioritized results
-
-→ [
-    {
-        ref_id: "LAM-060",
-        title: "Single-threaded alternatives",
-        priority: "HIGH",  # PROJECT-level match
-        constraint: "❌ No threading (Lambda single-threaded)",
-        alternative: "See PY-034 for async/await"
-    },
-    {
-        ref_id: "PY-045",
-        title: "Thread-safe patterns",
-        priority: "LOW",  # Not applicable under current config
-        note: "Disabled (Lambda project active)"
-    }
-]
-```
-
-### Custom Instruction Integration
-
-**Current (v3):**
-```
-- Load SESSION-START-Quick-Context.md
-- Provides access to NM00-NM07
-```
-
-**New (v4):**
-```
-- Load SIMA-MAIN-CONFIG.md first
-- Determine active project/language
-- Load relevant gateways based on config
-- Filter interfaces by active config
-- Provide configuration-aware responses
-```
-
----
-
-## 📈 Benefits of SIMAv4
-
-### Scalability
-- ✅ Add new projects without restructuring
-- ✅ Add new languages independently
-- ✅ Multi-project support (switch configs)
-- ✅ Clear separation of concerns
-
-### Maintainability
-- ✅ Easier to update project-specific content
-- ✅ Universal concepts remain stable
-- ✅ Configuration changes don't affect entries
-- ✅ Clear ownership (CORE vs LANG vs PROJECT)
-
-### Usability
-- ✅ Constraint awareness (automatic filtering)
-- ✅ Relevant suggestions only (no inapplicable patterns)
-- ✅ Clear precedence rules (no ambiguity)
-- ✅ Multi-language support (future-ready)
-
-### Quality
-- ✅ Prevents suggesting anti-patterns for active project
-- ✅ Configuration-driven validation
-- ✅ Cross-reference integrity maintained
-- ✅ Search results respect active constraints
-
----
-
-## ❓ Open Questions for Review
-
-1. **Directory Naming:**
-   - Use `/sima-config/` vs `/config/`?
-   - Use `/sima-gateways/` vs `/gateways/`?
-   - Prefix with "sima-" for clarity or use flat names?
-
-2. **REF-ID Format:**
-   - Current proposal: `{CATEGORY}-{NUMBER}`
-   - Alternative: `{CATEGORY}-{SUBCATEGORY}-{NUMBER}`?
-   - Example: `LAM-LIMITS-001` vs `LAM-001`?
-
-3. **Configuration Format:**
-   - Markdown (human-readable, proposed)
-   - YAML (machine-parseable)
-   - JSON (strict schema)
-   - Hybrid (MD with YAML frontmatter)?
-
-4. **Entry Duplication:**
-   - If a concept applies to CORE, LANGUAGE, and PROJECT, do we:
-     a) Create 3 separate entries? (CORE-001, PY-023, LAM-045)
-     b) Create 1 entry with 3 sections?
-     c) Create CORE entry + cross-ref from LANG/PROJECT?
-
-5. **Constraint Inheritance:**
-   - Should LANGUAGE config inherit from CORE?
-   - Should PROJECT config inherit from LANGUAGE?
-   - Or keep all configs independent with explicit precedence?
-
-6. **Migration Timeline:**
-   - 8-week timeline realistic?
-   - Phased migration (gradual cutover) vs hard cutover?
-   - Maintain v3 in parallel during migration?
-
-7. **Version Control:**
-   - SIMAv4 gets `v4.0.0`
-   - What about individual entries? Keep their own versions?
-   - Gateway/Interface/Entry versioning strategy?
-
-8. **Neural Map Density:**
-   - Target number of entries per interface? (Current: ~25-40)
-   - Maximum entry size? (Current: < 200 lines)
-   - Minimum entry size? (No mininum currently)
-
----
-
-## 📝 Next Steps
-
-### Immediate (This Review)
-1. Review this architecture document
-2. Answer open questions (section above)
-3. Propose any structural changes
-4. Approve or iterate on design
-
-### After Approval
-1. Create `/sima-config/` prototype
-2. Create 1-2 gateway prototypes
-3. Create 1-2 interface prototypes
-4. Create 5-10 entry prototypes (different categories)
-5. Test configuration switching
-6. Build search tool prototype
-7. If prototypes validate design → proceed with full migration
-
-### Migration Execution
-1. Follow 8-week phased plan (or revised timeline)
-2. Weekly checkpoints and validation
-3. Parallel v3 maintenance during migration
-4. Hard cutover only after 100% validation
-
----
-
-## 📚 Appendix A: Terminology
-
-- **Gateway:** Top-level index (master index of interfaces)
-- **Interface:** Category-level index (index of entries)
-- **Entry:** Individual knowledge document (actual content)
-- **Configuration:** Settings that control active map sets
-- **Constraint:** Project/language-specific limitation
-- **Precedence:** Rule for resolving conflicts (PROJECT > LANG > ARCH > CORE)
-- **Applicability:** Whether an entry is relevant under current config
-- **REF-ID:** Reference identifier (CATEGORY-NUMBER)
-- **Cross-reference:** Link between related entries
-
----
-
-## 📚 Appendix B: File Size Estimates
-
-### Configuration Layer (~15 files)
-- SIMA-MAIN-CONFIG.md: ~100 lines
-- Project configs (3-5): ~150 lines each
-- Language configs (3-5): ~200 lines each
-- **Total:** ~2,500 lines
-
-### Gateway Layer (5 files)
-- Each gateway: ~200-300 lines
-- **Total:** ~1,250 lines
-
-### Interface Layer (~40 files)
-- Each interface: ~150-250 lines
-- **Total:** ~7,500 lines
-
-### Entry Layer (~300-500 entries)
-- Each entry: ~50-150 lines
-- **Total:** ~37,500 lines (assuming 300 entries avg 125 lines)
-
-### Grand Total: ~48,750 lines
-(vs current SIMA v3: ~35,000 lines estimated)
-
-**Note:** Size increase is due to:
-- Explicit configuration files
-- Better separation (some duplication across categories)
-- More detailed constraint documentation
-
----
-
-**END OF SIMAv4 ARCHITECTURE PLAN**
-
-**Status:** DRAFT - Awaiting Review  
-**Next Action:** Review open questions, approve/iterate design  
-**Once Approved:** Create prototypes for validation
+**Estimated Knowledge Density:** 0-2% duplication (vs 40-60% in typical documentation)
