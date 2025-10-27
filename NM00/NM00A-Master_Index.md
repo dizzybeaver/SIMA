@@ -1,289 +1,342 @@
-# NM00A-Master_Index.md
+# NMP00A-Master_Index.md
 
-# Master Index - Complete System Navigation
+# Neural Maps Project-Specific - Master Index
 
-**Type:** Gateway Layer  
-**Purpose:** Complete map of all neural maps  
-**Categories:** 7 (NM01-NM07) + AWS External Knowledge  
-**Total Files:** ~185 (NM) + 14 (AWS)  
-**Total REF-IDs:** 168+ (NM) + 12 (AWS)  
-**Last Updated:** 2025-10-25 (added AWS gateway links)
+**Version:** 1.0.0  
+**Date:** 2025-10-26  
+**Total Projects:** 1  
+**Total Files:** 1  
+**Status:** Active - Initial Setup Complete
 
 ---
 
-## 📖 SYSTEM OVERVIEW
+## ðŸ"Š System Overview
 
-**Complete Neural Map Architecture:**
+### What is NMP?
+
+**NMP = Neural Maps Project-specific**
+
+Knowledge specific to individual projects that doesn't transfer generically. Each project maintains its own folder with flat structure (no sub-categories).
+
+### Architecture Philosophy
+
+**Three-Tier Knowledge System:**
+
 ```
-NM Gateway (NM00) - Project-specific knowledge
-    ↓
-NM Categories (NM01-NM07)
-    ↓
-Project implementation & patterns
-
-AWS Gateway (AWS00) - External/universal knowledge
-    ↓
-AWS Categories (AWS01-AWS07)
-    ↓
-Industry patterns & AWS best practices
+┌─────────────────────────────────────────────────┐
+│ NM## - Generic (Transferable Everywhere)        │
+│ • Architectural patterns (SUGA, SIMA)           │
+│ • Generic lessons (LESS-##)                     │
+│ • Anti-patterns (AP-##)                         │
+│ • Universal principles                          │
+└─────────────────────────────────────────────────┘
+                      ↓ Specializes
+┌─────────────────────────────────────────────────┐
+│ AWS## - Cloud Provider (AWS Projects)           │
+│ • Lambda optimization                           │
+│ • DynamoDB patterns                             │
+│ • SSM best practices                            │
+│ • AWS service integration                       │
+└─────────────────────────────────────────────────┘
+                      ↓ Implements
+┌─────────────────────────────────────────────────┐
+│ NMP## - Project-Specific (This Project Only)    │
+│ • Implementation details                        │
+│ • Project-specific decisions                    │
+│ • Integration patterns                          │
+│ • Codebase lessons                              │
+└─────────────────────────────────────────────────┘
 ```
 
-**Integration:** AWS maps provide universal serverless patterns. NM maps provide project-specific implementation.
+---
 
-**Navigation:** Use NM maps for "how we do it", AWS maps for "how it's done universally"
+## ðŸ"‚ Directory Structure
+
+### File Organization
+
+```
+nmap/NMP/
+│
+├── NMP00/ (Indexes)
+│   ├── NMP00-Quick_Index.md
+│   └── NMP00A-Master_Index.md (this file)
+│
+├── NMP01/ (Lambda Execution Engine)
+│   ├── NMP01-LEE_Index.md
+│   └── NMP01-LEE-01.md
+│
+├── NMP02/ (Future Project)
+│   └── [Future files]
+│
+└── NMP03/ (Future Project)
+    └── [Future files]
+```
+
+**Key Difference:** One flat folder per project (no sub-categories like NM)
 
 ---
 
-## 🔗 AWS EXTERNAL KNOWLEDGE GATEWAY
+## ðŸ—‚ï¸ Active Projects
 
-**AWS00 Directory:** `/nmap/AWS/AWS00/`  
-**Purpose:** Universal serverless patterns from AWS/industry  
-**Status:** ✅ Active (AWS06 populated, others reserved)
+### NMP01: Lambda Execution Engine (SUGA-ISP)
 
-**Quick Access:**
-- **AWS Master Index:** AWS00-Master_Index.md
-- **AWS Quick Index:** AWS00-Quick_Index.md
-- **Active Content:** AWS06 (12 serverless LESS files)
+**Status:** âœ… Active  
+**Files:** 1  
+**Index:** `NMP01/NMP01-LEE_Index.md`
 
-**When to Use AWS Maps:**
-- Learning universal serverless patterns
-- Understanding industry best practices
-- Validating project approaches against external standards
-- Researching AWS-specific optimization techniques
+**Purpose:**  
+Document Lambda Execution Engine implementation specifics, including Home Assistant integration, caching strategies, and project-specific design decisions.
 
-**Integration with NM Maps:**
-- AWS patterns inform NM decisions
-- NM implementations reference AWS lessons
-- Cross-reference for complete understanding
+**Current Files:**
+1. **NMP01-LEE-01**: HA Cache Functions - Application vs Infrastructure
+   - Priority: 🟢 HIGH
+   - Teaching example: Application logic vs infrastructure
+   - Keywords: application-logic, cache-strategies, ISP
 
----
-
-## 🗂️ NM CATEGORY DIRECTORY
-
-### NM01 - Architecture & Interfaces
-
-**Index:** `NM01/NM01-INDEX-Architecture.md`  
-**Purpose:** System architecture, patterns, and interface definitions  
-**Topics:** 3 (Core Architecture, Interfaces-Core, Interfaces-Advanced)  
-**Files:** ~27 (1 index + 26 implementation)  
-**REF-IDs:** 20 (8 ARCH + 12 INT)
-
-**Priority Items:**
-- ARCH-01: Gateway trinity (🔴 CRITICAL) - Foundation of SUGA
-- ARCH-07: LMMS system (🔴 CRITICAL) - Lazy loading
-- INT-01: CACHE interface (🟡 HIGH)
-- INT-02: LOGGING interface (🟡 HIGH)
-- INT-03: SECURITY interface (🟡 HIGH)
-
-**AWS Cross-Reference:** AWS-LESS-01 (cold start optimization informs LMMS)
-
-**Key Triggers:** gateway, architecture, SUGA, interface, LMMS, lazy loading
+**Planned Topics:**
+- Interface function catalogs (12 interfaces)
+- Gateway optimization specifics
+- Home Assistant integration patterns
+- Failsafe independence rationale
+- Diagnostic tool usage
 
 ---
 
-### NM02 - Dependencies & Rules
+## ðŸ"‹ All Files by REF-ID
 
-**Index:** `NM02/NM02-INDEX-Dependencies.md`  
-**Purpose:** Import rules, dependency layers, interface dependencies  
-**Topics:** 3 (Import Rules, Dependency Layers, Interface Dependencies)  
-**Files:** ~23 (1 index + 22 implementation)  
-**REF-IDs:** 18 (5 RULE + 5 DEP + 8 other)
+### LEE (Lambda Execution Engine)
 
-**Priority Items:**
-- RULE-01: Cross-interface via gateway (🔴 CRITICAL)
-- RULE-02: Intra-interface direct (🔴 CRITICAL)
-- RULE-03: External code gateway only (🔴 CRITICAL)
-- DEP-01: Layer 0 LOGGING (🔴 CRITICAL)
-- DEP-02 to DEP-05: Layers 1-4 (🟡 HIGH)
+| REF-ID | Title | Priority | File |
+|--------|-------|----------|------|
+| NMP01-LEE-01 | HA Cache Functions - Application vs Infrastructure | 🟢 HIGH | NMP01-LEE-01.md |
 
-**Key Triggers:** import, circular import, dependency, layer, gateway only
+**Count:** 1 file
 
 ---
 
-### NM03 - Operations & Flows
+## 🎯 Content Guidelines
 
-**Index:** `NM03/NM03-INDEX-Operations.md`  
-**Purpose:** Operation pathways, flows, error handling, tracing  
-**Topics:** 4 (Pathways, Flows, Error Handling, Tracing)  
-**Files:** ~15 (1 index + 14 implementation)  
-**REF-IDs:** 13 (5 PATH + 3 FLOW + 3 ERROR + 2 TRACE)
+### What Goes in NMP?
 
-**Priority Items:**
-- PATH-01: Cold start pathway (🔴 CRITICAL)
-- FLOW-01: Simple operations (🟡 HIGH)
-- ERROR-01: Exception propagation (🟡 HIGH)
-- TRACE-01: Request tracing (🟡 HIGH)
+**âœ… INCLUDE:**
+- Project-specific implementation details
+- "Why we did it this way in THIS project"
+- Integration patterns unique to this codebase
+- Lessons from this specific project's evolution
+- Function catalogs for this project's interfaces
+- This project's architecture decisions
 
-**Key Triggers:** pathway, flow, error, exception, tracing, cold start
+**❌ EXCLUDE (Use NM Instead):**
+- Generic patterns transferable to other projects
+- Universal lessons applicable everywhere
+- Generic anti-patterns
+- SUGA/SIMA architecture principles
+- Standard design patterns
 
----
+**❌ EXCLUDE (Use AWS Instead):**
+- AWS service best practices
+- Lambda optimization (generic)
+- DynamoDB patterns
+- SSM usage patterns
 
-### NM04 - Decisions & Rationale
+### Example Classification
 
-**Index:** `NM04/NM04-INDEX-Decisions.md`  
-**Purpose:** Design decisions and their rationale  
-**Topics:** 3 (Architecture, Technical, Operational)  
-**Files:** ~27 (1 index + 26 implementation)  
-**REF-IDs:** 23+ (DEC-01 to DEC-23+)
+**Scenario:** HA cache warming function
 
-**Priority Items:**
-- DEC-01: SUGA pattern choice (🔴 CRITICAL)
-- DEC-04: No threading locks (🔴 CRITICAL)
-- DEC-05: Sentinel sanitization (🔴 CRITICAL)
-- DEC-07: Dependencies < 128MB (🔴 CRITICAL)
-- DEC-08: Flat file structure (🟡 HIGH)
-- DEC-12: Multi-tier configuration (🟡 HIGH)
-- DEC-21: SSM token-only (🟡 HIGH)
+**Generic lesson (→ NM):**  
+"Application logic should use infrastructure primitives, not duplicate them"
 
-**AWS Cross-Reference:** Integration decisions reference AWS-LESS-09, AWS-LESS-10
-
-**Key Triggers:** why, decision, rationale, choice, threading, sentinel
+**Project-specific lesson (→ NMP):**  
+"In Lambda Execution Engine, HA cache warming pre-loads config (600s TTL) and states (60s TTL) because states are accessed in 80% of HA requests"
 
 ---
 
-### NM05 - Anti-Patterns
+## 🔗 Cross-System Navigation
 
-**Index:** `NM05/NM05-INDEX-AntiPatterns.md`  
-**Purpose:** What NOT to do and why  
-**Topics:** 12 categories  
-**Files:** ~42 (1 index + 41 implementation)  
-**REF-IDs:** 28 (AP-01 to AP-28)
+### From NMP to NM (Generic Knowledge)
 
-**Priority Items:**
-- AP-01: Direct cross-interface imports (🔴 CRITICAL)
-- AP-08: Threading primitives (🔴 CRITICAL)
-- AP-14: Bare except clauses (🔴 CRITICAL)
-- AP-19: Sentinel objects crossing boundaries (🔴 CRITICAL)
-- AP-27: Skipping verification protocol (🔴 CRITICAL)
-- AP-28: Not reading complete file (🔴 CRITICAL)
+NMP files should reference generic patterns:
+- DEC-01 (SUGA Pattern)
+- LESS-08 (ISP Principle)
+- INT-01 (CACHE interface)
 
-**Key Triggers:** anti-pattern, prohibited, never do, direct import, threading
+### From NMP to AWS (Cloud Provider)
 
----
+NMP files should reference AWS patterns:
+- AWS06-LESS-01 (Lambda cold start)
+- AWS optimization patterns
+- SSM integration
 
-### NM06 - Learned Experiences
+### From NM to NMP (Examples)
 
-**Index:** `NM06/NM06-INDEX-Learned.md`  
-**Purpose:** Bugs, lessons learned, wisdom synthesis  
-**Topics:** 9 categories  
-**Files:** ~48 (1 index + 47 implementation)  
-**REF-IDs:** ~40 (31 LESS + 4 BUG + 5 WISD)
-
-**Priority Items:**
-- BUG-01: Sentinel leak (🔴 CRITICAL)
-- BUG-02: _CacheMiss validation (🔴 CRITICAL)
-- LESS-15: 5-step verification protocol (🔴 CRITICAL)
-- LESS-01: Read complete files first (🔴 CRITICAL)
-- LESS-53: File version incrementation (🔴 CRITICAL)
-
-**AWS Cross-Reference:** LESS-09, LESS-10 cross-reference AWS-LESS-09, AWS-LESS-10
-
-**Key Triggers:** bug, lesson, verification, wisdom
+Generic lessons can link to project examples:
+- LESS-08 → "See NMP01-LEE-01 for real example"
+- DEC-01 → "Implemented in NMP01 Lambda project"
 
 ---
 
-### NM07 - Decision Logic & Trees
+## ðŸ"Š Statistics
 
-**Index:** `NM07/NM07-INDEX-DecisionLogic.md`  
-**Purpose:** Decision trees and logic frameworks  
-**Topics:** 8-9 categories  
-**Files:** ~26 (1 index + 25 implementation)  
-**REF-IDs:** ~16 (13 DT + 2 FW + 1 META)
+### Current State
 
-**Priority Items:**
-- DT-01: How to import X (🔴 CRITICAL)
-- DT-03: Feature addition decision (🔴 CRITICAL)
-- DT-05: How to handle errors (🟡 HIGH)
-- DT-04: Should I cache this (🟡 HIGH)
-- DT-07: Should I optimize (🟡 HIGH)
+**Projects:** 1 active  
+**Files:** 1 total  
+**Categories:** LEE (Lambda Execution Engine)  
+**Growth Rate:** ~5-10 files per project
 
-**Key Triggers:** how to, where to put, add feature, should I cache
+### Growth Projections
 
----
+**Short-term (3 months):**
+- NMP01: ~15 files (interface catalogs, integration patterns)
+- Projects: 1-2
 
-## 🔤 COMPLETE REF-ID DIRECTORY
+**Medium-term (1 year):**
+- NMP01: ~30 files (mature documentation)
+- Projects: 2-4
 
-### NM REF-IDs (168+)
-[Same as before - ARCH, AP, BUG, DEC, DEP, DT, ERROR, FLOW, FW, INT, LESS, MATRIX, META, PATH, RULE, TRACE, VALIDATION, WISD]
-
-### AWS REF-IDs (12)
-- **AWS-LESS-01 to AWS-LESS-12** → AWS06 (Serverless Patterns)
-
-**Access:** See AWS00-Master_Index.md for complete AWS navigation
+**Long-term (2 years):**
+- Projects: 5-10 (different Lambda functions, services)
+- Files per project: 20-40
+- Total: 100-400 files
 
 ---
 
-## 🔄 CROSS-CATEGORY CONNECTIONS
+## 🎓 When to Create New NMP Project
 
-**NM Internal Connections:**
-[Same as before]
+**Create new NMP## folder when:**
 
-**NM ↔ AWS Connections:**
-- NM01/ARCH-07 (LMMS) ↔ AWS-LESS-01 (cold start optimization)
-- NM04 (integration decisions) ↔ AWS-LESS-09 (proxy patterns)
-- NM04/DEC-05 (sentinel sanitization) ↔ AWS-LESS-10 (transformation strategies)
-- NM06/LESS-09, LESS-10 ↔ AWS-LESS-09, AWS-LESS-10 (cross-validation)
+1. **New distinct project/service**
+   - Different Lambda function
+   - Different microservice
+   - Different application
 
----
+2. **Significant architectural differences**
+   - Different tech stack
+   - Different integration patterns
+   - Different domain logic
 
-## 🧭 NAVIGATION GUIDE
+3. **Separate deployment**
+   - Independent deployment pipeline
+   - Separate AWS account/region
+   - Different team ownership
 
-### To Find Anything:
-
-**Project-specific knowledge:**
-1. Known keyword? → NM00-Quick_Index.md
-2. Know category? → This file → NM Category
-3. Know REF-ID? → This file → NM REF-ID Directory
-
-**Universal/AWS patterns:**
-1. Serverless question? → AWS00-Quick_Index.md
-2. Industry best practice? → AWS00-Master_Index.md
-3. Need validation? → Check both NM + AWS
-
-**Complete understanding:**
-1. Start with AWS for universal pattern
-2. Check NM for project implementation
-3. Cross-reference for full context
+**Example:**
+- NMP01: SUGA-ISP Lambda (Home Assistant)
+- NMP02: Weather Service Lambda
+- NMP03: IoT Device Manager Lambda
+- NMP04: Analytics Pipeline
 
 ---
 
-## 📈 SYSTEM METRICS
+## 🔄 Maintenance
 
-**Last Updated:** 2025-10-25  
-**NM Files:** ~185  
-**AWS Files:** 14 (2 gateway + 12 content)  
-**Total REF-IDs:** 180+ (168 NM + 12 AWS)  
-**Total Categories:** 7 NM + 8 AWS (1 active)  
+### Update Frequency
 
----
+**Per file:** Update when code changes significantly  
+**Indexes:** Update when new files added  
+**Cross-references:** Update when new related content added
 
-## 🔧 MAINTENANCE NOTES
+### Quality Standards
 
-**When to Update NM:**
-- New NM category/topic/REF-ID added
-- File reorganization
-- Priority changes
-
-**When to Update AWS:**
-- New AWS LESS file added
-- New AWS category activated
-- Cross-references to NM change
-
-**Cross-Reference Maintenance:**
-- Update both NM and AWS indexes when adding cross-references
-- Ensure bidirectional links are maintained
+All NMP files must have:
+- âœ… Clear project context
+- âœ… Code references (file, line numbers)
+- âœ… REF-ID assignment
+- âœ… 4-8 keywords
+- âœ… 3-7 related topics
+- âœ… Version history
 
 ---
 
-**Navigation:**
-- **NM Quick Index:** NM00-Quick_Index.md (project keyword routing)
-- **AWS Gateway:** AWS00-Master_Index.md (external knowledge)
-- **ZAPH:** NM00B-ZAPH.md (hot path optimization)
+## 🚀 Getting Started
+
+### Adding New NMP File
+
+1. **Choose project**: Which NMP## folder?
+2. **Assign REF-ID**: NMP##-[PROJECT]-##
+3. **Create file**: Use SIMA v3 template
+4. **Update index**: Add to project index
+5. **Cross-reference**: Link from NM/AWS if relevant
+
+### Example Workflow
+
+```
+1. Write code in Lambda project
+2. Discover project-specific lesson
+3. Check: Generic (NM) or project-specific (NMP)?
+4. Create NMP01-LEE-02.md with lesson
+5. Update NMP01-LEE_Index.md
+6. Link from generic lesson in NM if applicable
+```
+
+---
+
+## 📚 Complete File Listing
+
+### NMP01 - Lambda Execution Engine
+
+**Project Index:** `NMP01/NMP01-LEE_Index.md`
+
+#### Architecture Lessons
+1. **NMP01-LEE-01**: HA Cache Functions - Application vs Infrastructure
+   - Application logic vs infrastructure separation
+   - ISP principle in practice
+   - Scalability through proper layering
+
+---
+
+## 🔗 Navigation Links
+
+**Quick Index:** NMP00-Quick_Index.md (keyword search)  
+**Base Neural Maps:** NM00A-Master_Index.md  
+**AWS Maps:** AWS00A-Master_Index.md  
+
+**Project Indexes:**
+- NMP01: Lambda Execution Engine (`NMP01/NMP01-LEE_Index.md`)
+
+---
+
+## âš ï¸ Important Notes
+
+### File Size Limits
+- Individual files: < 200 lines
+- Project indexes: < 300 lines
+- Master index: < 400 lines
+
+### Naming Convention
+```
+Format: NMP##-[PROJECT]-##.md
+
+Examples:
+✅ NMP01-LEE-01.md (Lambda Execution Engine, file 1)
+✅ NMP01-LEE-15.md (Lambda Execution Engine, file 15)
+✅ NMP02-WEATHER-01.md (Weather Service, file 1)
+
+Project codes:
+- LEE = Lambda Execution Engine
+- WEATHER = Weather Service Lambda
+- IOT = IoT Device Manager
+- ANALYTICS = Analytics Pipeline
+```
+
+---
+
+## 📊 Health Metrics
+
+**Current Health:** âœ… Excellent
+
+- âœ… Structure established
+- âœ… First file created
+- âœ… Indexes complete
+- âœ… Integration with NM complete
+- âœ… Quality standards met
+
+**Readiness:** Ready for growth
 
 ---
 
 **End of Master Index**
 
-**Total Lines:** ~250 (within limit, added AWS section)  
-**Purpose:** Complete system navigation (NM + AWS)  
-**Coverage:** 100% of neural maps + AWS gateway
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-26  
+**Next Review:** When NMP01 reaches 10 files
