@@ -1,43 +1,87 @@
+# SIMAv4-Master-Control-Implementation.md
+
 # SIMAv4 Master Control Implementation Document
 
-**Version:** 1.0.4  
-**Last Updated:** 2025-10-28 16:30:00  
-**Status:** â³ Phase 0.5 In Progress (50%)  
-**Current Session:** 0.5.2 Complete  
-**Purpose:** Track SIMAv4 implementation progress across all phases
+**Version:** 1.0.2  
+**Date:** 2025-10-28  
+**Purpose:** Master control system for SIMAv4 implementation across multiple sessions  
+**Usage:** Both human and Claude use this document to coordinate implementation
+
+**ðŸ†• Update Notes:**
+- Session 0.0.4 marked complete
+- Phase 0.0 marked 100% complete
+- Added note: Include filename in all artifact headers (v1.0.2)
 
 ---
 
-## ðŸ"Š IMPLEMENTATION STATUS DASHBOARD
+## ðŸŽ¯ DOCUMENT PURPOSE
 
-**Overall Progress:** 12.5% Complete
+This document provides **complete session-by-session control** of the SIMAv4 implementation.
 
-### Phases Overview
+**For Human:**
+- Know exactly what to say to start/continue sessions
+- Track progress across sessions
+- Understand stop points for context switching
 
-| Phase | Name | Status | Progress | Start | Complete |
-|-------|------|--------|----------|-------|----------|
-| 0.0 | File Server Config | âœ… | 100% | 2025-10-24 | 2025-10-28 |
-| 0.5 | Project Structure | â³ | 50% | 2025-10-28 | [In Progress] |
-| 1.0 | Core Architecture | â¬œ | 0% | [Pending] | [Pending] |
-| 2.0 | Gateway Entries | â¬œ | 0% | [Pending] | [Pending] |
-| 3.0 | Interface Entries | â¬œ | 0% | [Pending] | [Pending] |
-| 4.0 | Language Entries | â¬œ | 0% | [Pending] | [Pending] |
-| 5.0 | Project NMPs | â¬œ | 0% | [Pending] | [Pending] |
-| 6.0 | Support Tools | â¬œ | 0% | [Pending] | [Pending] |
-| 7.0 | Integration | â¬œ | 0% | [Pending] | [Pending] |
-| 8.0 | Documentation | â¬œ | 0% | [Pending] | [Pending] |
-| 9.0 | Deployment | â¬œ | 0% | [Pending] | [Pending] |
-
-**Legend:**
-- âœ… Complete
-- â³ In Progress
-- â¬œ Not Started
-- âš ï¸ Blocked
-- ðŸ"´ Critical Issue
+**For Claude:**
+- Know exactly where to start in each session
+- Work with minimal chatter
+- Update progress automatically
+- Signal completion clearly
 
 ---
 
-## ðŸš€ QUICK START GUIDE
+## ðŸ"‹ IMPLEMENTATION PHASES OVERVIEW
+
+```
+Phase 0.0: File Server Configuration        [1 week]   âœ… P0 Foundation - COMPLETE
+Phase 0.5: Project Structure Organization   [1 week]   ⏠P0 Foundation
+Phase 1.0: Entry Categorization            [2 weeks]  ⏠P0 Foundation
+Phase 2.0: Reference Implementation        [2 weeks]  ⏠P0 Foundation
+Phase 3.0: Architecture Maps               [1 week]   ⏠P0 Foundation
+Phase 4.0: ZAPH Index System               [1 week]   ⏠P0 Performance
+Phase 5.0: Validation & Testing            [1 week]   ⏠P1 Quality
+Phase 6.0: Documentation & Training        [1 week]   ⏠P1 Adoption
+Phase 7.0: Production Rollout              [1 week]   ⏠P1 Deployment
+Phase 8.0: Monitoring & Optimization       [2 weeks]  ⏠P2 Improvement
+Phase 9.0: Advanced Features               [Ongoing]  ⏠P3 Innovation
+
+Total Core Implementation: 12 weeks
+```
+
+---
+
+## âœ… PROGRESS TRACKING
+
+### Current Status
+
+**Phase:** 0.0 - File Server Configuration  
+**Sub-Phase:** Complete  
+**Completion:** 100% (4 of 4 sessions complete)  
+**Last Updated:** 2025-10-28 15:15:00  
+**Last Session:** 0.0.4
+
+### Completed Phases
+
+- [X] **Phase 0.0: File Server Configuration - âœ… 100% Complete**
+  - âœ… Session 0.0.1: Initial Setup (scan tool, audit report)
+  - âœ… Session 0.0.2: Web Interface (HTML generator)
+  - âœ… Session 0.0.3: Documentation Updates (templates, patterns)
+  - âœ… Session 0.0.4: Python Script & Testing (generate-urls.py, test report, completion report)
+- [ ] Phase 0.5: Project Structure
+- [ ] Phase 1.0: Categorization
+- [ ] Phase 2.0: References
+- [ ] Phase 3.0: Architecture Maps
+- [ ] Phase 4.0: ZAPH Indexes
+- [ ] Phase 5.0: Validation
+- [ ] Phase 6.0: Documentation
+- [ ] Phase 7.0: Rollout
+- [ ] Phase 8.0: Monitoring
+- [ ] Phase 9.0: Advanced Features
+
+---
+
+## ðŸ"£ CHAT SCRIPTS
 
 ### Starting New Phase
 
@@ -65,7 +109,7 @@ Ready to begin.
 Please load context.
 
 Continue SIMAv4 Phase [X.X]: [PHASE_NAME]
-Session [X.X.N]: [SESSION_NAME]
+Section: [SECTION_NAME]
 
 Instructions:
 - Minimal chatter, maximum output
@@ -88,7 +132,7 @@ Show SIMAv4 implementation status.
 
 ---
 
-## ðŸ" PHASE IMPLEMENTATION PLANS
+## ðŸ"  PHASE IMPLEMENTATION PLANS
 
 ---
 
@@ -96,30 +140,141 @@ Show SIMAv4 implementation status.
 
 **Duration:** 1 week (4 days actual)  
 **Priority:** P0 (Foundation)  
-**Status:** âœ… COMPLETE (100%)  
-**Start Date:** 2025-10-24  
-**End Date:** 2025-10-28
+**Status:** âœ… COMPLETE (100%)
 
-**Objectives:**
-1. âœ… Create genericized file server configuration system
-2. âœ… Build web-based and Python tools for URL generation
-3. âœ… Update all documentation to use templates
-4. âœ… Deploy tools to file server
-5. âœ… Validate all File-Server-URLs.md files
+#### Session Breakdown
 
+**Session 0.0.1: Initial Setup (2 hours) - âœ… COMPLETE**
+
+**Human Start Script:**
+```
+Please load context.
+
+Start SIMAv4 Phase 0.0: File Server Configuration
+Session 0.0.1: Initial Setup
+
+Tasks:
+1. Audit hardcoded URLs
+2. Create scanning tool
+3. Generate audit report
+
+Instructions:
+- Minimal chatter, maximum output
+- Continuous generation
+- Update master control file when done
+- Signal completion with "I am done"
+
+Ready to begin.
+```
+
+**Stop Point:** After audit report generated  
+**Deliverables:** 
+- âœ… scan-hardcoded-urls.py
+- âœ… url-audit-report.md
+
+**Completion:** 2025-10-25
+
+---
+
+**Session 0.0.2: Web Interface (2 hours) - âœ… COMPLETE**
+
+**Human Start Script:**
+```
+Please load context.
+
+Continue SIMAv4 Phase 0.0: File Server Configuration
+Session 0.0.2: Web Interface
+
+Tasks:
+1. Create file-server-config-ui.html
+2. Test interface functionality
+3. Document usage
+
+Instructions:
+- Minimal chatter, maximum output
+- Continuous generation
+- Update master control file when done
+- Signal completion with "I am done"
+
+Ready to continue.
+```
+
+**Stop Point:** After web interface tested  
 **Deliverables:**
-- âœ… SERVER-CONFIG.md template
-- âœ… URL generator (Python script)
-- âœ… URL generator (HTML interface)
-- âœ… File-Server-URLs.md (generated)
-- âœ… 38+ documentation files updated
-- âœ… Phase 0.0 Completion Report
+- âœ… file-server-config-ui.html
+- âœ… Interface test results
 
-**Key Metrics:**
-- Zero hardcoded URLs: âœ…
-- All tools functional: âœ…
-- Test pass rate: 100% (5/5)
-- Documentation complete: âœ…
+**Completion:** 2025-10-26
+
+---
+
+**Session 0.0.3: Documentation Updates (2 hours) - âœ… COMPLETE**
+
+**Human Start Script:**
+```
+Please load context.
+
+Continue SIMAv4 Phase 0.0: File Server Configuration
+Session 0.0.3: Documentation Updates
+
+Tasks:
+1. Update SERVER-CONFIG.md
+2. Update URL-GENERATOR-Template.md
+3. Create workflow template updates
+4. Document replacement patterns
+
+Instructions:
+- Minimal chatter, maximum output
+- Continuous generation
+- Update master control file when done
+- Signal completion with "I am done"
+
+Ready to continue.
+```
+
+**Stop Point:** After all docs updated  
+**Deliverables:**
+- âœ… SERVER-CONFIG.md (v2.0.0) - Added scanning section, environment profiles, CI/CD integration
+- âœ… URL-GENERATOR-Template.md (v2.0.0) - Complete Python script method with full documentation
+- âœ… Workflow-Template-Updates-Guide.md - Standard patterns for [BASE_URL] in workflow files
+- âœ… URL-Replacement-Patterns-Reference.md - Complete guide for all file types
+
+**Completion:** 2025-10-28 14:45:00
+
+---
+
+**Session 0.0.4: Python Script & Testing (2 hours) - âœ… COMPLETE**
+
+**Human Start Script:**
+```
+Please load context.
+
+Continue SIMAv4 Phase 0.0: File Server Configuration
+Session 0.0.4: Python Script & Testing
+
+Tasks:
+1. Create generate-urls.py script
+2. Execute all validation tests
+3. Generate Phase-0-Test-Report.md
+4. Create Phase-0-Completion-Report.md
+
+Instructions:
+- Minimal chatter, maximum output
+- Continuous generation
+- Update master control file when done
+- Signal completion with "I am done"
+
+Ready to continue.
+```
+
+**Stop Point:** Phase 0.0 complete  
+**Deliverables:**
+- âœ… generate-urls.py (standalone script with filename in header)
+- âœ… Phase-0-Test-Report.md (5/5 tests passed - 100%)
+- âœ… Phase-0-Completion-Report.md (Phase 0.0 completion certified)
+- âœ… SIMAv4-Master-Control-Implementation.md (v1.0.2 - updated with completion)
+
+**Completion:** 2025-10-28 15:15:00
 
 **Phase 0.0 Completion Criteria:**
 - âœ… Zero hardcoded URLs (except output file)
@@ -134,74 +289,78 @@ Show SIMAv4 implementation status.
 
 ---
 
-### Phase 0.5: Project Structure Organization â³ IN PROGRESS
+### Phase 0.5: Project Structure Organization
 
 **Duration:** 1 week  
 **Priority:** P0 (Foundation)  
-**Status:** â³ In Progress (50%)  
-**Start Date:** 2025-10-28  
-**Expected End:** 2025-11-04
-
-**Objectives:**
-1. âœ… Create /projects/ directory structure
-2. âœ… Move SUGA-ISP entries to /projects/SUGA-ISP/sima/
-3. âœ… Move LEE entries to /projects/LEE/sima/
-4. âœ… Verify no base SIMA contamination
-5. âœ… Create projects_config.md (CURRENT)
-6. â¬œ Create project template system
-7. â¬œ Build HTML configuration tools
-8. â¬œ Update documentation for multi-project structure
+**Status:** ⏠Not Started
 
 #### Session Breakdown
 
-**Session 0.5.1: Directory Restructure (2 hours) - âœ… COMPLETE**
+**Session 0.5.1: Directory Restructure (2 hours)**
 
-**Completed:** 2025-10-28 16:00:00
+**Human Start Script:**
+```
+Please load context.
 
+Start SIMAv4 Phase 0.5: Project Structure Organization
+Session 0.5.1: Directory Restructure
+
+Tasks:
+1. Create /projects/ directory structure
+2. Move SUGA-ISP entries to /projects/SUGA-ISP/sima/
+3. Move LEE entries to /projects/LEE/sima/
+4. Verify no base SIMA contamination
+
+Instructions:
+- Minimal chatter, maximum output
+- Continuous generation
+- Update master control file when done
+- Signal completion with "I am done"
+
+Ready to begin.
+```
+
+**Stop Point:** After directory restructure complete  
 **Deliverables:**
-- âœ… Phase-0.5.1-Directory-Structure.md - Complete directory structure plan
-- âœ… Phase-0.5.1-File-Movement-Script.sh - Automated migration script
-- âœ… Phase-0.5.1-Verification-Report.md - Verification checklist and procedures
-- âœ… SIMAv4-Master-Control-Implementation.md (v1.0.3) - Updated master control
-
-**Tasks Completed:**
-1. âœ… Created /projects/ directory structure
-2. âœ… Moved SUGA-ISP entries to /projects/SUGA-ISP/sima/
-3. âœ… Moved LEE entries to /projects/LEE/sima/
-4. âœ… Verified no base SIMA contamination
+- New directory structure
+- Moved files list
+- Verification report
 
 ---
 
-**Session 0.5.2: Projects Config (2 hours) - âœ… COMPLETE**
+**Session 0.5.2: Projects Config (2 hours)**
 
-**Completed:** 2025-10-28 16:30:00
+**Human Start Script:**
+```
+Please load context.
 
+Continue SIMAv4 Phase 0.5: Project Structure Organization
+Session 0.5.2: Projects Config
+
+Tasks:
+1. Create projects_config.md
+2. Register SUGA-ISP
+3. Register LEE
+4. Document structure
+
+Instructions:
+- Minimal chatter, maximum output
+- Continuous generation
+- Update master control file when done
+- Signal completion with "I am done"
+
+Ready to continue.
+```
+
+**Stop Point:** After projects_config.md created  
 **Deliverables:**
-- âœ… projects_config.md - Central project registry
-- âœ… SIMAv4-Master-Control-Implementation.md (v1.0.4) - Updated master control
-
-**Tasks Completed:**
-1. âœ… Created projects_config.md with complete structure
-2. âœ… Registered SUGA-ISP project with full details
-3. âœ… Registered LEE project with full details
-4. âœ… Documented project isolation rules
-5. âœ… Defined project directory standards
-6. âœ… Created project lifecycle states
-7. âœ… Established maintenance procedures
-8. âœ… Documented cross-project reference guidelines
-
-**Key Features of projects_config.md:**
-- Central registry for all SIMA-enabled projects
-- Complete project metadata (architectures, languages, platforms)
-- Project health metrics tracking
-- Clear isolation and cross-reference rules
-- Project lifecycle management
-- Template for future projects
-- Maintenance schedules and procedures
+- projects_config.md
+- Project registration docs
 
 ---
 
-**Session 0.5.3: Project Templates (2 hours) - â¬œ NOT STARTED**
+**Session 0.5.3: Project Templates (2 hours)**
 
 **Human Start Script:**
 ```
@@ -226,21 +385,14 @@ Instructions:
 Ready to continue.
 ```
 
-**Expected Deliverables:**
-- PROJECT-CONFIG-TEMPLATE.md
-- ARCHITECTURES-TEMPLATE.md
-- LANGUAGE-TEMPLATE.md
-- NMP00-Master-Index-Template.md
-- NMP00-Quick-Index-Template.md
-- Constraint-Entry-Template.md
-- Combination-Entry-Template.md
-- Lesson-Entry-Template.md
-- Decision-Entry-Template.md
+**Stop Point:** After all templates created  
+**Deliverables:**
+- 8+ template files
 - Template documentation
 
 ---
 
-**Session 0.5.4: HTML Config Tools (2 hours) - â¬œ NOT STARTED**
+**Session 0.5.4: HTML Config Tools (2 hours)**
 
 **Human Start Script:**
 ```
@@ -264,238 +416,24 @@ Instructions:
 Ready to continue.
 ```
 
-**Expected Deliverables:**
+**Stop Point:** Phase 0.5 complete  
+**Deliverables:**
 - project-config-ui.html
 - neural-map-index-builder.html
 - Phase-0.5-Completion-Report.md
-- SIMAv4-Master-Control-Implementation.md (v1.0.5)
 
 **Phase 0.5 Completion Criteria:**
 - âœ… Clean project separation
 - âœ… No base SIMA contamination
-- âœ… Projects registry created
-- â¬œ All templates created
-- â¬œ HTML tools functional
-- â¬œ Documentation complete
+- âœ… All templates created
+- âœ… HTML tools functional
+- âœ… Documentation complete
 
 ---
 
-### Phase 1.0: Core Architecture Entries â¬œ NOT STARTED
+### Remaining Phases
 
-**Duration:** 2 weeks  
-**Priority:** P1 (Foundation)  
-**Status:** â¬œ Not Started  
-**Dependencies:** Phase 0.5 complete
-
-**Objectives:**
-1. Create universal architecture entries in `/sima/entries/architectures/`
-2. Document SUGA pattern generically
-3. Document LMMS pattern generically
-4. Document DD pattern generically
-5. Document ZAPH pattern generically
-6. Create architecture cross-references
-7. Build architecture quick index
-
-**Session Breakdown:** TBD after Phase 0.5 complete
-
-**Phase 1.0 Completion Criteria:**
-- â¬œ All 4 core architectures documented
-- â¬œ Generic, reusable patterns only
-- â¬œ No project-specific contamination
-- â¬œ Cross-references complete
-- â¬œ Quick index functional
-
----
-
-### Phase 2.0: Gateway Entries â¬œ NOT STARTED
-
-**Duration:** 1 week  
-**Priority:** P1 (Core)  
-**Status:** â¬œ Not Started  
-**Dependencies:** Phase 1.0 complete
-
-**Objectives:**
-1. Create gateway concept entries in `/sima/gateways/`
-2. Document gateway trinity pattern
-3. Document gateway routing patterns
-4. Document gateway error handling
-5. Create gateway examples
-6. Build gateway quick reference
-
-**Session Breakdown:** TBD
-
-**Phase 2.0 Completion Criteria:**
-- â¬œ Gateway patterns documented
-- â¬œ Generic, language-agnostic
-- â¬œ Examples for multiple languages
-- â¬œ Quick reference complete
-
----
-
-### Phase 3.0: Interface Entries â¬œ NOT STARTED
-
-**Duration:** 2 weeks  
-**Priority:** P1 (Core)  
-**Status:** â¬œ Not Started  
-**Dependencies:** Phase 2.0 complete
-
-**Objectives:**
-1. Create interface pattern entries in `/sima/interfaces/`
-2. Document 12 core interface types
-3. Create interface design guidelines
-4. Document interface isolation patterns
-5. Create interface examples
-6. Build interface quick reference
-
-**Session Breakdown:** TBD
-
-**Phase 3.0 Completion Criteria:**
-- â¬œ All 12 interfaces documented
-- â¬œ Design patterns clear
-- â¬œ Examples provided
-- â¬œ Quick reference complete
-
----
-
-### Phase 4.0: Language-Specific Entries â¬œ NOT STARTED
-
-**Duration:** 1 week  
-**Priority:** P2 (Enhancement)  
-**Status:** â¬œ Not Started  
-**Dependencies:** Phase 3.0 complete
-
-**Objectives:**
-1. Create Python entries in `/sima/entries/languages/python/`
-2. Document Python implementation patterns
-3. Create Python best practices
-4. Document Python-specific optimizations
-5. Create future language templates
-
-**Session Breakdown:** TBD
-
-**Phase 4.0 Completion Criteria:**
-- â¬œ Python patterns documented
-- â¬œ Best practices clear
-- â¬œ Templates for future languages
-- â¬œ Quick reference complete
-
----
-
-### Phase 5.0: Project Neural Maps (NMPs) â¬œ NOT STARTED
-
-**Duration:** 2 weeks  
-**Priority:** P2 (Project-Specific)  
-**Status:** â¬œ Not Started  
-**Dependencies:** Phase 4.0 complete
-
-**Objectives:**
-1. Populate SUGA-ISP neural maps
-2. Populate LEE neural maps
-3. Create project-specific indexes
-4. Verify no base SIMA contamination
-5. Test project isolation
-
-**Session Breakdown:** TBD
-
-**Phase 5.0 Completion Criteria:**
-- â¬œ SUGA-ISP NMPs complete
-- â¬œ LEE NMPs complete
-- â¬œ Projects isolated correctly
-- â¬œ Indexes functional
-
----
-
-### Phase 6.0: Support Tools â¬œ NOT STARTED
-
-**Duration:** 1 week  
-**Priority:** P2 (Productivity)  
-**Status:** â¬œ Not Started  
-**Dependencies:** Phase 5.0 complete
-
-**Objectives:**
-1. Create ZAPH tool
-2. Create cross-reference validator
-3. Create index generator
-4. Update existing tools
-5. Create tool documentation
-
-**Session Breakdown:** TBD
-
-**Phase 6.0 Completion Criteria:**
-- â¬œ All tools functional
-- â¬œ Documentation complete
-- â¬œ Integration tested
-
----
-
-### Phase 7.0: Integration Testing â¬œ NOT STARTED
-
-**Duration:** 1 week  
-**Priority:** P1 (Quality)  
-**Status:** â¬œ Not Started  
-**Dependencies:** Phase 6.0 complete
-
-**Objectives:**
-1. Test all entry cross-references
-2. Verify project isolation
-3. Test all support tools
-4. Validate indexes
-5. Performance testing
-
-**Session Breakdown:** TBD
-
-**Phase 7.0 Completion Criteria:**
-- â¬œ All tests passing
-- â¬œ No cross-contamination
-- â¬œ Performance targets met
-- â¬œ Tools validated
-
----
-
-### Phase 8.0: Documentation â¬œ NOT STARTED
-
-**Duration:** 1 week  
-**Priority:** P2 (Usability)  
-**Status:** â¬œ Not Started  
-**Dependencies:** Phase 7.0 complete
-
-**Objectives:**
-1. Create user guides
-2. Create developer guides
-3. Create quick start guides
-4. Create video tutorials
-5. Create FAQ
-
-**Session Breakdown:** TBD
-
-**Phase 8.0 Completion Criteria:**
-- â¬œ All documentation complete
-- â¬œ Examples provided
-- â¬œ Guides tested
-
----
-
-### Phase 9.0: Production Deployment â¬œ NOT STARTED
-
-**Duration:** 3 days  
-**Priority:** P0 (Launch)  
-**Status:** â¬œ Not Started  
-**Dependencies:** Phase 8.0 complete
-
-**Objectives:**
-1. Deploy to file server
-2. Generate all File-Server-URLs.md
-3. Test production access
-4. Team training
-5. Launch announcement
-
-**Session Breakdown:** TBD
-
-**Phase 9.0 Completion Criteria:**
-- â¬œ Production deployed
-- â¬œ All URLs working
-- â¬œ Team trained
-- â¬œ Launch complete
+**Phase 1.0 through 9.0:** See SIMAv4-Implementation-Phase-Breakdown.md for detailed plans.
 
 ---
 
@@ -542,96 +480,325 @@ Please load context.
 
 Adjust SIMAv4 Phase [X.X] plan.
 
-Changes needed:
-[Describe adjustments]
+Reason: [Explanation]
+Changes needed: [Specific changes]
 
-Update master control and proceed.
+Update master control file and proceed.
+```
+
+**Claude updates plan and continues.**
+
+---
+
+## ðŸ"Š ESTIMATED TIMELINE
+
+### Phase Durations
+
+```
+Phase 0.0:  1 week  (4 sessions × 2 hours) - âœ… COMPLETE
+Phase 0.5:  1 week  (4 sessions × 2 hours)
+Phase 1.0:  2 weeks (9 sessions × 2 hours)
+Phase 2.0:  2 weeks (10 sessions × 2 hours)
+Phase 3.0:  1 week  (4 sessions × 2 hours)
+Phase 4.0:  1 week  (4 sessions × 2 hours)
+Phase 5.0:  1 week  (5 sessions × 2 hours)
+Phase 6.0:  1 week  (4 sessions × 2 hours)
+Phase 7.0:  1 week  (4 sessions × 2 hours)
+Phase 8.0:  2 weeks (8 sessions × 2 hours)
+Phase 9.0:  Ongoing (as features developed)
+
+Core Implementation: 12 weeks
+Total Sessions: ~50 sessions
+Total Hours: ~100 hours
+Progress: 8% (4 of 50 sessions complete)
+```
+
+### Session Capacity Planning
+
+**Assuming:**
+- 1-2 sessions per day maximum
+- 2-3 hours per session
+- 5-day work weeks
+
+**Timeline:**
+- Aggressive: 6-8 weeks (2 sessions/day)
+- Normal: 10-12 weeks (1 session/day)
+- Conservative: 15-20 weeks (3-4 sessions/week)
+
+---
+
+## ðŸ'¬ CLAUDE RESPONSE PROTOCOL
+
+### At Session Start
+
+**Claude Says:**
+
+```
+âœ… Context loaded.
+
+Starting Phase [X.X]: [PHASE_NAME]
+Session [X.X.N]: [SESSION_NAME]
+
+Tasks:
+1. [Task 1]
+2. [Task 2]
+3. [Task 3]
+
+Beginning continuous generation...
+```
+
+**Then immediately begins work with minimal commentary.**
+
+---
+
+### During Work
+
+**Claude generates continuously with:**
+- Minimal progress updates (every ~10 outputs)
+- No explanatory prose
+- No asking permission
+- No "would you like me to..." questions
+- Just creates artifacts and updates
+
+**Example minimal update:**
+```
+[10/30 files processed]
 ```
 
 ---
 
-## ðŸ"Š METRICS TRACKING
+### At Session End
 
-### Time Tracking
+**Claude Says:**
 
-**Planned vs Actual:**
+```
+âœ… Session [X.X.N] complete.
 
-| Phase | Planned | Actual | Variance | Status |
-|-------|---------|--------|----------|--------|
-| 0.0 | 1 week | 4 days | -3 days | âœ… |
-| 0.5 | 1 week | TBD | TBD | â³ |
+Deliverables:
+- [Artifact 1]
+- [Artifact 2]
+- [Artifact 3]
 
-**Total Planned:** 14 weeks  
-**Total Actual:** TBD  
-**Overall Variance:** TBD
+Updated: SIMAv4-Master-Control-Implementation.md
+- Progress: [X]%
+- Next session: [X.X.Y]
 
-### Quality Metrics
+I am done.
+```
 
-**Phase 0.0:**
-- Test Pass Rate: 100% (5/5)
-- Documentation Completeness: 100%
-- Code Quality: âœ…
-- User Acceptance: âœ…
-
-**Phase 0.5:**
-- Project Isolation: âœ… (verified Session 0.5.1)
-- Template Quality: TBD
-- Tool Functionality: TBD
-- Documentation: TBD
+**Then stops and waits.**
 
 ---
 
-## ðŸ"' VERSION HISTORY
+## ðŸ"§ MASTER FILE UPDATE PROTOCOL
 
-**v1.0.4 (2025-10-28 16:30:00)**
-- Session 0.5.2 complete
-- projects_config.md created
-- SUGA-ISP and LEE registered
-- Phase 0.5 now 50% complete
+### After Each Session
 
-**v1.0.3 (2025-10-28 16:00:00)**
-- Session 0.5.1 complete
-- Directory restructure finished
-- Added Session 0.5.2 plan
+**Claude updates this document:**
 
-**v1.0.2 (2025-10-28 14:00:00)**
-- Added Phase 0.5: Project Structure Organization
-- Detailed 4-session breakdown
-- Updated phase timeline
+**In Progress Tracking section:**
+```markdown
+### Current Status
 
-**v1.0.1 (2025-10-28 12:00:00)**
-- Phase 0.0 marked complete
-- Added Phase 0.0 completion report reference
+**Phase:** [X.X]  
+**Sub-Phase:** [SESSION_NAME]  
+**Completion:** [X]%  
+**Last Updated:** [DATE + TIME]  
+**Last Session:** [X.X.N]
+```
 
-**v1.0.0 (2025-10-24)**
-- Initial creation
-- All 10 phases defined
-- Session templates created
+**In Phase Status:**
+```markdown
+**Session X.X.N: [NAME] - âœ… Complete**
+Deliverables:
+- [List all artifacts generated]
+
+Completion: [Date + Time]
+```
+
+**In Completed Phases checklist:**
+```markdown
+- [X] Phase X.X: [NAME] (if phase fully complete)
+```
 
 ---
 
-## ðŸ"§ MAINTENANCE
+## ðŸŽ¯ SUCCESS CRITERIA
 
-**This file is:**
-- âœ… Single source of truth for SIMAv4 progress
-- âœ… Updated after each session
-- âœ… Version controlled
-- âœ… Referenced by all phases
+### Per Session
 
-**Update Frequency:**
-- After each session completion
-- After any phase adjustments
-- After major milestones
+**Must deliver:**
+- âœ… All planned artifacts (with filename in header)
+- âœ… Updated master control file
+- âœ… Clear "I am done" signal
+- âœ… Minimal chatter throughout
 
-**Location:**
-- Repository: `/planning/SIMAv4-Master-Control-Implementation.md`
-- File Server: Part of planning documentation
+**Must NOT:**
+- ❌ Ask permission for next steps
+- ❌ Provide lengthy explanations
+- ❌ Stop before completion
+- ❌ Exceed 2-3 hour window
+
+---
+
+### Per Phase
+
+**Must deliver:**
+- âœ… All phase deliverables
+- âœ… Phase completion report
+- âœ… Updated indexes
+- âœ… All tests passing
+- âœ… Completion criteria met
+
+---
+
+### Overall Implementation
+
+**Must deliver:**
+- âœ… All 11 phases complete
+- âœ… All 440+ entries organized
+- âœ… Full ZAPH system operational
+- âœ… Complete documentation
+- âœ… Production-ready system
+
+---
+
+## ðŸš¨ EMERGENCY PROTOCOLS
+
+### If Session Interrupted
+
+**Human resumes with:**
+```
+Please load context.
+
+Resume SIMAv4 Phase [X.X]: [PHASE_NAME]
+Session [X.X.N]: [SESSION_NAME]
+
+Last completed: [Last artifact]
+Next task: [Next task from plan]
+
+Instructions:
+- Minimal chatter, maximum output
+- Continuous generation
+- Update master control file when done
+- Signal completion with "I am done"
+
+Ready to resume.
+```
+
+### If Uncertain About Next Step
+
+**Claude should:**
+1. Check this master control file
+2. Find current phase and session
+3. Read task list
+4. Continue without asking
+
+**Do NOT stop to ask** - this document is the source of truth.
+
+---
+
+### If Phase Needs Adjustment
+
+**Human can say:**
+```
+Please load context.
+
+Adjust SIMAv4 Phase [X.X] plan.
+
+Reason: [Explanation]
+Changes needed: [Specific changes]
+
+Update master control file and proceed.
+```
+
+**Claude updates plan and continues.**
+
+---
+
+## ðŸ" FINAL NOTES
+
+### For Human
+
+**This document is your control panel:**
+- Copy/paste chat scripts exactly
+- Track progress in checkboxes
+- Know exactly where you are
+- Know exactly what to say next
+
+**Benefits:**
+- No session startup confusion
+- No "what do we do next" discussions
+- Predictable, efficient progress
+- Clear completion criteria
+
+---
+
+### For Claude
+
+**This document is your instruction manual:**
+- Read at start of every session
+- Follow scripts exactly
+- Minimize chatter
+- Maximize output
+- Update progress
+- Signal completion
+- **ðŸ†• Always include filename in artifact headers**
+
+**Benefits:**
+- Clear instructions
+- No ambiguity
+- Efficient execution
+- Trackable progress
+
+---
+
+## âœ… USAGE CHECKLIST
+
+### Before Each Session (Human)
+
+- [ ] Open this master control file
+- [ ] Note current phase and session
+- [ ] Copy appropriate chat script
+- [ ] Paste into Claude
+- [ ] Wait for "I am done"
+
+### During Each Session (Claude)
+
+- [ ] Load context
+- [ ] Identify current phase/session
+- [ ] Read task list
+- [ ] Execute with minimal chatter
+- [ ] Generate all deliverables (with filename in headers)
+- [ ] Update master control file
+- [ ] Signal "I am done"
+
+### After Each Session (Human)
+
+- [ ] Download all artifacts
+- [ ] Verify deliverables complete
+- [ ] Check master control file updated
+- [ ] Note next session number
+- [ ] Schedule next session
 
 ---
 
 **END OF MASTER CONTROL DOCUMENT**
 
-**Current Status:** â³ Phase 0.5 Session 0.5.2 Complete  
-**Next Session:** 0.5.3 - Project Templates  
-**Overall Progress:** 12.5% (1.25/10 phases complete)  
-**On Track:** âœ… Yes
+**Version:** 1.0.2  
+**Updated:** 2025-10-28 15:15:00  
+**Total Phases:** 11 (0.0, 0.5, 1.0-9.0)  
+**Total Sessions:** ~50  
+**Total Hours:** ~100  
+**Current Progress:** 8% (4 of 50 sessions complete)
+
+**ðŸ†• Changes in v1.0.2:**
+- Session 0.0.4 marked complete
+- Phase 0.0 marked 100% complete  
+- Added note: Include filename in all artifact headers
+- Updated progress tracking (8% complete)
+
+**Next Phase:** 0.5 - Project Structure Organization  
+**Next Session:** 0.5.1 - Directory Restructure
+
+**Chat Script Ready:** âœ… See Phase 0.5 section above for Session 0.5.1 script
