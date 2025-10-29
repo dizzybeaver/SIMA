@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMA v4 - Neural Map Index Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #11998e;
+            border-bottom: 3px solid #11998e;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .section h3 {
+            color: #11998e;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #11998e;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .entry-list {
+            margin-top: 15px;
+        }
+        
+        .entry-item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #11998e;
+        }
+        
+        .entry-info {
+            flex: 1;
+        }
+        
+        .entry-id {
+            font-weight: 700;
+            color: #11998e;
+            margin-right: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #11998e;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0d7a6f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+        
+        .btn-small {
+            font-size: 12px;
+            padding: 8px 15px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .output {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .output pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.5;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ SIMA v4 Neural Map Index Builder</h1>
+            <p>Build and manage NMP indexes for project neural maps</p>
+        </div>
+        
+        <div class="content">
+            <!-- Statistics -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="statConstraints">0</div>
+                    <div class="stat-label">Constraints</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statCombinations">0</div>
+                    <div class="stat-label">Combinations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statLessons">0</div>
+                    <div class="stat-label">Lessons</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statDecisions">0</div>
+                    <div class="stat-label">Decisions</div>
+                </div>
+            </div>
+            
+            <!-- Project Info -->
+            <div class="section">
+                <h3>📋 Project Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project Name</label>
+                        <input type="text" id="projectName" placeholder="e.g., SUGA-ISP">
+                    </div>
+                    <div class="form-group">
+                        <label>Project Code</label>
+                        <input type="text" id="projectCode" placeholder="e.g., SUGA">
+                    </div>
+                    <div class="form-group">
+                        <label>Index Type</label>
+                        <select id="indexType">
+                            <option value="master">Master Index</option>
+                            <option value="quick">Quick Index</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('constraints')">NMP01: Constraints</button>
+                <button class="tab" onclick="switchTab('combinations')">NMP02: Combinations</button>
+                <button class="tab" onclick="switchTab('lessons')">NMP03: Lessons</button>
+                <button class="tab" onclick="switchTab('decisions')">NMP04: Decisions</button>
+            </div>
+            
+            <!-- Constraints Tab -->
+            <div class="tab-content active" id="constraints-tab">
+                <div class="section">
+                    <h3>Add Constraint Entry</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" id="consDesc" placeholder="Brief description">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="consStatus">
+                                <option value="Active">✅ Active</option>
+                                <option value="Draft">⏳ Draft</option>
+                                <option value="Archived">📦 Archived</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Severity</label>
+                            <select id="consSeverity">
+                                <option value="Critical">🔴 Critical</option>
+                                <option value="Important">🟡 Important</option>
+                                <option value="Advisory">🟢 Advisory</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="addEntry('constraint')">Add Constraint</button>
+                </div>
+                <div class="entry-list" id="constraintList"></div>
+            </div>
+            
+            <!-- Combinations Tab -->
+            <div class="tab-content" id="combinations-tab">
+                <div class="section">
+                    <h3>Add Combination Entry</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Pattern Description</label>
+                            <input type="text" id="combDesc" placeholder="e.g., SUGA + Python + Lambda">
+                        </div>
+                        <div class="form-group">
+                            <label>Impact</label>
+                            <select id="combImpact">
+                                <option value="High">🔴 High</option>
+                                <option value="Medium">🟡 Medium</option>
+                                <option value="Low">🟢 Low</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="combStatus">
+                                <option value="Active">✅ Active</option>
+                                <option value="Draft">⏳ Draft</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="addEntry('combination')">Add Combination</button>
+                </div>
+                <div class="entry-list" id="combinationList"></div>
+            </div>
+            
+            <!-- Lessons Tab -->
+            <div class="tab-content" id="lessons-tab">
+                <div class="section">
+                    <h3>Add Lesson Entry</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Lesson Description</label>
+                            <input type="text" id="lessDesc" placeholder="What was learned">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="lessCategory">
+                                <option value="Core Architecture">Core Architecture</option>
+                                <option value="Performance">Performance</option>
+                                <option value="Operations">Operations</option>
+                                <option value="Documentation">Documentation</option>
+                                <option value="Security">Security</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Severity</label>
+                            <select id="lessSeverity">
+                                <option value="Critical">🔴 Critical</option>
+                                <option value="Important">🟡 Important</option>
+                                <option value="Advisory">🟢 Advisory</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="addEntry('lesson')">Add Lesson</button>
+                </div>
+                <div class="entry-list" id="lessonList"></div>
+            </div>
+            
+            <!-- Decisions Tab -->
+            <div class="tab-content" id="decisions-tab">
+                <div class="section">
+                    <h3>Add Decision Entry</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Decision Description</label>
+                            <input type="text" id="decDesc" placeholder="What was decided">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="decCategory">
+                                <option value="Architecture">Architecture</option>
+                                <option value="Technical">Technical</option>
+                                <option value="Operational">Operational</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Impact</label>
+                            <select id="decImpact">
+                                <option value="High">🔴 High</option>
+                                <option value="Medium">🟡 Medium</option>
+                                <option value="Low">🟢 Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="addEntry('decision')">Add Decision</button>
+                </div>
+                <div class="entry-list" id="decisionList"></div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="actions">
+                <button class="btn btn-primary" onclick="generateIndex()">Generate Index</button>
+                <button class="btn btn-secondary" onclick="resetAll()">Reset All</button>
+                <button class="btn btn-primary" onclick="downloadIndex()">Download Index</button>
+            </div>
+            
+            <!-- Output -->
+            <div class="output" id="output">
+                <h3>Generated Index</h3>
+                <pre id="indexOutput"></pre>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let constraints = [];
+        let combinations = [];
+        let lessons = [];
+        let decisions = [];
+        
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+        
+        function addEntry(type) {
+            let entry;
+            
+            switch(type) {
+                case 'constraint':
+                    const consDesc = document.getElementById('consDesc').value;
+                    if (!consDesc) return alert('Please enter description');
+                    entry = {
+                        id: `CONS-${String(constraints.length + 1).padStart(2, '0')}`,
+                        desc: consDesc,
+                        status: document.getElementById('consStatus').value,
+                        severity: document.getElementById('consSeverity').value
+                    };
+                    constraints.push(entry);
+                    document.getElementById('consDesc').value = '';
+                    updateList('constraint');
+                    break;
+                    
+                case 'combination':
+                    const combDesc = document.getElementById('combDesc').value;
+                    if (!combDesc) return alert('Please enter pattern description');
+                    entry = {
+                        id: `COMB-${String(combinations.length + 1).padStart(2, '0')}`,
+                        desc: combDesc,
+                        impact: document.getElementById('combImpact').value,
+                        status: document.getElementById('combStatus').value
+                    };
+                    combinations.push(entry);
+                    document.getElementById('combDesc').value = '';
+                    updateList('combination');
+                    break;
+                    
+                case 'lesson':
+                    const lessDesc = document.getElementById('lessDesc').value;
+                    if (!lessDesc) return alert('Please enter lesson description');
+                    entry = {
+                        id: `LESS-${String(lessons.length + 1).padStart(2, '0')}`,
+                        desc: lessDesc,
+                        category: document.getElementById('lessCategory').value,
+                        severity: document.getElementById('lessSeverity').value
+                    };
+                    lessons.push(entry);
+                    document.getElementById('lessDesc').value = '';
+                    updateList('lesson');
+                    break;
+                    
+                case 'decision':
+                    const decDesc = document.getElementById('decDesc').value;
+                    if (!decDesc) return alert('Please enter decision description');
+                    entry = {
+                        id: `DEC-${String(decisions.length + 1).padStart(2, '0')}`,
+                        desc: decDesc,
+                        category: document.getElementById('decCategory').value,
+                        impact: document.getElementById('decImpact').value
+                    };
+                    decisions.push(entry);
+                    document.getElementById('decDesc').value = '';
+                    updateList('decision');
+                    break;
+            }
+            
+            updateStats();
+        }
+        
+        function removeEntry(type, index) {
+            switch(type) {
+                case 'constraint':
+                    constraints.splice(index, 1);
+                    updateList('constraint');
+                    break;
+                case 'combination':
+                    combinations.splice(index, 1);
+                    updateList('combination');
+                    break;
+                case 'lesson':
+                    lessons.splice(index, 1);
+                    updateList('lesson');
+                    break;
+                case 'decision':
+                    decisions.splice(index, 1);
+                    updateList('decision');
+                    break;
+            }
+            updateStats();
+        }
+        
+        function updateList(type) {
+            let list, items, listId;
+            
+            switch(type) {
+                case 'constraint':
+                    list = constraints;
+                    listId = 'constraintList';
+                    break;
+                case 'combination':
+                    list = combinations;
+                    listId = 'combinationList';
+                    break;
+                case 'lesson':
+                    list = lessons;
+                    listId = 'lessonList';
+                    break;
+                case 'decision':
+                    list = decisions;
+                    listId = 'decisionList';
+                    break;
+            }
+            
+            document.getElementById(listId).innerHTML = list.map((item, index) => `
+                <div class="entry-item">
+                    <div class="entry-info">
+                        <span class="entry-id">${item.id}</span>
+                        <span>${item.desc}</span>
+                    </div>
+                    <button class="btn btn-danger" onclick="removeEntry('${type}', ${index})">Remove</button>
+                </div>
+            `).join('');
+        }
+        
+        function updateStats() {
+            document.getElementById('statConstraints').textContent = constraints.length;
+            document.getElementById('statCombinations').textContent = combinations.length;
+            document.getElementById('statLessons').textContent = lessons.length;
+            document.getElementById('statDecisions').textContent = decisions.length;
+        }
+        
+        function generateIndex() {
+            const projectName = document.getElementById('projectName').value;
+            const projectCode = document.getElementById('projectCode').value;
+            const indexType = document.getElementById('indexType').value;
+            
+            if (!projectName || !projectCode) {
+                return alert('Please enter project name and code');
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            const totalEntries = constraints.length + combinations.length + lessons.length + decisions.length;
+            
+            let index = `# NMP00: ${indexType === 'master' ? 'Master' : 'Quick'} Index - ${projectName}
+
+**Project:** ${projectName}  
+**Last Updated:** ${today}  
+**Total Entries:** ${totalEntries}
+
+---
+
+## ⚡ STATISTICS
+
+**Total Entries:** ${totalEntries}
+
+**By Category:**
+- Constraints (NMP01): ${constraints.length}
+- Combinations (NMP02): ${combinations.length}
+- Lessons (NMP03): ${lessons.length}
+- Decisions (NMP04): ${decisions.length}
+
+---
+
+## 📋 NMP01: CONSTRAINTS
+
+**Total:** ${constraints.length}
+`;
+            
+            constraints.forEach(cons => {
+                index += `
+**${projectCode}-${cons.id}**: ${cons.desc}  
+**Status:** ${cons.status}  
+**Severity:** ${cons.severity}  
+**File:** \`/projects/${projectCode}/sima/nmp/NMP01/${projectCode}-${cons.id}.md\`
+`;
+            });
+            
+            index += `
+---
+
+## 🔗 NMP02: COMBINATIONS
+
+**Total:** ${combinations.length}
+`;
+            
+            combinations.forEach(comb => {
+                index += `
+**${projectCode}-${comb.id}**: ${comb.desc}  
+**Status:** ${comb.status}  
+**Impact:** ${comb.impact}  
+**File:** \`/projects/${projectCode}/sima/nmp/NMP02/${projectCode}-${comb.id}.md\`
+`;
+            });
+            
+            index += `
+---
+
+## 📚 NMP03: LESSONS
+
+**Total:** ${lessons.length}
+`;
+            
+            lessons.forEach(less => {
+                index += `
+**${projectCode}-${less.id}**: ${less.desc}  
+**Category:** ${less.category}  
+**Severity:** ${less.severity}  
+**File:** \`/projects/${projectCode}/sima/nmp/NMP03/${projectCode}-${less.id}.md\`
+`;
+            });
+            
+            index += `
+---
+
+## 🎯 NMP04: DECISIONS
+
+**Total:** ${decisions.length}
+`;
+            
+            decisions.forEach(dec => {
+                index += `
+**${projectCode}-${dec.id}**: ${dec.desc}  
+**Category:** ${dec.category}  
+**Impact:** ${dec.impact}  
+**File:** \`/projects/${projectCode}/sima/nmp/NMP04/${projectCode}-${dec.id}.md\`
+`;
+            });
+            
+            index += `
+---
+
+**END OF ${indexType.toUpperCase()} INDEX**
+
+**Template Version:** 1.0.0  
+**Project:** ${projectName}  
+**Generated:** ${today} by SIMA v4 Neural Map Index Builder
+`;
+            
+            document.getElementById('indexOutput').textContent = index;
+            document.getElementById('output').style.display = 'block';
+            document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function downloadIndex() {
+            const content = document.getElementById('indexOutput').textContent;
+            if (!content) {
+                return alert('Please generate index first');
+            }
+            
+            const indexType = document.getElementById('indexType').value;
+            const filename = indexType === 'master' ? 'NMP00-Master-Index.md' : 'NMP00-Quick-Index.md';
+            
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function resetAll() {
+            if (confirm('Reset all entries and clear all data?')) {
+                constraints = [];
+                combinations = [];
+                lessons = [];
+                decisions = [];
+                updateList('constraint');
+                updateList('combination');
+                updateList('lesson');
+                updateList('decision');
+                updateStats();
+                document.getElementById('output').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
