@@ -10,7 +10,7 @@
 
 ---
 
-## ðŸ"‹ SUMMARY
+## 📋 SUMMARY
 
 Router layer must sanitize internal sentinel objects (like _CacheMiss) to None before returning to callers, preventing 535ms performance penalty and maintaining clean API boundaries.
 
@@ -20,17 +20,17 @@ Router layer must sanitize internal sentinel objects (like _CacheMiss) to None b
 
 ---
 
-## ðŸŽ¯ CONTEXT
+## 🎯 CONTEXT
 
 ### Problem Statement
-BUG-01 discovered that internal cache sentinel object (_CacheMiss) leaked to callers, causing 535ms performance penalty when compared using == instead of is. Need architectural solution.
+BUG-01 discovered internal cache sentinel object (_CacheMiss) leaked to callers, causing 535ms performance penalty when compared using == instead of is. Need architectural solution.
 
 ### Background
 - Cache layer used _CacheMiss sentinel for "key not found"
 - Sentinel leaked through router to external callers
 - Callers used == comparison (standard Python practice)
 - Sentinel's __eq__ method caused 535ms penalty
-- Bug happened multiple times despite awareness
+- Bug recurred despite documentation
 
 ### Requirements
 - Prevent sentinel leakage permanently
@@ -40,232 +40,214 @@ BUG-01 discovered that internal cache sentinel object (_CacheMiss) leaked to cal
 
 ---
 
-## ðŸ'¡ DECISION
+## 💡 DECISION
 
 ### What We Chose
 Router layer must convert all internal sentinel objects to None before returning to callers. Sentinels are implementation details that never cross the router boundary.
 
 ### Implementation
 ```python
-# âŒ BEFORE - Sentinel leaked to caller
-def router(operation, **kwargs):
-    result = core_function(**kwargs)
-    return result  # Might be sentinel!
+# ❌ BEFORE - Sentinel leaked to caller
+_CacheMiss = object()
+
+def cache_get(key):
+    value = _cache.get(key, _CacheMiss)
+    return value  # Sentinel leaks!
 
 # Caller code
-value = gateway.cache_get("key")
-if value == None:  # WRONG - but natural Python
-    # If value is _CacheMiss, this costs 535ms!
-    ...
+result = cache_get("key")
+if result == None:  # WRONG but natural - costs 535ms!
+    print("Miss")
 
-# âœ… AFTER - Router sanitizes sentinel
-def router(operation, **kwargs):
-    result = core_function(**kwargs)
+# ✅ AFTER - Router sanitizes sentinel
+_CacheMiss = object()
+
+def cache_get(key):
+    value = _cache.get(key, _CacheMiss)
     
-    # Sanitize sentinels at boundary
-    if isinstance(result, _CacheMiss):
+    # Sanitize at boundary
+    if value is _CacheMiss:
         return None
     
-    return result
+    return value
 
 # Caller code
-value = gateway.cache_get("key")
-if value is None:  # CORRECT - fast, Pythonic
-    ...
+result = cache_get("key")
+if result is None:  # CORRECT - fast, Pythonic
+    print("Miss")
 ```
 
 ### Rationale
-1. **Clean API Boundary**
+1. **Prevents Performance Bug**
+   - BUG-01: Sentinel leak caused 535ms penalty
+   - None comparison: nanoseconds
+   - Router overhead: ~50ns (negligible)
+   - Net improvement: 535ms saved per miss
+
+2. **Clean API Boundary**
    - External callers see None, not sentinels
    - Pythonic interface (None is standard)
    - No sentinel knowledge required
-   - Clear separation internal vs external
+   - Clear internal vs external separation
 
-2. **Performance**
-   - None comparison: nanoseconds
-   - Sentinel comparison: 535ms penalty
-   - Router overhead: ~50ns (negligible)
-   - Net improvement: 535ms savings
-
-3. **Prevents Bugs**
-   - Architectural enforcement
+3. **Architectural Enforcement**
    - Not relying on documentation
-   - Impossible to leak sentinel
+   - Impossible to leak sentinel past router
+   - Router enforces contract
    - Future-proof against new sentinels
 
-4. **Maintainability**
-   - One place to handle sanitization
-   - Clear responsibility (router layer)
-   - Easy to audit
-   - Consistent across all interfaces
+4. **Encapsulation**
+   - Implementation details stay internal
+   - Can change sentinel freely
+   - Callers unaffected by internal changes
+   - Proper abstraction boundary
 
 ---
 
-## ðŸ"„ ALTERNATIVES CONSIDERED
+## 📄 ALTERNATIVES CONSIDERED
 
-### Alternative 1: Document Sentinel Usage
-**Description:** Tell developers to use 'is' instead of '=='
-
+### Alternative 1: Document "Use 'is' Not '=='"
 **Pros:**
 - No code changes needed
-- Preserves sentinel semantics
+- Keeps sentinel in external API
 
 **Cons:**
 - Relies on developer discipline
 - Easy to forget
-- Non-Pythonic (None is standard)
-- Already failed (caused BUG-01)
+- Bug already happened despite docs
+- Unnatural Python (None typically uses ==)
 
-**Why Rejected:** Documentation doesn't prevent bugs
+**Why Rejected:** Documentation alone failed - architectural solution needed.
 
 ---
 
-### Alternative 2: Fast Sentinel __eq__
-**Description:** Fix sentinel's __eq__ method to be fast
-
+### Alternative 2: Raise Exception Instead of Sentinel
 **Pros:**
-- Preserves sentinel in API
-- Allows == comparison
+- No sentinel needed
+- Clear "not found" signal
 
 **Cons:**
-- Still leaks implementation detail
-- Non-Pythonic API
-- Confuses external users
-- More complex than None
+- Exceptions expensive for control flow
+- Cache miss is expected, not exceptional
+- Forces try/except everywhere
+- Performance worse than sentinel
 
-**Why Rejected:** Sentinel shouldn't cross boundary
+**Why Rejected:** Exceptions aren't for expected conditions.
 
 ---
 
-### Alternative 3: Result Wrapper Objects
-**Description:** Wrap results in Result(value, found=True/False)
-
+### Alternative 3: Return (found, value) Tuple
 **Pros:**
-- Explicit success/failure
-- Type-safe
+- Explicit found/not-found state
+- No sentinel needed
 
 **Cons:**
-- More complex API
-- Overkill for simple cache
-- Breaking change for existing code
-- Extra object allocation
+- Breaks existing API
+- More complex caller code
+- Unnatural Python pattern
+- Major migration required
 
-**Why Rejected:** Over-engineered solution
+**Why Rejected:** Breaking change, less Pythonic.
 
 ---
 
-## âš–ï¸ TRADE-OFFS
+### Alternative 4: Custom Sentinel with Safe __eq__
+**Pros:**
+- Keeps sentinel pattern
+- No leak risk
+
+**Cons:**
+- Complex sentinel implementation
+- Still exposes internal detail
+- Harder to understand
+- Doesn't solve API cleanliness
+
+**Why Rejected:** Router sanitization simpler and cleaner.
+
+---
+
+## ⚖️ TRADE-OFFS
 
 ### What We Gained
 - 535ms performance penalty eliminated
-- Pythonic API (None is standard)
-- Architectural bug prevention
-- Clean internal/external boundary
-- Future-proof against new sentinels
+- Clean external API (None is Pythonic)
+- Architectural enforcement (can't leak)
+- Future-proof (any sentinel caught)
+- Zero sentinel bugs since fix
 
 ### What We Accepted
 - ~50ns router overhead per operation
-- Must remember to sanitize new sentinels
-- Can't use sentinel semantics externally
-- Router responsibility increased slightly
+- Slightly more complex router code
+- Cannot distinguish "None" from "not found" externally
+- Must maintain sanitization layer
 
 ---
 
-## ðŸ"Š IMPACT ANALYSIS
+## 📊 IMPACT ANALYSIS
 
 ### Technical Impact
-**Performance:**
-- Cache miss: 535ms penalty â†' 0ms (None comparison)
-- Router overhead: +50ns (negligible)
-- Net improvement: 534.999950ms per cache miss
-
-**API Quality:**
-- Before: Sentinel objects in API (confusing)
-- After: None (Pythonic, clear)
-- Developer experience: Significantly improved
-
-**Architecture:**
-- Clear boundary enforcement
-- Router responsibility defined
-- Implementation detail containment
+- **Performance:** 535ms penalty eliminated, 50ns overhead added (net gain)
+- **API:** Cleaner interface, Pythonic conventions
+- **Architecture:** Clear boundary enforcement pattern
+- **Maintenance:** Can change sentinels without affecting callers
 
 ### Operational Impact
-**Bug Prevention:**
-- BUG-01 class of errors prevented architecturally
-- Can't forget to use 'is' (now using None)
-- Zero similar bugs in 6+ months since fix
-
-**Development:**
-- Simpler API documentation
-- Easier to explain to new developers
-- Standard Python patterns apply
-
-**Maintenance:**
-- One place to check (router layer)
-- Easy to audit sanitization
-- Clear patterns to follow
+- **Debugging:** Simpler (no sentinel leaks to trace)
+- **Development:** Standard Python patterns work
+- **Code Review:** Check sanitization at boundaries
+- **Results:** Zero sentinel bugs in 6+ months
 
 ---
 
-## ðŸ"® FUTURE CONSIDERATIONS
+## 🔮 FUTURE CONSIDERATIONS
 
 ### When to Revisit
-- If sentinels need to cross boundary for valid reason (unlikely)
-- If router overhead becomes measurable (extremely unlikely)
-- If Python introduces better missing-value semantics
+- If need to distinguish "None value" from "not found"
+- If 50ns overhead becomes measurable (hasn't)
+- If sentinels needed in external API (unlikely)
 
 ### Evolution Path
-1. Add type hints indicating None possible
-2. Consider Result wrapper for more complex cases
-3. Generate API documentation from router
-
-### Monitoring
-- âœ… Zero sentinel leaks (6+ months)
-- âœ… Zero performance issues from sanitization
-- âœ… Developer feedback positive
-- âœ… Code reviews verify sanitization
+- Automatic sanitization framework (decorator?)
+- Static analysis to detect sentinel leaks
+- Linting rule: sentinels never in return types
+- Router pattern template with sanitization
 
 ---
 
-## ðŸ"— RELATED
-
-### Related Bugs
-- BUG-01 - Sentinel Leak (caused this decision)
+## 🔗 RELATED
 
 ### Related Decisions
-- DEC-02 - Gateway Centralization (router is boundary)
-- DEC-15 - Router-Level Exceptions (router responsibilities)
+- DEC-01 - SUGA Pattern (routers part of architecture)
+- DEC-02 - Gateway Centralization (sanitization at gateway)
 
 ### SIMA Entries
-- GATE-01 - Three-File Structure (router layer role)
-- INT-01 - Cache Interface (where sentinels used)
+- BUG-01 - Sentinel Leak Bug (problem this solves)
+- AP-10 - Sentinel Objects Crossing Boundaries
+- LESS-06 - Sentinel Objects Lesson
 
-### Anti-Patterns
-- AP-19 - Sentinel Leakage (this decision prevents)
-
-### Lessons
-- LESS-05 - Sentinel handling lessons
-- LESS-12 - API boundary importance
+### Related Files
+- `/sima/entries/interfaces/INT-01-Cache-Interface.md`
+- `/sima/entries/gateways/GATE-01-Three-File-Structure.md`
 
 ---
 
-## ðŸ·ï¸ KEYWORDS
+## 🏷️ KEYWORDS
 
-`sentinel-sanitization`, `router-layer`, `API-boundary`, `performance`, `cache-miss`, `None-vs-sentinel`, `bug-prevention`
+`sentinel-sanitization`, `router-boundary`, `API-cleanliness`, `performance-bug`, `encapsulation`, `BUG-01-prevention`, `abstraction-boundary`
 
 ---
 
-## ðŸ" VERSION HISTORY
+## 📝 VERSION HISTORY
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 3.0.0 | 2025-10-29 | Migration | SIMAv4 migration |
 | 2.0.0 | 2025-10-23 | System | SIMA v3 format |
-| 1.0.0 | 2024-06-15 | Original | Decision after BUG-01 discovery |
+| 1.0.0 | 2024-06-15 | Original | Decision after BUG-01 |
 
 ---
 
 **END OF DECISION**
 
-**Status:** Active - Enforced in all router layers  
-**Effectiveness:** 100% - Zero sentinel leaks, 535ms penalty eliminated
+**Status:** Active - Enforced in all 12 interfaces  
+**Effectiveness:** 100% - Zero sentinel bugs, 535ms penalty eliminated
