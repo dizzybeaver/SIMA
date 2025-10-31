@@ -5,7 +5,7 @@
 **Category:** NM06 - Lessons  
 **Topic:** Learning & Development  
 **Items:** 4  
-**Last Updated:** 2025-10-30 (Phase 10.3 Session 4)
+**Last Updated:** 2025-10-31
 
 ---
 
@@ -127,48 +127,4 @@ Account for milestones: +15-25% boost at 50%
 
 **Phase 3: Mastery (Sessions 4+)**
 - Pattern mastery achieved
-- Muscle memory active
-- High velocity (0.5h per unit)
-- Estimation needs recalibration (LESS-43)
-- Watch for momentum milestones (LESS-44)
-
----
-
-## Application Guidelines
-
-**For Individuals:**
-1. Track velocity across sessions
-2. Celebrate first independent success (Session 3)
-3. Note 50% milestone achievement
-4. Recalibrate personal estimates
-5. Share learning trajectory with team
-
-**For Teams:**
-1. Plan 2-session learning phases
-2. Validate at Session 3 (LESS-45)
-3. Track velocity milestones (LESS-47)
-4. Leverage 50% momentum (LESS-44)
-5. Update estimation models (LESS-43)
-
-**For Projects:**
-1. Account for learning curve in planning
-2. Celebrate validation milestones
-3. Recalibrate estimates post-mastery
-4. Use milestone psychology strategically
-5. Document learning trajectories
-
----
-
-**Navigation:**
-- **Up:** Lessons Master Index (`/sima/entries/lessons/Lessons-Master-Index.md`)
-- **Sibling Topics:** Core Architecture, Performance, Documentation, Evolution, Operations, Optimization
-
----
-
-**File:** `/sima/entries/lessons/learning/Learning-Index.md`  
-**Status:** Complete  
-**Lines:** ~180
-
----
-
-**END OF INDEX**
+-
