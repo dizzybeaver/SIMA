@@ -1,6 +1,7 @@
 # SIMA v4: Teaching AI to Remember
 
 ## Simulated Integrated Memory Architecture
+By Joseph Hersey
 
 **The Memory AI Assistants Are Missing**
 
