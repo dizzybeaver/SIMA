@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMA v4 NMP Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 30px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #f5576c;
+            border-bottom-color: #f5576c;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h3 {
+            color: #f5576c;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+        
+        .output {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .output.visible {
+            display: block;
+        }
+        
+        .output h3 {
+            color: #f5576c;
+            margin-bottom: 15px;
+        }
+        
+        .output pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .copy-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #48bb78;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .copy-btn:hover {
+            background: #38a169;
+        }
+        
+        .help-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ðŸ"š SIMA v4 NMP Generator</h1>
+            <p>Generate Neural Map Project entries</p>
+        </div>
+        
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('interface')">Interface Catalog</button>
+                <button class="tab" onclick="showTab('gateway')">Gateway Pattern</button>
+                <button class="tab" onclick="showTab('integration')">Integration</button>
+            </div>
+            
+            <!-- Interface Catalog Tab -->
+            <div id="interface" class="tab-content active">
+                <form id="interfaceForm">
+                    <div class="section">
+                        <h3>Basic Information</h3>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>NMP Prefix *</label>
+                                <input type="text" id="int_nmp_prefix" required placeholder="e.g., NMP01">
+                            </div>
+                            <div class="form-group">
+                                <label>Project Code *</label>
+                                <input type="text" id="int_project_code" required placeholder="e.g., LEE">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Entry Number *</label>
+                                <input type="number" id="int_entry_num" required min="1" max="99" placeholder="02">
+                            </div>
+                            <div class="form-group">
+                                <label>Interface Name *</label>
+                                <select id="int_interface_name" required>
+                                    <option value="">Select Interface</option>
+                                    <option value="Cache">Cache (INT-01)</option>
+                                    <option value="Config">Config (INT-02)</option>
+                                    <option value="Debug">Debug (INT-03)</option>
+                                    <option value="HTTP">HTTP (INT-04)</option>
+                                    <option value="Initialization">Initialization (INT-05)</option>
+                                    <option value="Logging">Logging (INT-06)</option>
+                                    <option value="Metrics">Metrics (INT-07)</option>
+                                    <option value="Security">Security (INT-08)</option>
+                                    <option value="Singleton">Singleton (INT-09)</option>
+                                    <option value="Utility">Utility (INT-10)</option>
+                                    <option value="WebSocket">WebSocket (INT-11)</option>
+                                    <option value="Circuit-Breaker">Circuit Breaker (INT-12)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Project Name *</label>
+                            <input type="text" id="int_project_name" required placeholder="e.g., Lambda Event Engine">
+                        </div>
+                        <div class="form-group">
+                            <label>Function Count</label>
+                            <input type="number" id="int_function_count" min="1" placeholder="Number of functions cataloged">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">âœ¨ Generate Interface Catalog</button>
+                </form>
+            </div>
+            
+            <!-- Gateway Pattern Tab -->
+            <div id="gateway" class="tab-content">
+                <form id="gatewayForm">
+                    <div class="section">
+                        <h3>Basic Information</h3>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>NMP Prefix *</label>
+                                <input type="text" id="gw_nmp_prefix" required placeholder="e.g., NMP01">
+                            </div>
+                            <div class="form-group">
+                                <label>Project Code *</label>
+                                <input type="text" id="gw_project_code" required placeholder="e.g., LEE">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Entry Number *</label>
+                                <input type="number" id="gw_entry_num" required min="1" max="99" placeholder="15">
+                            </div>
+                            <div class="form-group">
+                                <label>Pattern Type *</label>
+                                <select id="gw_pattern_type" required>
+                                    <option value="">Select Pattern</option>
+                                    <option value="Execute Operation">Execute Operation</option>
+                                    <option value="Fast Path">Fast Path</option>
+                                    <option value="Custom">Custom Pattern</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Pattern Name (if custom)</label>
+                            <input type="text" id="gw_pattern_name" placeholder="e.g., Batch Processing">
+                        </div>
+                        <div class="form-group">
+                            <label>Project Name *</label>
+                            <input type="text" id="gw_project_name" required placeholder="e.g., Lambda Event Engine">
+                        </div>
+                        <div class="form-group">
+                            <label>Pattern Description</label>
+                            <textarea id="gw_description" placeholder="Brief description of what this pattern does"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">âœ¨ Generate Gateway Pattern</button>
+                </form>
+            </div>
+            
+            <!-- Integration Tab -->
+            <div id="integration" class="tab-content">
+                <form id="integrationForm">
+                    <div class="section">
+                        <h3>Basic Information</h3>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>NMP Prefix *</label>
+                                <input type="text" id="int_nmp_prefix_2" required placeholder="e.g., NMP01">
+                            </div>
+                            <div class="form-group">
+                                <label>Project Code *</label>
+                                <input type="text" id="int_project_code_2" required placeholder="e.g., LEE">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Entry Number *</label>
+                                <input type="number" id="int_entry_num_2" required min="1" max="99" placeholder="20">
+                            </div>
+                            <div class="form-group">
+                                <label>External System *</label>
+                                <input type="text" id="int_system_name" required placeholder="e.g., Home Assistant">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Project Name *</label>
+                            <input type="text" id="int_project_name_2" required placeholder="e.g., Lambda Event Engine">
+                        </div>
+                        <div class="form-group">
+                            <label>Integration Type</label>
+                            <select id="int_integration_type">
+                                <option value="REST API">REST API</option>
+                                <option value="WebSocket">WebSocket</option>
+                                <option value="GraphQL">GraphQL</option>
+                                <option value="Database">Database</option>
+                                <option value="Message Queue">Message Queue</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">âœ¨ Generate Integration Entry</button>
+                </form>
+            </div>
+            
+            <div id="output" class="output">
+                <h3>ðŸ"„ Generated NMP Entry</h3>
+                <pre id="nmpOutput"></pre>
+                <button class="copy-btn" onclick="copyToClipboard()">ðŸ"‹ Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById('output').classList.remove('visible');
+        }
+        
+        document.getElementById('interfaceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateInterfaceCatalog();
+        });
+        
+        document.getElementById('gatewayForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateGatewayPattern();
+        });
+        
+        document.getElementById('integrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateIntegration();
+        });
+        
+        function generateInterfaceCatalog() {
+            const prefix = document.getElementById('int_nmp_prefix').value;
+            const project = document.getElementById('int_project_code').value;
+            const num = document.getElementById('int_entry_num').value.padStart(2, '0');
+            const iface = document.getElementById('int_interface_name').value;
+            const projectName = document.getElementById('int_project_name').value;
+            const funcCount = document.getElementById('int_function_count').value || 'X';
+            const today = new Date().toISOString().split('T')[0];
+            
+            const ifaceMap = {
+                'Cache': 'INT-01',
+                'Config': 'INT-02',
+                'Debug': 'INT-03',
+                'HTTP': 'INT-04',
+                'Initialization': 'INT-05',
+                'Logging': 'INT-06',
+                'Metrics': 'INT-07',
+                'Security': 'INT-08',
+                'Singleton': 'INT-09',
+                'Utility': 'INT-10',
+                'WebSocket': 'INT-11',
+                'Circuit-Breaker': 'INT-12'
+            };
+            
+            const content = `# File: ${prefix}-${project}-${num}-${iface}-Interface-Functions.md
+
+**REF-ID:** ${prefix}-${project}-${num}  
+**Category:** Project Neural Map - Interface Catalog  
+**Project:** ${projectName} (${project})  
+**Status:** Active  
+**Created:** ${today}  
+**Last Updated:** ${today}
+
+---
+
+## ðŸ"‹ SUMMARY
+
+Catalog of ${iface} interface functions used in ${projectName}. Inherits from generic interface pattern and adds project-specific implementations.
+
+**Interface:** ${iface} (${iface.toLowerCase()}.py)  
+**Generic Pattern:** ${ifaceMap[iface]} (${iface} Interface)  
+**Functions Cataloged:** ${funcCount} functions  
+**Usage:** [Add usage context]
+
+---
+
+## ðŸŽ¯ PURPOSE
+
+[Why this interface is used in the project - 2-3 sentences]
+
+**Key Benefits:**
+- [Benefit 1]
+- [Benefit 2]
+- [Benefit 3]
+
+---
+
+## 🔗 INHERITANCE
+
+**Inherits From:**
+- **REF-ID:** ${ifaceMap[iface]}
+- **Entry:** ${iface} Interface
+- **Inheritance Type:** Full adoption + project extensions
+- **Note:** Follows generic pattern, adds project-specific functions
+
+---
+
+## ðŸ"¦ FUNCTION CATALOG
+
+### Core Functions (from ${ifaceMap[iface]})
+
+[Add function documentation here]
+
+---
+
+### Project-Specific Extensions
+
+[Add project-specific functions here]
+
+---
+
+## ðŸ—ºï¸ FUNCTION INDEX
+
+### By Category
+
+**[Category 1]:**
+- \`function_1()\` - Brief description
+- \`function_2()\` - Brief description
+
+---
+
+## ðŸ"— INTEGRATION POINTS
+
+### Gateway Usage
+**Gateways Using This Interface:**
+- \`gateway_1.py\` - [Usage context]
+
+---
+
+## ðŸ"š RELATED DOCUMENTATION
+
+**SIMA Generic Entries:**
+- ${ifaceMap[iface]} - ${iface} Interface (generic pattern)
+- GATE-01 - Three-File Structure
+
+**Project NMPs:**
+- ${prefix}-${project}-Quick-Index.md
+- ${prefix}-${project}-Cross-Reference-Matrix.md
+
+---
+
+## ðŸ·ï¸ KEYWORDS
+
+\`${iface.toLowerCase()}\`, \`${project.toLowerCase()}\`, \`interface-catalog\`, \`function-reference\`
+
+---
+
+## ðŸ" VERSION HISTORY
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0.0 | ${today} | [Author] | Initial catalog with ${funcCount} functions |
+
+---
+
+**END OF INTERFACE CATALOG**`;
+            
+            showOutput(content);
+        }
+        
+        function generateGatewayPattern() {
+            const prefix = document.getElementById('gw_nmp_prefix').value;
+            const project = document.getElementById('gw_project_code').value;
+            const num = document.getElementById('gw_entry_num').value.padStart(2, '0');
+            const patternType = document.getElementById('gw_pattern_type').value;
+            const customName = document.getElementById('gw_pattern_name').value;
+            const projectName = document.getElementById('gw_project_name').value;
+            const description = document.getElementById('gw_description').value || '[Add description]';
+            const today = new Date().toISOString().split('T')[0];
+            
+            const patternName = patternType === 'Custom' ? customName : patternType;
+            const filename = patternName.replace(/ /g, '-');
+            
+            const content = `# File: ${prefix}-${project}-${num}-Gateway-${filename}.md
+
+**REF-ID:** ${prefix}-${project}-${num}  
+**Category:** Project Neural Map - Gateway Pattern  
+**Project:** ${projectName} (${project})  
+**Status:** Active  
+**Created:** ${today}  
+**Last Updated:** ${today}
+
+---
+
+## ðŸ"‹ SUMMARY
+
+${patternName} gateway pattern implementation for ${projectName}. ${description}
+
+**Pattern Type:** Gateway Implementation  
+**Related Generic:** GATE-01 (Three-File Structure)  
+**Impact:** [High/Medium/Low]
+
+---
+
+## ðŸŽ¯ PURPOSE
+
+[Detailed explanation of why this pattern exists - 2-3 sentences]
+
+**Solves:**
+- [Problem 1]
+- [Problem 2]
+
+**Benefits:**
+- [Benefit 1]
+- [Benefit 2]
+
+---
+
+## 🔗 INHERITANCE
+
+**Inherits From:**
+- **REF-ID:** GATE-01
+- **Entry:** Three-File Structure
+- **Inheritance Type:** Full
+- **Note:** Follows standard gateway structure
+
+---
+
+## ðŸ"¦ PATTERN STRUCTURE
+
+### File Organization
+\`\`\`
+gateway_name/
+â"œâ"€â"€ gateway.py              # External interface
+â"œâ"€â"€ interface.py            # Interface layer
+â""â"€â"€ core.py                 # Core logic
+\`\`\`
+
+---
+
+## ðŸ"Š COMPLETE EXAMPLE
+
+[Add implementation example]
+
+---
+
+## ðŸ"— INTEGRATION POINTS
+
+### Gateways Using This Pattern
+- \`gateway_1.py\` - [How it uses pattern]
+
+---
+
+## ðŸ"š RELATED DOCUMENTATION
+
+**SIMA Generic Entries:**
+- GATE-01 - Three-File Structure
+- GATE-03 - Cross-Interface Communication
+
+**Project NMPs:**
+- ${prefix}-${project}-Quick-Index.md
+
+---
+
+## ðŸ·ï¸ KEYWORDS
+
+\`${filename.toLowerCase()}\`, \`gateway\`, \`${project.toLowerCase()}\`, \`implementation-pattern\`
+
+---
+
+## ðŸ" VERSION HISTORY
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0.0 | ${today} | [Author] | Initial pattern documentation |
+
+---
+
+**END OF GATEWAY PATTERN**`;
+            
+            showOutput(content);
+        }
+        
+        function generateIntegration() {
+            const prefix = document.getElementById('int_nmp_prefix_2').value;
+            const project = document.getElementById('int_project_code_2').value;
+            const num = document.getElementById('int_entry_num_2').value.padStart(2, '0');
+            const system = document.getElementById('int_system_name').value;
+            const projectName = document.getElementById('int_project_name_2').value;
+            const intType = document.getElementById('int_integration_type').value;
+            const today = new Date().toISOString().split('T')[0];
+            
+            const systemSlug = system.replace(/ /g, '-');
+            
+            const content = `# File: ${prefix}-${project}-${num}-${systemSlug}-Integration.md
+
+**REF-ID:** ${prefix}-${project}-${num}  
+**Category:** Project Neural Map - Integration Pattern  
+**Project:** ${projectName} (${project})  
+**Status:** Active  
+**Created:** ${today}  
+**Last Updated:** ${today}
+
+---
+
+## ðŸ"‹ SUMMARY
+
+${system} integration for ${projectName}. Handles communication with external ${system} service.
+
+**Integration Type:** ${intType}  
+**External System:** ${system}  
+**Direction:** [Inbound/Outbound/Bidirectional]
+
+---
+
+## ðŸŽ¯ PURPOSE
+
+[Why this integration exists - 2-3 sentences]
+
+**Integrates With:**
+- ${system}
+
+**Provides:**
+- [Feature 1]
+- [Feature 2]
+
+---
+
+## ðŸ"¦ INTEGRATION STRUCTURE
+
+### Authentication
+[How authentication is handled]
+
+### Endpoints
+[List of API endpoints used]
+
+### Data Flow
+\`\`\`
+${projectName} â†" ${system}
+\`\`\`
+
+---
+
+## ðŸ"Š IMPLEMENTATION
+
+[Add implementation details]
+
+---
+
+## ðŸ"— RELATED ITEMS
+
+**Project NMPs:**
+- ${prefix}-${project}-Quick-Index.md
+
+**SIMA Entries:**
+- INT-04 - HTTP Interface (if REST)
+- INT-11 - WebSocket Interface (if WebSocket)
+
+---
+
+## ðŸ·ï¸ KEYWORDS
+
+\`integration\`, \`${system.toLowerCase()}\`, \`${project.toLowerCase()}\`, \`${intType.toLowerCase().replace(/ /g, '-')}\`
+
+---
+
+## ðŸ" VERSION HISTORY
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0.0 | ${today} | [Author] | Initial integration documentation |
+
+---
+
+**END OF INTEGRATION ENTRY**`;
+            
+            showOutput(content);
+        }
+        
+        function showOutput(content) {
+            document.getElementById('nmpOutput').textContent = content;
+            document.getElementById('output').classList.add('visible');
+            document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function copyToClipboard() {
+            const text = document.getElementById('nmpOutput').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const original = btn.textContent;
+                btn.textContent = 'âœ… Copied!';
+                setTimeout(() => {
+                    btn.textContent = original;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
