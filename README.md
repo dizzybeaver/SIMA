@@ -26,14 +26,14 @@ SIMA wasn't created in a lab. It was born from frustration during real developme
 
 **The Results Were Measurable:**
 
-| Version | Year | Improvement | Focus |
+| Version | Date | Improvement | Focus |
 |---------|------|-------------|-------|
-| **SIMA v1** | 2024 | **30% token efficiency** | First memory encoding |
-| **SIMA v2** | 2024 | **50% token efficiency** | Optimized retrieval |
-| **SIMA v3** | 2024-25 | **65-70% token efficiency** | Mature memory system |
-| **SIMA v4** | 2025 | **Architectural redesign** | Expandability & scale |
+| **SIMA v1** | 10/21/2024 | **30% token efficiency** | First memory encoding |
+| **SIMA v2** | 10/23/2024 | **50% token efficiency** | Optimized retrieval |
+| **SIMA v3** | 10/28/2025 | **65% token efficiency** | Mature memory system |
+| **SIMA v4** | 11/01/2025 | **Architectural redesign** | Expandability & scale |
 
-LEE continued as the testbed. Every SIMA version was proven on real Lambda development before being considered complete.
+LEE continued as the testbed. Every SIMA version was proven on real Lambda development before being considered complete. Token efficiency is the amount of saved tokens from not having to do rework and work being done correctly the first time.
 
 **v4 isn't about more efficiency** - v3 had already hit diminishing returns. v4 is about **expandability** - the architecture needed to scale beyond a single project, support multiple memory types, and grow without hitting walls.
 
@@ -936,10 +936,10 @@ AI recalls the memory
 **Version:** 4.1.1  
 **Status:** Production Ready  
 **Total Memories:** 310 encoded patterns  
-**Proven Efficiency:** 65-70% token reduction (measured on LEE)  
-**Built by:** Developers tired of repeating themselves  
+**Proven Efficiency:** 65% token reduction (measured on LEE thru lower rework and work completed right the first time)  
+**Built by:** Joseph Hersey
 **Built for:** AI assistants that should remember  
-**Tested on:** Real Lambda development (LEE project)
+**Tested on:** Lambda Execution Engine
 
 **Four versions. Measured results. Proven approach.**
 
