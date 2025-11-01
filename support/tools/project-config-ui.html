@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMA v4 - Project Configuration Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 24px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .architecture-list,
+        .language-list {
+            margin-top: 15px;
+        }
+        
+        .item {
+            background: #f5f5f5;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .item-header strong {
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .output {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .output pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 SIMA v4 Project Configuration Builder</h1>
+            <p>Create and configure SIMA-enabled projects with multi-project structure</p>
+        </div>
+        
+        <div class="content">
+            <!-- Project Identity -->
+            <div class="section">
+                <h2>📋 Project Identity</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project Name <span class="required">*</span></label>
+                        <input type="text" id="projectName" placeholder="e.g., SUGA-ISP">
+                        <div class="help-text">Full project name</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Code <span class="required">*</span></label>
+                        <input type="text" id="projectCode" placeholder="e.g., SUGA">
+                        <div class="help-text">Short code (2-6 chars)</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Primary Purpose <span class="required">*</span></label>
+                    <textarea id="projectPurpose" placeholder="Describe what this project does..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Domain</label>
+                        <input type="text" id="projectDomain" placeholder="e.g., Home Automation">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="projectStatus">
+                            <option value="Development">Development</option>
+                            <option value="Active">Active</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Archived">Archived</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Architectures -->
+            <div class="section">
+                <h2>🏗️ Architectures</h2>
+                <div class="form-group">
+                    <label>Architecture Name</label>
+                    <input type="text" id="archName" placeholder="e.g., SUGA">
+                </div>
+                <div class="form-group">
+                    <label>Architecture Code</label>
+                    <input type="text" id="archCode" placeholder="e.g., SUGA-01">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="archDesc" placeholder="Brief description..."></textarea>
+                </div>
+                <button class="btn btn-secondary" onclick="addArchitecture()">Add Architecture</button>
+                <div class="architecture-list" id="architectureList"></div>
+            </div>
+            
+            <!-- Languages -->
+            <div class="section">
+                <h2>💻 Languages & Technologies</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Language Name</label>
+                        <input type="text" id="langName" placeholder="e.g., Python">
+                    </div>
+                    <div class="form-group">
+                        <label>Language Code</label>
+                        <input type="text" id="langCode" placeholder="e.g., PYTH">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Version</label>
+                        <input type="text" id="langVersion" placeholder="e.g., 3.12">
+                    </div>
+                    <div class="form-group">
+                        <label>Purpose</label>
+                        <input type="text" id="langPurpose" placeholder="e.g., Core logic">
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="addLanguage()">Add Language</button>
+                <div class="language-list" id="languageList"></div>
+            </div>
+            
+            <!-- Deployment & Runtime -->
+            <div class="section">
+                <h2>🚀 Deployment & Runtime</h2>
+                <div class="form-group">
+                    <label>Target Platform</label>
+                    <input type="text" id="platform" placeholder="e.g., AWS Lambda">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Memory Limit</label>
+                        <input type="text" id="memoryLimit" placeholder="e.g., 128MB">
+                    </div>
+                    <div class="form-group">
+                        <label>Execution Timeout</label>
+                        <input type="text" id="timeout" placeholder="e.g., 30s">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Deployment Method</label>
+                    <select id="deployMethod">
+                        <option value="GitHub Actions">GitHub Actions</option>
+                        <option value="Manual">Manual</option>
+                        <option value="CI/CD">CI/CD Pipeline</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="actions">
+                <button class="btn btn-success" onclick="generateConfig()">Generate Configuration</button>
+                <button class="btn btn-secondary" onclick="resetForm()">Reset Form</button>
+                <button class="btn btn-primary" onclick="downloadConfig()">Download Config</button>
+            </div>
+            
+            <!-- Output -->
+            <div class="output" id="output">
+                <h3>Generated Configuration</h3>
+                <pre id="configOutput"></pre>
+                <div class="alert alert-success">
+                    ✅ Configuration generated successfully! Click "Download Config" to save as project_config.md
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let architectures = [];
+        let languages = [];
+        
+        function addArchitecture() {
+            const name = document.getElementById('archName').value;
+            const code = document.getElementById('archCode').value;
+            const desc = document.getElementById('archDesc').value;
+            
+            if (!name || !code) {
+                alert('Please fill in architecture name and code');
+                return;
+            }
+            
+            architectures.push({ name, code, desc });
+            updateArchitectureList();
+            
+            // Clear inputs
+            document.getElementById('archName').value = '';
+            document.getElementById('archCode').value = '';
+            document.getElementById('archDesc').value = '';
+        }
+        
+        function removeArchitecture(index) {
+            architectures.splice(index, 1);
+            updateArchitectureList();
+        }
+        
+        function updateArchitectureList() {
+            const list = document.getElementById('architectureList');
+            list.innerHTML = architectures.map((arch, index) => `
+                <div class="item">
+                    <div class="item-header">
+                        <strong>${arch.name} (${arch.code})</strong>
+                        <button class="btn btn-danger" onclick="removeArchitecture(${index})">Remove</button>
+                    </div>
+                    <div>${arch.desc || 'No description'}</div>
+                </div>
+            `).join('');
+        }
+        
+        function addLanguage() {
+            const name = document.getElementById('langName').value;
+            const code = document.getElementById('langCode').value;
+            const version = document.getElementById('langVersion').value;
+            const purpose = document.getElementById('langPurpose').value;
+            
+            if (!name || !code) {
+                alert('Please fill in language name and code');
+                return;
+            }
+            
+            languages.push({ name, code, version, purpose });
+            updateLanguageList();
+            
+            // Clear inputs
+            document.getElementById('langName').value = '';
+            document.getElementById('langCode').value = '';
+            document.getElementById('langVersion').value = '';
+            document.getElementById('langPurpose').value = '';
+        }
+        
+        function removeLanguage(index) {
+            languages.splice(index, 1);
+            updateLanguageList();
+        }
+        
+        function updateLanguageList() {
+            const list = document.getElementById('languageList');
+            list.innerHTML = languages.map((lang, index) => `
+                <div class="item">
+                    <div class="item-header">
+                        <strong>${lang.name} (${lang.code}) v${lang.version}</strong>
+                        <button class="btn btn-danger" onclick="removeLanguage(${index})">Remove</button>
+                    </div>
+                    <div>${lang.purpose || 'No purpose specified'}</div>
+                </div>
+            `).join('');
+        }
+        
+        function generateConfig() {
+            const projectName = document.getElementById('projectName').value;
+            const projectCode = document.getElementById('projectCode').value;
+            const projectPurpose = document.getElementById('projectPurpose').value;
+            const projectDomain = document.getElementById('projectDomain').value;
+            const projectStatus = document.getElementById('projectStatus').value;
+            const platform = document.getElementById('platform').value;
+            const memoryLimit = document.getElementById('memoryLimit').value;
+            const timeout = document.getElementById('timeout').value;
+            const deployMethod = document.getElementById('deployMethod').value;
+            
+            if (!projectName || !projectCode || !projectPurpose) {
+                alert('Please fill in required fields: Project Name, Code, and Purpose');
+                return;
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            
+            let config = `# PROJECT-CONFIG.md
+
+**Version:** 1.0.0  
+**Date:** ${today}  
+**Project:** ${projectName}  
+**Status:** ${projectStatus}
+
+---
+
+## 📋 PROJECT IDENTITY
+
+**Project Name:** ${projectName}  
+**Project Code:** ${projectCode}  
+**Primary Purpose:** ${projectPurpose}  
+**Domain:** ${projectDomain}
+
+**Owner:**
+- Primary: [Name/Team]
+- Technical Lead: [Name]
+- SIMA Curator: [Name]
+
+**Creation Date:** ${today}  
+**Last Updated:** ${today}  
+**Current Version:** 1.0.0
+
+---
+
+## 🏗️ ARCHITECTURES
+
+**Architecture Stack:**
+`;
+            
+            architectures.forEach((arch, index) => {
+                config += `
+${index + 1}. **${arch.name}** - ${arch.desc}
+   - **Location:** \`/sima/entries/architectures/${arch.code}/\`
+   - **Status:** Active
+   - **Applied To:** [Specific modules/components]
+`;
+            });
+            
+            config += `
+---
+
+## 💻 LANGUAGES & TECHNOLOGIES
+
+### Primary Languages
+`;
+            
+            languages.forEach(lang => {
+                config += `
+**Language: ${lang.name}**
+- **Version:** ${lang.version}
+- **Purpose:** ${lang.purpose}
+- **Constraints Reference:** \`/sima/entries/languages/${lang.code}/\`
+`;
+            });
+            
+            config += `
+---
+
+## 🚀 DEPLOYMENT & RUNTIME
+
+**Target Platform:** ${platform}
+
+**Platform Constraints:**
+- Memory: ${memoryLimit}
+- Execution Time: ${timeout}
+
+**Deployment Method:**
+- **Primary:** ${deployMethod}
+
+---
+
+## 📦 PROJECT STRUCTURE
+
+**Repository Root:** \`[/path/to/repo/]\`  
+**SIMA Location:** \`/projects/${projectCode}/sima/\`
+
+**Directory Layout:**
+\`\`\`
+/projects/${projectCode}/
+├── sima/
+│   ├── nmp/
+│   │   ├── NMP00/        # Master indexes
+│   │   ├── NMP01/        # Constraints
+│   │   ├── NMP02/        # Combinations
+│   │   ├── NMP03/        # Lessons
+│   │   └── NMP04/        # Decisions
+│   ├── docs/             # Project documentation
+│   ├── support/          # Support tools
+│   └── project_config.md # This file
+├── src/                  # Source code
+├── tests/                # Test files
+└── config/               # Configuration files
+\`\`\`
+
+---
+
+**END OF PROJECT CONFIG**
+
+**Template Version:** 1.0.0  
+**Usage:** Generated by SIMA v4 Project Configuration Builder  
+**Maintenance:** Update after major changes or quarterly reviews
+`;
+            
+            document.getElementById('configOutput').textContent = config;
+            document.getElementById('output').style.display = 'block';
+            document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function resetForm() {
+            if (confirm('Reset form and clear all data?')) {
+                document.querySelectorAll('input, textarea, select').forEach(el => {
+                    if (el.tagName === 'SELECT') {
+                        el.selectedIndex = 0;
+                    } else {
+                        el.value = '';
+                    }
+                });
+                architectures = [];
+                languages = [];
+                updateArchitectureList();
+                updateLanguageList();
+                document.getElementById('output').style.display = 'none';
+            }
+        }
+        
+        function downloadConfig() {
+            const content = document.getElementById('configOutput').textContent;
+            if (!content) {
+                alert('Please generate configuration first');
+                return;
+            }
+            
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'project_config.md';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
