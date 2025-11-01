@@ -1,12 +1,12 @@
 # Anti-Patterns-Master-Index.md
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Date:** 2025-11-01  
 **Purpose:** Master index for all anti-pattern entries
 
 **REF-ID:** INDEX-ANTIPATTERNS-MASTER  
 **Category:** Anti-Patterns  
-**Total Entries:** 28 (AP-01 through AP-28)  
+**Total Entries:** 26 (AP-01 through AP-28, excluding AP-20, AP-21)  
 **Total Categories:** 11  
 **Created:** 2025-11-01  
 **Last Updated:** 2025-11-01
@@ -20,6 +20,8 @@ Master index for all anti-patterns in SIMA - patterns and practices that should 
 **Purpose:** Prevent known mistakes, document failed approaches, guide toward better solutions.
 
 **Structure:** 11 categories covering import, concurrency, error handling, security, testing, quality, and more.
+
+**Note:** AP-20 and AP-21 are not currently assigned. The numbering gap is intentional for future use.
 
 ---
 
@@ -371,14 +373,16 @@ anti-patterns, mistakes, violations, what-not-to-do, common-errors, architectura
 
 ## Version History
 
-- **2025-11-01:** Created master index for anti-patterns (28 entries, 11 categories)
+- **2025-11-01 (v1.1.0):** Updated entry count to 26 (verified AP-20, AP-21 do not exist)
+- **2025-11-01 (v1.0.0):** Created master index for anti-patterns (11 categories)
 
 ---
 
-**Total Anti-Patterns:** 28  
+**Total Anti-Patterns:** 26 (of 28 possible IDs)  
 **Total Categories:** 11  
 **Critical Severity:** 6  
 **High Severity:** 6  
-**Medium Severity:** 16
+**Medium Severity:** 14  
+**Reserved IDs:** AP-20, AP-21 (available for future use)
 
 **End of Master Index**
