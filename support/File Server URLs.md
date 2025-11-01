@@ -2,8 +2,8 @@
 
 **Updated:** 2025-11-01  
 **Purpose:** URL inventory for web_fetch access  
-**Version:** SIMAv4  
-**Total Files:** 376 files
+**Version:** SIMAv4.2  
+**Total Files:** 398 files
 
 **⚠️ KEEP THIS FILE MINIMAL:** URLs only, no descriptions or statistics
 
@@ -117,9 +117,10 @@ https://claude.dizzybeaver.com/sima/.htaccess
 
 ---
 
-## 📂 CONTEXT FILES (/sima/context - 5 files)
+## 📂 CONTEXT FILES (/sima/context - 6 files)
 
 ```
+https://claude.dizzybeaver.com/sima/context/Custom%20Instructions%20for%20SUGA-ISP%20Development.md
 https://claude.dizzybeaver.com/sima/context/DEBUG-MODE-Context.md
 https://claude.dizzybeaver.com/sima/context/MODE-SELECTOR.md
 https://claude.dizzybeaver.com/sima/context/PROJECT-MODE-Context.md
@@ -166,6 +167,11 @@ https://claude.dizzybeaver.com/sima/docs/planning/SIMAv4%20Master%20Control%20Im
 ---
 
 ## 📂 ENTRIES - ANTI-PATTERNS (/sima/entries/anti-patterns)
+
+### Root (1 file)
+```
+https://claude.dizzybeaver.com/sima/entries/anti-patterns/Anti-Patterns-Master-Index.md
+```
 
 ### Concurrency (4 files)
 ```
@@ -327,12 +333,13 @@ https://claude.dizzybeaver.com/sima/entries/decisions/meta/META-01.md
 https://claude.dizzybeaver.com/sima/entries/decisions/meta/Meta-Index.md
 ```
 
-### Operational (4 files)
+### Operational (5 files)
 ```
 https://claude.dizzybeaver.com/sima/entries/decisions/operational/DEC-20.md
 https://claude.dizzybeaver.com/sima/entries/decisions/operational/DEC-21.md
 https://claude.dizzybeaver.com/sima/entries/decisions/operational/DEC-22.md
 https://claude.dizzybeaver.com/sima/entries/decisions/operational/DEC-23.md
+https://claude.dizzybeaver.com/sima/entries/decisions/operational/Operational-Index.md
 ```
 
 ### Optimization (4 files)
@@ -350,7 +357,7 @@ https://claude.dizzybeaver.com/sima/entries/decisions/refactoring/DT-11.md
 https://claude.dizzybeaver.com/sima/entries/decisions/refactoring/Refactoring-Index.md
 ```
 
-### Technical (8 files)
+### Technical (9 files)
 ```
 https://claude.dizzybeaver.com/sima/entries/decisions/technical/DEC-12.md
 https://claude.dizzybeaver.com/sima/entries/decisions/technical/DEC-13.md
@@ -360,6 +367,7 @@ https://claude.dizzybeaver.com/sima/entries/decisions/technical/DEC-16.md
 https://claude.dizzybeaver.com/sima/entries/decisions/technical/DEC-17.md
 https://claude.dizzybeaver.com/sima/entries/decisions/technical/DEC-18.md
 https://claude.dizzybeaver.com/sima/entries/decisions/technical/DEC-19.md
+https://claude.dizzybeaver.com/sima/entries/decisions/technical/Technical-Index.md
 ```
 
 ### Testing (3 files)
@@ -425,6 +433,11 @@ https://claude.dizzybeaver.com/sima/entries/languages/python/Python-Language-Pat
 
 ## 📂 ENTRIES - LESSONS (/sima/entries/lessons)
 
+### Root (1 file)
+```
+https://claude.dizzybeaver.com/sima/entries/lessons/Lessons-Master-Index.md
+```
+
 ### Bugs (5 files)
 ```
 https://claude.dizzybeaver.com/sima/entries/lessons/bugs/BUG-01.md
@@ -446,12 +459,13 @@ https://claude.dizzybeaver.com/sima/entries/lessons/core-architecture/LESS-07.md
 https://claude.dizzybeaver.com/sima/entries/lessons/core-architecture/LESS-08.md
 ```
 
-### Documentation (4 files)
+### Documentation (5 files)
 ```
 https://claude.dizzybeaver.com/sima/entries/lessons/documentation/Documentation-Index.md
 https://claude.dizzybeaver.com/sima/entries/lessons/documentation/LESS-11.md
 https://claude.dizzybeaver.com/sima/entries/lessons/documentation/LESS-12.md
 https://claude.dizzybeaver.com/sima/entries/lessons/documentation/LESS-13.md
+https://claude.dizzybeaver.com/sima/entries/lessons/documentation/LESS-14.md
 ```
 
 ### Evolution (4 files)
@@ -532,6 +546,52 @@ https://claude.dizzybeaver.com/sima/entries/lessons/wisdom/Wisdom-Index.md
 
 ---
 
+## 📂 ENTRIES - PLATFORMS (/sima/entries/platforms)
+
+### Root (1 file)
+```
+https://claude.dizzybeaver.com/sima/entries/platforms/Platforms-Master-Index.md
+```
+
+### AWS Root (4 files)
+```
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/AWS-Index.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/AWS-Master-Index.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/AWS-Quick-Index.md
+```
+
+### AWS API Gateway (3 files)
+```
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/api-gateway/APIGateway-Index.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/api-gateway/AWS-APIGateway-ProxyIntegration_AWS-LESS-09.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/api-gateway/AWS-APIGateway-Transformation_AWS-LESS-10.md
+```
+
+### AWS DynamoDB (5 files)
+```
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/dynamodb/AWS-DynamoDB-ItemCollections_AWS-LESS-08.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/dynamodb/AWS-DynamoDB-PrimaryKeyDesign_AWS-LESS-05.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/dynamodb/AWS-DynamoDB-QueryVsScan_AWS-LESS-07.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/dynamodb/AWS-DynamoDB-SecondaryIndexes_AWS-LESS-06.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/dynamodb/DynamoDB-Index.md
+```
+
+### AWS General (2 files)
+```
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/general/AWS-General-ProcessingPatterns_AWS-LESS-01.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/general/General-Index.md
+```
+
+### AWS Lambda (4 files)
+```
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/lambda/AWS-Lambda-CostModel_AWS-LESS-11.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/lambda/AWS-Lambda-StatelessExecution_AWS-LESS-03.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/lambda/AWS-Lambda-TimeoutConstraints_AWS-LESS-12.md
+https://claude.dizzybeaver.com/sima/entries/platforms/aws/lambda/Lambda-Index.md
+```
+
+---
+
 ## 📂 INTEGRATION (/sima/integration - 4 files)
 
 ```
@@ -594,8 +654,9 @@ https://claude.dizzybeaver.com/sima/projects/tools/project_configurator.html
 
 ## 📂 SUPPORT (/sima/support)
 
-### Root (4 files)
+### Root (5 files)
 ```
+https://claude.dizzybeaver.com/sima/support/File%20Server%20URLs.md
 https://claude.dizzybeaver.com/sima/support/SERVER-CONFIG.md
 https://claude.dizzybeaver.com/sima/support/SIMA-MAIN-CONFIG.md
 https://claude.dizzybeaver.com/sima/support/Support-Master-Index.md
@@ -610,11 +671,12 @@ https://claude.dizzybeaver.com/sima/support/checklists/Checklist-03-Documentatio
 https://claude.dizzybeaver.com/sima/support/checklists/Tool-Integration-Verification.md
 ```
 
-### Quick Reference (3 files)
+### Quick Reference (4 files)
 ```
 https://claude.dizzybeaver.com/sima/support/quick-reference/QRC-01-Interfaces-Overview.md
 https://claude.dizzybeaver.com/sima/support/quick-reference/QRC-02-Gateway-Patterns.md
 https://claude.dizzybeaver.com/sima/support/quick-reference/QRC-03-Common-Patterns.md
+https://claude.dizzybeaver.com/sima/support/quick-reference/tag.md
 ```
 
 ### Templates (3 files)
@@ -672,4 +734,4 @@ https://claude.dizzybeaver.com/sima/To_Be_Added/PROJECT-MODE-Context-ADDENDUM-LE
 
 **END OF FILE**
 
-**Total Files:** 376 (93 /src + 283 /sima)
+**Total Files:** 398 (93 /src + 305 /sima)
