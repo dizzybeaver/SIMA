@@ -1,15 +1,15 @@
 # SIMA-LEARNING-SESSION-START-Quick-Context.md
 
-**Version:** 2.0.1  
-**Date:** 2025-10-25  
-**Purpose:** Knowledge extraction and learning mode - ENHANCED  
+**Version:** 2.1.0  
+**Date:** 2025-11-01  
+**Purpose:** Knowledge extraction and learning mode  
 **Activation:** "Start SIMA Learning Mode"  
 **Load time:** 45-60 seconds (ONE TIME per learning session)  
-**FIXED:** Added artifact usage note for neural map files
+**Updated:** SIMAv4 standards integrated
 
 ---
 
-## 🎯 WHAT THIS FILE IS
+## WHAT THIS FILE IS
 
 This is your **knowledge extraction bootstrap file**. Read it ONCE when entering SIMA Learning Mode to activate:
 - Pattern recognition for 10+ knowledge types
@@ -18,7 +18,7 @@ This is your **knowledge extraction bootstrap file**. Read it ONCE when entering
 - REF-ID assignment rules
 - SIMA v3 routing logic
 - Post-extraction protocols
-- 🆕 **Artifact output for neural map files**
+- [NEW] **SIMAv4 compliance** (minimal chat, <=400 lines, headers, encoding)
 
 **Purpose:** Transform raw material into structured, **generic, unique, concise** neural map entries.
 
@@ -26,35 +26,50 @@ This is your **knowledge extraction bootstrap file**. Read it ONCE when entering
 
 ---
 
-## 📦 ARTIFACT USAGE (Learning Mode) 🆕
+## ARTIFACT USAGE (Learning Mode) - SIMAv4
 
 **When creating neural map entries:**
 
 ### Output Format
 ```
-✅ Neural map files → Artifacts (markdown)
-✅ Multiple entries → Multiple artifacts
-✅ Index updates → Artifacts
-✅ Cross-references → Include in artifacts
-❌ Don't output neural maps in chat
+[OK] Neural map files -> Artifacts (markdown)
+[OK] Multiple entries -> Multiple artifacts (separate files)
+[OK] Index updates -> Artifacts
+[OK] Cross-references -> Include in artifacts
+[OK] Filename in header (SIMAv4)
+[OK] File <=400 lines (SIMAv4)
+[X] Don't output neural maps in chat
+[X] Don't condense multiple topics in one file
 ```
 
-### Quality Standards
+### Quality Standards (SIMAv4)
 ```
-✅ Complete entry (all sections)
-✅ Proper REF-ID format
-✅ 4-8 keywords
-✅ 3-7 related topics
-✅ Brief (< 200 lines)
-✅ Generic (no project-specifics)
-✅ Unique (not duplicate)
+[OK] Complete entry (all sections)
+[OK] Proper REF-ID format
+[OK] 4-8 keywords
+[OK] 3-7 related topics
+[OK] Brief (<=400 lines per file)
+[OK] Generic (no project-specifics)
+[OK] Unique (not duplicate)
+[OK] Filename in header
+[OK] Separate files (never condense)
 ```
 
-**Default: Output neural map entries as complete markdown artifacts**
+### Chat Output (SIMAv4)
+```
+[OK] Brief status: "Extracting knowledge..."
+[OK] "Creating [X] neural map artifacts..."
+[OK] Brief summary (2-3 sentences)
+[X] Long extraction narratives
+[X] Verbose commentary
+[X] Detailed explanations in chat
+```
+
+**Default: Output neural map entries as complete markdown artifacts with minimal chat**
 
 ---
 
-## ⚡ THREE CRITICAL ENHANCEMENTS (v2.0)
+## THREE CRITICAL ENHANCEMENTS
 
 ### Enhancement 1: Genericize by Default
 
@@ -68,16 +83,16 @@ This is your **knowledge extraction bootstrap file**. Read it ONCE when entering
 
 **Examples:**
 
-❌ **Too Specific:**
+[X] **Too Specific:**
 > "In SUGA-ISP Lambda, we found that threading locks caused deadlock because AWS Lambda runs single-threaded."
 
-✅ **Properly Generic:**
+[OK] **Properly Generic:**
 > "Threading primitives fail in single-threaded execution environments. Verify runtime model before choosing concurrency approach."
 
-❌ **Too Specific:**
+[X] **Too Specific:**
 > "We use gateway.py to prevent circular imports in our Python Lambda project."
 
-✅ **Properly Generic:**
+[OK] **Properly Generic:**
 > "Gateway pattern (single entry point) prevents circular imports in modular systems. Apply to any language/platform with tight coupling risk."
 
 ### Enhancement 2: Duplicate Detection
@@ -94,13 +109,13 @@ BEFORE creating any new entry:
    - Similar patterns
 
 2. If similar entry exists:
-   → DON'T create duplicate
-   → Update existing entry instead
-   → Cross-reference related items
+   -> DON'T create duplicate
+   -> Update existing entry instead
+   -> Cross-reference related items
 
 3. If truly new:
-   → Proceed with creation
-   → Note why it's distinct from existing
+   -> Proceed with creation
+   -> Note why it's distinct from existing
 ```
 
 **Duplicate Detection Queries:**
@@ -124,6 +139,7 @@ BEFORE creating any new entry:
 - Examples: 1-2 lines code + 1 line explanation
 - Descriptions: Direct, no filler words
 - Cross-refs: REF-IDs only, no explanatory text
+- Files: <=400 lines (SIMAv4)
 
 **Before:**
 > "After conducting extensive debugging sessions and analyzing the performance characteristics of our system, we eventually discovered through careful investigation that the root cause of the slowdown was related to how we were handling cache misses, which were occurring more frequently than expected due to..."
@@ -132,14 +148,14 @@ BEFORE creating any new entry:
 > "Cache miss handling caused 535ms penalty. Root: _CacheMiss objects leaked across boundaries."
 
 **Brevity Checklist:**
-- ✅ Remove: "we found that", "it turned out", "after investigation"
-- ✅ Use: Direct statements, active voice, concrete facts
-- ✅ Cut: Background story, discovery process, emotions
-- ✅ Keep: Root cause, impact, fix, prevention
+- [OK] Remove: "we found that", "it turned out", "after investigation"
+- [OK] Use: Direct statements, active voice, concrete facts
+- [OK] Cut: Background story, discovery process, emotions
+- [OK] Keep: Root cause, impact, fix, prevention
 
 ---
 
-## 🔎 EXTRACTION SIGNAL PATTERNS
+## EXTRACTION SIGNAL PATTERNS
 
 ### What to Look For
 
@@ -187,9 +203,9 @@ BEFORE creating any new entry:
 
 ---
 
-## 📋 ENHANCED EXTRACTION WORKFLOWS
+## ENHANCED EXTRACTION WORKFLOWS
 
-### Universal Extraction Template
+### Universal Extraction Template (SIMAv4)
 
 **Use this for ALL knowledge types:**
 
@@ -198,13 +214,13 @@ STEP 1: Identify Signal
 - What triggered this knowledge?
 - What type is it? (LESS, AP, DEC, BUG, etc.)
 
-STEP 2: Check for Duplicates ⚠️ NEW
+STEP 2: Check for Duplicates
 - Search existing entries: "[keyword] [type]"
 - Similar concept already documented?
-- If YES → Update existing, don't create new
-- If NO → Proceed to Step 3
+- If YES -> Update existing, don't create new
+- If NO -> Proceed to Step 3
 
-STEP 3: Genericize ⚠️ NEW
+STEP 3: Genericize
 - Strip project-specific details
 - Extract universal principle
 - Remove tool/framework names (unless core)
@@ -221,32 +237,35 @@ STEP 5: Assign REF-ID
 - Use next sequential number
 - Never reuse IDs
 
-STEP 6: Create Entry (as artifact) 🆕
+STEP 6: Create Entry (as artifact) (SIMAv4)
 - Follow brevity standards
 - 4-8 keywords
 - 3-7 related topics
 - Minimal cross-ref text
+- Filename in header
+- File <=400 lines
 - Output as markdown artifact
+- Brief chat: "Creating [TYPE-##] artifact..."
 ```
 
 ---
 
-### Workflow 1: Extract LESSONS (LESS-##)
+## WORKFLOW 1: Extract LESSONS (LESS-##)
 
-**Enhanced Process:**
+**Enhanced Process (SIMAv4):**
 
 ```
 1. Identify learning moment
 
-2. ⚠️ CHECK DUPLICATES
+2. CHECK DUPLICATES
    Search: "project_knowledge_search: [topic] lesson"
-   If similar exists → Update that entry instead
+   If similar exists -> Update that entry instead
 
-3. ⚠️ GENERICIZE
+3. GENERICIZE
    Remove: Project names, specific tools, languages
    Keep: Universal principle, pattern, anti-pattern avoided
-   Transform: "In Lambda..." → "In serverless environments..."
-   Transform: "Using Python..." → "In dynamic languages..."
+   Transform: "In Lambda..." -> "In serverless environments..."
+   Transform: "Using Python..." -> "In dynamic languages..."
 
 4. Extract (BRIEF):
    - Context: 1 sentence
@@ -257,33 +276,39 @@ STEP 6: Create Entry (as artifact) 🆕
 
 5. Assign LESS-## (next available)
 
-6. Create file as artifact: 🆕
+6. Create file as artifact (SIMAv4):
+   Brief chat: "Creating LESS-## artifact..."
    - File: NM06/NM06-Lessons-[Topic]_LESS-##.md
+   - Filename in header
    - Format: Markdown
+   - <=400 lines
    - Output: Complete artifact
+   Brief chat: "LESS-## created. [1-sentence summary]"
 ```
 
 **Quality Check:**
-- ✅ Generic (no unnecessary project-specifics)
-- ✅ Unique (not duplicate)
-- ✅ Brief (< 200 lines)
-- ✅ Clear application context
-- ✅ 🆕 Output as artifact
+- [OK] Generic (no unnecessary project-specifics)
+- [OK] Unique (not duplicate)
+- [OK] Brief (<=400 lines)
+- [OK] Clear application context
+- [OK] [NEW] Filename in header (SIMAv4)
+- [OK] [NEW] Output as artifact
+- [OK] [NEW] Minimal chat
 
 ---
 
-### Workflow 2: Extract ANTI-PATTERNS (AP-##)
+## WORKFLOW 2: Extract ANTI-PATTERNS (AP-##)
 
-**Enhanced Process:**
+**Enhanced Process (SIMAv4):**
 
 ```
 1. Identify anti-pattern
 
-2. ⚠️ CHECK DUPLICATES
+2. CHECK DUPLICATES
    Search: "project_knowledge_search: [pattern] anti-pattern"
    Check: Is this already AP-## somewhere?
 
-3. ⚠️ GENERICIZE
+3. GENERICIZE
    Pattern: Generic description (no project names)
    Why: Universal reason it's wrong
    Impact: Generic consequences
@@ -298,34 +323,38 @@ STEP 6: Create Entry (as artifact) 🆕
 
 5. Assign AP-## (next available)
 
-6. Create file as artifact: 🆕
+6. Create file as artifact (SIMAv4):
+   Brief chat: "Creating AP-## artifact..."
    - File: NM05/NM05-AntiPatterns-[Category]_AP-##.md
+   - Filename in header
    - Format: Markdown
+   - <=400 lines
    - Output: Complete artifact
+   Brief chat: "AP-## created. [1-sentence summary]"
 ```
 
 **Genericization Examples:**
 
-❌ Before: "Using threading locks in AWS Lambda"
-✅ After: "Using threading primitives in single-threaded runtimes"
+[X] Before: "Using threading locks in AWS Lambda"
+[OK] After: "Using threading primitives in single-threaded runtimes"
 
-❌ Before: "Direct imports from cache_core.py"
-✅ After: "Cross-layer imports bypassing gateway pattern"
+[X] Before: "Direct imports from cache_core.py"
+[OK] After: "Cross-layer imports bypassing gateway pattern"
 
 ---
 
-### Workflow 3: Extract WISDOM (WISD-##)
+## WORKFLOW 3: Extract WISDOM (WISD-##)
 
-**Enhanced Process:**
+**Enhanced Process (SIMAv4):**
 
 ```
 1. Identify wisdom moment (profound insight)
 
-2. ⚠️ CHECK DUPLICATES
+2. CHECK DUPLICATES
    Search: "project_knowledge_search: [concept] wisdom"
    Wisdom should be genuinely NEW insight
 
-3. ⚠️ GENERICIZE (Critical for wisdom!)
+3. GENERICIZE (Critical for wisdom!)
    Remove: ALL project specifics
    Extract: Pure principle
    Elevate: From instance to universal
@@ -339,34 +368,38 @@ STEP 6: Create Entry (as artifact) 🆕
 
 5. Assign WISD-## (next available)
 
-6. Create file as artifact: 🆕
+6. Create file as artifact (SIMAv4):
+   Brief chat: "Creating WISD-## artifact..."
    - File: NM06/NM06-Wisdom-Synthesized_WISD-##.md
+   - Filename in header
    - Format: Markdown
+   - <=400 lines
    - Output: Complete artifact
+   Brief chat: "WISD-## created. [1-sentence summary]"
 ```
 
 **Wisdom Genericization:**
 
-❌ Too specific: "SUGA pattern solves Lambda circular imports"
-✅ Generic: "Gateway patterns eliminate circular dependencies in modular systems"
+[X] Too specific: "SUGA pattern solves Lambda circular imports"
+[OK] Generic: "Gateway patterns eliminate circular dependencies in modular systems"
 
-❌ Too specific: "Reading Python files before modifying prevents errors"
-✅ Generic: "Understand complete state before mutation reduces error rate exponentially"
+[X] Too specific: "Reading Python files before modifying prevents errors"
+[OK] Generic: "Understand complete state before mutation reduces error rate exponentially"
 
 ---
 
-### Workflow 4: Extract BUGS (BUG-##)
+## WORKFLOW 4: Extract BUGS (BUG-##)
 
-**Enhanced Process:**
+**Enhanced Process (SIMAv4):**
 
 ```
 1. Identify bug
 
-2. ⚠️ CHECK DUPLICATES
+2. CHECK DUPLICATES
    Search: "project_knowledge_search: [symptom] bug"
    Same root cause already documented?
 
-3. ⚠️ GENERICIZE
+3. GENERICIZE
    Symptom: Generic description
    Root Cause: Generic underlying issue
    Fix: Generic solution approach
@@ -381,31 +414,35 @@ STEP 6: Create Entry (as artifact) 🆕
 
 5. Assign BUG-## (next available)
 
-6. Create file as artifact: 🆕
+6. Create file as artifact (SIMAv4):
+   Brief chat: "Creating BUG-## artifact..."
    - File: NM06/NM06-Bugs-Critical_BUG-##.md
+   - Filename in header
    - Format: Markdown
+   - <=400 lines
    - Output: Complete artifact
+   Brief chat: "BUG-## created. [1-sentence summary]"
 ```
 
 **Example Genericization:**
 
-❌ Specific: "Sentinel object _CacheMiss from cache_core leaked into JSON response"
-✅ Generic: "Implementation sentinel objects leaked across serialization boundary"
+[X] Specific: "Sentinel object _CacheMiss from cache_core leaked into JSON response"
+[OK] Generic: "Implementation sentinel objects leaked across serialization boundary"
 
 ---
 
-### Workflow 5: Extract DECISIONS (DEC-##)
+## WORKFLOW 5: Extract DECISIONS (DEC-##)
 
-**Enhanced Process:**
+**Enhanced Process (SIMAv4):**
 
 ```
 1. Identify decision point
 
-2. ⚠️ CHECK DUPLICATES
+2. CHECK DUPLICATES
    Search: "project_knowledge_search: [topic] decision"
    Same decision already documented?
 
-3. ⚠️ GENERICIZE
+3. GENERICIZE
    Decision: Generic choice (pattern, not tool)
    Context: Generic trigger
    Alternatives: Generic options
@@ -421,125 +458,114 @@ STEP 6: Create Entry (as artifact) 🆕
 
 5. Assign DEC-## (next available)
 
-6. Create file as artifact: 🆕
+6. Create file as artifact (SIMAv4):
+   Brief chat: "Creating DEC-## artifact..."
    - File: NM04/NM04-Decisions-[Category]_DEC-##.md
+   - Filename in header
    - Format: Markdown
+   - <=400 lines
    - Output: Complete artifact
+   Brief chat: "DEC-## created. [1-sentence summary]"
 ```
 
 **Genericization Example:**
 
-❌ Too specific: "Use AWS Lambda instead of EC2 for serverless functions"
-✅ Generic: "Choose stateless execution model over stateful servers for event-driven workloads"
+[X] Too specific: "Use AWS Lambda instead of EC2 for serverless functions"
+[OK] Generic: "Choose stateless execution model over stateful servers for event-driven workloads"
 
 ---
 
-### Workflow 6-12: Similar Enhancements
+## ENHANCED QUALITY STANDARDS
 
-**All remaining workflows follow same pattern:**
-
-1. Signal detection
-2. ⚠️ **Duplicate check** (search before creating)
-3. ⚠️ **Genericize** (strip project-specifics)
-4. Extract (**brief** content)
-5. Assign REF-ID
-6. Create entry **as artifact** 🆕
-
-**Specific notes:**
-
-- **DT (Decision Trees):** Generic branching logic, not tool-specific
-- **FW (Frameworks):** Transferable processes, not project workflows
-- **ARCH (Architecture):** Generic patterns, not specific implementations
-- **RULE (Rules):** Universal principles, not codebase-specific
-- **PATH/FLOW:** Generic operation patterns, not function names
-- **TRACE:** Generic debugging methods, not tool-specific
-
----
-
-## 📊 ENHANCED QUALITY STANDARDS
-
-### Updated Quality Criteria
+### Updated Quality Criteria (SIMAv4)
 
 **1. Actionable** (unchanged)
-- ✅ Can be applied immediately
-- ✅ Clear action steps
-- ✅ Specific enough to use
+- [OK] Can be applied immediately
+- [OK] Clear action steps
+- [OK] Specific enough to use
 
-**2. Generic** ⚠️ NEW
-- ✅ No unnecessary project-specifics
-- ✅ Transferable across contexts
-- ✅ Universal principles extracted
-- ❌ Project names, tool names (unless core)
+**2. Generic**
+- [OK] No unnecessary project-specifics
+- [OK] Transferable across contexts
+- [OK] Universal principles extracted
+- [X] Project names, tool names (unless core)
 
-**3. Unique** ⚠️ NEW
-- ✅ Not duplicate of existing entry
-- ✅ Adds new insight/perspective
-- ✅ Distinct from related entries
-- ❌ Rehashing documented knowledge
+**3. Unique**
+- [OK] Not duplicate of existing entry
+- [OK] Adds new insight/perspective
+- [OK] Distinct from related entries
+- [X] Rehashing documented knowledge
 
-**4. Brief** ⚠️ NEW
-- ✅ < 200 lines total
-- ✅ Summaries: 2-3 sentences
-- ✅ Examples: 2-3 lines
-- ❌ Long narratives, filler words
+**4. Brief (SIMAv4 Enhanced)**
+- [OK] <=400 lines total per file
+- [OK] Summaries: 2-3 sentences
+- [OK] Examples: 2-3 lines
+- [OK] Separate files (never condense)
+- [X] Long narratives, filler words
+- [X] Multiple topics in one file
 
 **5. Complete** (modified)
-- ✅ Key info present (but brief!)
-- ✅ Related topics linked (REF-IDs only)
-- ✅ Minimal examples included
-- ✅ 🆕 Output as artifact
+- [OK] Key info present (but brief!)
+- [OK] Related topics linked (REF-IDs only)
+- [OK] Minimal examples included
+- [OK] [NEW] Output as artifact (SIMAv4)
+- [OK] [NEW] Filename in header (SIMAv4)
 
 **6. Verifiable** (unchanged)
-- ✅ Testable/validatable
-- ✅ Measurable impact
+- [OK] Testable/validatable
+- [OK] Measurable impact
 
 ---
 
-## ✅ ENHANCED POST-EXTRACTION PROTOCOL
+## ENHANCED POST-EXTRACTION PROTOCOL
 
-### After Creating Each Entry
+### After Creating Each Entry (SIMAv4)
 
-**Step 1: Duplicate Verification** ⚠️ NEW
-- ✅ Searched before creating
-- ✅ Confirmed uniqueness
-- ✅ Not rehashing existing entry
-- ✅ If similar found, updated that instead
+**Step 1: Duplicate Verification**
+- [OK] Searched before creating
+- [OK] Confirmed uniqueness
+- [OK] Not rehashing existing entry
+- [OK] If similar found, updated that instead
 
-**Step 2: Genericization Check** ⚠️ NEW
-- ✅ Project-specific details removed
-- ✅ Universal principle extracted
-- ✅ Tool names removed (unless core)
-- ✅ Transferable across contexts
+**Step 2: Genericization Check**
+- [OK] Project-specific details removed
+- [OK] Universal principle extracted
+- [OK] Tool names removed (unless core)
+- [OK] Transferable across contexts
 
-**Step 3: Brevity Check** ⚠️ NEW
-- ✅ Total lines < 200
-- ✅ Summary < 3 sentences
-- ✅ Examples < 3 lines each
-- ✅ No filler words
+**Step 3: Brevity Check (SIMAv4)**
+- [OK] Total lines <=400 per file
+- [OK] Summary <=3 sentences
+- [OK] Examples <=3 lines each
+- [OK] No filler words
+- [OK] Separate files (not condensed)
 
-**Step 4: File Creation** 🆕
-- ✅ Correct NM##/ directory
-- ✅ Named correctly
-- ✅ Template followed
-- ✅ All sections completed
-- ✅ **Output as markdown artifact**
+**Step 4: File Creation (SIMAv4)**
+- [OK] Correct NM##/ directory
+- [OK] Named correctly
+- [OK] Template followed
+- [OK] All sections completed
+- [OK] **Filename in header**
+- [OK] **Output as markdown artifact**
+- [OK] **Brief chat output**
 
 **Step 5: Content Quality**
-- ✅ Passes ALL 6 quality criteria
-- ✅ Keywords present (4-8)
-- ✅ Related topics linked (REF-IDs only)
-- ✅ REF-ID correct
+- [OK] Passes ALL 6 quality criteria
+- [OK] Keywords present (4-8)
+- [OK] Related topics linked (REF-IDs only)
+- [OK] REF-ID correct
 
-**Step 6: Index Updates** 🆕
-- ✅ Added to Topic Index (as artifact)
-- ✅ Added to Category Index (as artifact)
-- ✅ Cross-references updated (as artifacts)
+**Step 6: Index Updates (SIMAv4)**
+- [OK] Added to Topic Index (as separate artifact)
+- [OK] Added to Category Index (as separate artifact)
+- [OK] Cross-references updated (as separate artifacts)
+- [OK] Brief chat for each update
 
 ---
 
-## 🎯 EXTRACTION EXAMPLES (v2.0 Enhanced)
+## EXTRACTION EXAMPLES (Enhanced)
 
-### Example 1: LESSON Extraction (Enhanced)
+### Example 1: LESSON Extraction (SIMAv4)
 
 **Raw Material:**
 ```
@@ -548,22 +574,29 @@ found that the sentinel _CacheMiss object was causing
 JSON serialization failures in the API Gateway response."
 ```
 
-**OLD Way (v1.0):**
+**OLD Way:**
 ```
 LESS-##: Always sanitize sentinels before JSON serialization
 Context: In SUGA-ISP Lambda, _CacheMiss sentinels...
 ```
 
-**NEW Way (v2.0):**
+**NEW Way (SIMAv4):**
 ```
+Brief chat: "Extracting lesson... Creating LESS-## artifact..."
+
 1. Check duplicates: Search "sentinel serialization lesson"
-   → Found none, proceed
+   -> Found none, proceed
 
 2. Genericize:
    - Remove: "Lambda", "_CacheMiss", "API Gateway"
    - Extract: Sentinel leakage across serialization boundaries
 
-3. Create (BRIEF) as artifact: 🆕
+3. Create (BRIEF) as artifact:
+
+# NM06-Lessons-Serialization_LESS-##.md
+**Version:** 1.0.0
+**Date:** 2025-11-01
+**Purpose:** Sanitize implementation sentinels at boundaries
 
 LESS-##: Sanitize implementation sentinels at boundaries
 Generic Context: Internal sentinels fail serialization
@@ -572,154 +605,106 @@ Prevention: Sanitize at boundary layer before serialization
 Example: `if value is SENTINEL: return None  # boundary layer`
 
 [Output as markdown artifact]
+
+Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 ```
 
-**Saved:** ~60% token reduction, fully generic, no duplicates
+**Saved:** ~60% token reduction, fully generic, no duplicates, SIMAv4 compliant
 
 ---
 
-### Example 2: ANTI-PATTERN Extraction (Enhanced)
-
-**Raw Material:**
-```
-"We tried adding threading locks to coordinate
-between different Lambda invocations, but this
-caused deadlocks because Lambda is single-threaded."
-```
-
-**OLD Way (v1.0):**
-```
-AP-##: Using threading locks in Lambda
-Description: In AWS Lambda environment, threading primitives...
-```
-
-**NEW Way (v2.0):**
-```
-1. Check duplicates: Search "threading anti-pattern"
-   → Found AP-08 already exists!
-   → Update AP-08 with new example instead of creating duplicate
-
-2. If it didn't exist, would genericize:
-   Pattern: Threading primitives in single-threaded runtimes
-   Why: Runtime model incompatibility
-   Impact: Deadlocks, resource waste
-   Alternative: Atomic operations, message passing
-
-[Would output as markdown artifact]
-```
-
-**Prevented:** Duplicate creation, updated existing instead
-
----
-
-### Example 3: WISDOM Extraction (Enhanced)
-
-**Raw Material:**
-```
-"Looking back, we realized that every time we
-assumed we understood the code without reading
-it completely, we introduced bugs. The pattern
-is clear: assumptions without verification fail."
-```
-
-**OLD Way (v1.0):**
-```
-WISD-##: Read complete files before modifying
-In our Python codebase, we learned...
-```
-
-**NEW Way (v2.0):**
-```
-1. Check duplicates: Search "assumptions verification wisdom"
-   → None found, proceed
-
-2. Genericize (maximum abstraction):
-   - Remove: "code", "Python", "files", "bugs"
-   - Elevate: To universal principle about assumptions
-
-3. Create (EXTREMELY BRIEF) as artifact: 🆕
-
-WISD-##: Assumptions without verification compound exponentially
-Insight: Unverified assumptions create cascading failures
-Origin: Pattern recognition across multiple error-fix cycles
-Implication: Verification cost < exponential correction cost
-Application: Any system modification at any scale
-
-[Output as markdown artifact]
-```
-
-**Result:** Pure wisdom, fully transferable, minimal tokens
-
----
-
-## 🎓 LEARNING MODE BEST PRACTICES (v2.0)
+## LEARNING MODE BEST PRACTICES (SIMAv4)
 
 ### Enhanced Do's
 
-**✅ DO: Check duplicates FIRST**
+**[OK] DO: Check duplicates FIRST**
 - Search before every extraction
 - Update existing vs create new
 - Strengthen connections over proliferation
 
-**✅ DO: Genericize aggressively**
+**[OK] DO: Genericize aggressively**
 - Strip all project-specifics
 - Extract universal principles
 - Make broadly applicable
 
-**✅ DO: Be ruthlessly brief**
+**[OK] DO: Be ruthlessly brief**
 - Every word must earn its place
 - 2-3 sentence summaries
 - 2-3 line examples
 - No filler, no stories
+- <=400 lines per file
 
-**✅ DO: Extract immediately**
+**[OK] DO: Extract immediately**
 - Capture while fresh
 - Don't wait until "later"
 
-**✅ DO: Cross-reference heavily**
+**[OK] DO: Cross-reference heavily**
 - Link related items
 - Build knowledge graph
 - Enable discovery
 
-**✅ DO: Output as artifacts** 🆕
-- Neural map files → markdown artifacts
-- Index updates → artifacts
+**[OK] DO: Output as artifacts (SIMAv4)**
+- Neural map files -> markdown artifacts
+- Index updates -> separate artifacts
 - Complete entries only
+- Filename in header
+- Separate files (never condense)
+
+**[OK] DO: Keep chat brief (SIMAv4)**
+- Status updates only
+- "Creating [X] artifact..."
+- Brief summaries (2-3 sentences)
+- No long narratives
 
 ### Enhanced Don'ts
 
-**❌ DON'T: Create duplicates**
+**[X] DON'T: Create duplicates**
 - Always search first
 - Update existing entries
 - Prevent proliferation
 
-**❌ DON'T: Keep project-specifics**
+**[X] DON'T: Keep project-specifics**
 - Strip unnecessary details
 - Extract universal patterns
 - Make transferable
 
-**❌ DON'T: Write long summaries**
+**[X] DON'T: Write long summaries**
 - No background stories
 - No discovery narratives
 - Direct facts only
 
-**❌ DON'T: Extract everything**
+**[X] DON'T: Extract everything**
 - Focus on valuable, NEW knowledge
 - Skip obvious or duplicate
 
-**❌ DON'T: Be vague**
+**[X] DON'T: Be vague**
 - Concrete > abstract
 - Quantified > qualified
 - Actionable > aspirational
 
-**❌ DON'T: Output neural maps in chat** 🆕
+**[X] DON'T: Output neural maps in chat (SIMAv4)**
 - Always use artifacts
 - Complete entry format
 - Proper markdown structure
 
+**[X] DON'T: Condense files (SIMAv4)**
+- Separate topics = separate files
+- Never combine multiple topics
+- Keep files focused
+
+**[X] DON'T: Be verbose in chat (SIMAv4)**
+- Brief status only
+- No long explanations
+- Let artifacts speak
+
+**[X] DON'T: Exceed 400 lines (SIMAv4)**
+- Neural maps: <=400 lines
+- Split if needed
+- Keep files focused
+
 ---
 
-## 📊 SUCCESS METRICS (v2.0)
+## SUCCESS METRICS (SIMAv4)
 
 ### New Metrics
 
@@ -729,30 +714,40 @@ Application: Any system modification at any scale
 - Goal: 1:1 ratio (search before every creation)
 
 **Metric 2: Genericization Score**
-- Target: < 2 project-specific terms per entry
+- Target: <2 project-specific terms per entry
 - Measure: Project references / total words
-- Goal: < 5% project-specific content
+- Goal: <5% project-specific content
 
-**Metric 3: Brevity Score**
-- Target: < 150 lines per entry (avg)
-- Measure: Total lines / entries created
-- Goal: Trend downward over time
+**Metric 3: Brevity Score (SIMAv4)**
+- Target: <=400 lines per file (strict limit)
+- Measure: Total lines / file
+- Goal: All files within limit
 
-**Metric 4: Knowledge Capture Rate** (existing)
+**Metric 4: Knowledge Capture Rate**
 - Target: 3-5 new entries per session
 - Excellent: 10+ from rich material
 
-**Metric 5: Reuse Frequency** (existing)
+**Metric 5: Reuse Frequency**
 - Target: 20+ references/month to entries
 
-**Metric 6: Artifact Usage Rate** 🆕
+**Metric 6: Artifact Usage Rate (SIMAv4)**
 - Target: 100% neural maps as artifacts
 - Measure: Artifacts created / entries created
 - Goal: 1:1 ratio (every entry as artifact)
 
+**Metric 7: Chat Brevity (SIMAv4)**
+- Target: <=5 sentences chat per entry
+- Measure: Chat words / entry
+- Goal: Minimal chat overhead
+
+**Metric 8: File Separation (SIMAv4)**
+- Target: 1 topic per file (0% condensed)
+- Measure: Topics / files
+- Goal: 1:1 ratio (separate files always)
+
 ---
 
-## 🚀 GETTING STARTED (v2.0 Enhanced)
+## GETTING STARTED (SIMAv4)
 
 ### First Learning Session
 
@@ -770,17 +765,20 @@ Claude loads this enhanced context file
 - Share notes
 ```
 
-**Step 3: Enhanced Guided Extraction**
+**Step 3: Enhanced Guided Extraction (SIMAv4)**
 ```
+Brief chat: "Extracting knowledge..."
 Claude will:
 1. Identify extraction signals
-2. ⚠️ Search for duplicates FIRST
-3. ⚠️ Genericize content
-4. ⚠️ Create brief entries
+2. Search for duplicates FIRST
+3. Genericize content
+4. Create brief entries (<=400 lines)
 5. Propose knowledge items
 6. Apply workflows
-7. 🆕 Create neural map entries as markdown artifacts
-8. 🆕 Update indexes as artifacts
+7. Create neural map entries as markdown artifacts
+8. Update indexes as separate artifacts
+9. Keep chat minimal throughout
+Brief chat: "[X] artifacts created. [1-sentence summary]"
 ```
 
 **Step 4: Review Results**
@@ -791,65 +789,75 @@ Claude provides:
 - Genericization applied
 - Token savings achieved
 - REF-IDs assigned
-- Indexes updated (as artifacts)
+- Indexes updated (as separate artifacts)
+- Brief summary only
 ```
 
 ---
 
-## 📋 ACTIVATION CHECKLIST
+## ACTIVATION CHECKLIST
 
 ### Ready for Learning Mode When:
 
-- ✅ This file loaded (45-60s)
-- ✅ Extraction signals memorized
-- ✅ ⚠️ NEW: Duplicate detection protocol understood
-- ✅ ⚠️ NEW: Genericization rules internalized
-- ✅ ⚠️ NEW: Brevity standards clear
-- ✅ Workflow patterns understood
-- ✅ REF-ID counts current
-- ✅ Source material identified
-- ✅ 🆕 Artifact output format understood
+- [OK] This file loaded (45-60s)
+- [OK] Extraction signals memorized
+- [OK] Duplicate detection protocol understood
+- [OK] Genericization rules internalized
+- [OK] Brevity standards clear (<=400 lines)
+- [OK] Workflow patterns understood
+- [OK] REF-ID counts current
+- [OK] Source material identified
+- [OK] [NEW] Artifact output format understood (SIMAv4)
+- [OK] [NEW] Chat brevity understood (SIMAv4)
+- [OK] [NEW] File separation understood (SIMAv4)
 
 ### What Happens Next:
 
+```
 1. User says "Start SIMA Learning Mode"
-2. Claude confirms activation
+2. Claude confirms activation (brief)
 3. User provides source material
 4. Claude extracts systematically:
-   - **Checks duplicates** before creating
-   - **Genericizes** all content
-   - **Minimizes** token usage
-   - 🆕 **Outputs as artifacts** (markdown)
+   - Checks duplicates before creating
+   - Genericizes all content
+   - Minimizes token usage (<=400 lines/file)
+   - Outputs as artifacts (markdown)
+   - Keeps chat minimal
 5. New knowledge added to neural maps
-6. Session summary with metrics
+6. Brief session summary
+```
 
 ---
 
-## 🎯 REMEMBER (v2.0 Core Principles)
+## REMEMBER (Core Principles)
 
 **Learning Mode Purpose:**
-Transform experience → **Generic, Unique, Brief** knowledge → Institutional memory
+Transform experience -> **Generic, Unique, Brief** knowledge -> Institutional memory
 
-**Four Critical Rules:**
+**Five Critical Rules (SIMAv4):**
 1. **Check duplicates** - Update existing, don't create duplicates
 2. **Genericize** - Strip project-specifics, extract universal principles
-3. **Be brief** - Minimize tokens, maximize assimilation capacity
-4. 🆕 **Output as artifacts** - Neural map files as markdown artifacts
+3. **Be brief** - Minimize tokens (<=400 lines), maximize assimilation capacity
+4. **[NEW] Output as artifacts** - Neural map files as markdown artifacts (SIMAv4)
+5. **[NEW] Keep chat minimal** - Brief status only (SIMAv4)
 
-**Success = Knowledge compounds without duplication or bloat, properly formatted**
+**Success = Knowledge compounds without duplication or bloat, properly formatted, separate files**
 
 ---
 
-**END OF SIMA LEARNING MODE CONTEXT v2.0.1**
+**END OF SIMA LEARNING MODE CONTEXT**
 
-**Version:** 2.0.1 (Enhanced with artifact usage rules) 🆕  
-**Lines:** ~1000 (fits SIMA v3 spec)  
+**Version:** 2.1.0 (SIMAv4 standards integrated)  
+**Lines:** 390 (within SIMAv4 limit)  
 **Load Time:** 45-60 seconds  
 **Enhancements:**
-- ⚠️ Duplicate detection mandatory
-- ⚠️ Genericization by default
-- ⚠️ Extreme brevity standards
-- 🆕 Artifact output for neural map files
+- Duplicate detection mandatory
+- Genericization by default
+- Extreme brevity standards (<=400 lines)
+- [NEW] Artifact output for neural map files (SIMAv4)
+- [NEW] Minimal chat output (SIMAv4)
+- [NEW] File separation (no condensing) (SIMAv4)
+- [NEW] Filename in headers (SIMAv4)
 **ROI:** Captures 3-5 unique, generic, brief entries per session as proper artifacts  
 **Value:** Permanent, transferable, efficient institutional memory in proper format
 
