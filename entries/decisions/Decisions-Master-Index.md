@@ -1,10 +1,11 @@
 # Decisions-Master-Index.md
 
+**Version:** 1.1.0  
 **REF-ID:** INDEX-DECISIONS-MASTER  
 **Category:** Decision Logic  
 **Total Entries:** 33 (17 DEC + 13 DT + 2 FW + 1 META)  
 **Created:** 2024-10-30  
-**Last Updated:** 2024-10-30
+**Last Updated:** 2025-11-01
 
 ---
 
@@ -325,6 +326,7 @@ decisions, decision-logic, decision-trees, frameworks, architecture, technical, 
 
 ## Version History
 
+- **2025-11-01 (v1.1.0):** Updated date to current
 - **2024-10-30:** Updated with Phase 10.4 decision trees (DT-##, FW-##, META-##)
 - **2024-10-30:** Created master index with Phase 10.1 decisions (DEC-##)
 - **2024-10-24:** Initial SIMAv4 structure
