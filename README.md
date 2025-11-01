@@ -30,7 +30,7 @@ SIMA wasn't created in a lab. It was born from frustration during real developme
 |---------|------|-------------|-------|
 | **SIMA v1** | 10/21/2024 | **30% token efficiency** | First memory encoding |
 | **SIMA v2** | 10/23/2024 | **50% token efficiency** | Optimized retrieval |
-| **SIMA v3** | 10/28/2025 | **65% token efficiency** | Mature memory system |
+| **SIMA v3** | 10/25/2025 | **65% token efficiency** | Mature memory system |
 | **SIMA v4** | 11/01/2025 | **Architectural redesign** | Expandability & scale |
 
 LEE continued as the testbed. Every SIMA version was proven on real Lambda development before being considered complete. Token efficiency is the amount of saved tokens from not having to do rework and work being done correctly the first time.
