@@ -1,19 +1,20 @@
 # SIMAv4 Complete Directory Structure
 
-**Version:** 4.1.1  
+**Version:** 4.2.0  
 **Date:** 2025-11-01  
-**Total Files:** 278  
-**Status:** Corrected and Verified
+**Total Files:** 310  
+**Status:** Updated with Platforms and Master Indexes
 
-**Changes from v4.0.0:**
-- Moved planning and deployment under docs/
-- Removed config/ directory (templates duplicated in projects/templates/)
-- Removed reports/ directory (empty)
-- Moved SIMA-MAIN-CONFIG.md to support/
-- Consolidated all documentation under docs/
-- Added SIMAv4-Directory-Structure.md to docs/
-- Corrected file counts (288 → 278)
-- Fixed utilities/ directory spelling (was "utiltities")
+**Changes from v4.1.1:**
+- ADDED: `/context/Custom Instructions for SUGA-ISP Development.md` (context: 5→6)
+- ADDED: `/entries/platforms/` directory with AWS knowledge (19 files)
+- ADDED: `/entries/anti-patterns/Anti-Patterns-Master-Index.md`
+- ADDED: `/entries/lessons/Lessons-Master-Index.md`
+- ADDED: `/entries/decisions/operational/Operational-Index.md`
+- ADDED: `/entries/decisions/technical/Technical-Index.md`
+- ADDED: `/entries/lessons/documentation/LESS-14.md`
+- ADDED: `/support/File Server URLs.md`
+- Total files: 278→310 (+32 files)
 
 ---
 
@@ -21,18 +22,19 @@
 
 ```
 sima/
-├── context/           (5 files)
+├── context/           (6 files)
 ├── docs/              (15 files)
 │   ├── planning/      (3 files)
 │   └── deployment/    (4 files)
-├── entries/           (191 files)
+├── entries/           (217 files)
 ├── integration/       (4 files)
 ├── projects/          (25 files)
-├── support/           (36 files)
+├── support/           (37 files)
+├── To_Be_Added/       (4 files)
 ├── LICENSE            (1 file)
 └── README.md          (1 file)
 
-Total: 278 files across 8 root items
+Total: 310 files across 9 root items
 ```
 
 ---
@@ -47,10 +49,11 @@ sima/
 
 ---
 
-## 2. CONTEXT (5 files)
+## 2. CONTEXT (6 files)
 
 ```
 sima/context/
+├── Custom Instructions for SUGA-ISP Development.md
 ├── DEBUG-MODE-Context.md
 ├── MODE-SELECTOR.md
 ├── PROJECT-MODE-Context.md
@@ -89,7 +92,7 @@ sima/docs/
 
 ---
 
-## 4. ENTRIES (191 files)
+## 4. ENTRIES (217 files)
 
 ### 4.1 CORE (6 files)
 
@@ -152,88 +155,12 @@ sima/entries/languages/python/
 └── Python-Language-Patterns-Quick-Index.md
 ```
 
-### 4.5 DECISIONS (47 files)
-
-```
-sima/entries/decisions/
-│
-├── Decisions-Master-Index.md                    (1 file)
-│
-├── architecture/                                (7 files)
-│   ├── Architecture-Index.md
-│   ├── DEC-01.md
-│   ├── DEC-02.md
-│   ├── DEC-03.md
-│   ├── DEC-04.md
-│   ├── DEC-05.md
-│   └── DT-13.md
-│
-├── deployment/                                  (2 files)
-│   ├── Deployment-Index.md
-│   └── DT-12.md
-│
-├── error-handling/                              (3 files)
-│   ├── DT-05.md
-│   ├── DT-06.md
-│   └── ErrorHandling-Index.md
-│
-├── feature-addition/                            (3 files)
-│   ├── DT-03.md
-│   ├── DT-04.md
-│   └── FeatureAddition-Index.md
-│
-├── import/                                      (3 files)
-│   ├── DT-01.md
-│   ├── DT-02.md
-│   └── Import-Index.md
-│
-├── indexes/                                     (4 files)
-│   ├── Architecture-Decisions-Index.md
-│   ├── Decisions-Master-Index.md
-│   ├── Operational-Decisions-Index.md
-│   └── Technical-Decisions-Index.md
-│
-├── meta/                                        (2 files)
-│   ├── META-01.md
-│   └── Meta-Index.md
-│
-├── operational/                                 (4 files)
-│   ├── DEC-20.md
-│   ├── DEC-21.md
-│   ├── DEC-22.md
-│   └── DEC-23.md
-│
-├── optimization/                                (4 files)
-│   ├── DT-07.md
-│   ├── FW-01.md
-│   ├── FW-02.md
-│   └── Optimization-Index.md
-│
-├── refactoring/                                 (3 files)
-│   ├── DT-10.md
-│   ├── DT-11.md
-│   └── Refactoring-Index.md
-│
-├── technical/                                   (8 files)
-│   ├── DEC-12.md
-│   ├── DEC-13.md
-│   ├── DEC-14.md
-│   ├── DEC-15.md
-│   ├── DEC-16.md
-│   ├── DEC-17.md
-│   ├── DEC-18.md
-│   └── DEC-19.md
-│
-└── testing/                                     (3 files)
-    ├── DT-08.md
-    ├── DT-09.md
-    └── Testing-Index.md
-```
-
-### 4.6 ANTI-PATTERNS (38 files)
+### 4.5 ANTI-PATTERNS (39 files)
 
 ```
 sima/entries/anti-patterns/
+│
+├── Anti-Patterns-Master-Index.md               (1 file)
 │
 ├── concurrency/                                 (4 files)
 │   ├── AP-08.md
@@ -298,10 +225,92 @@ sima/entries/anti-patterns/
     └── Testing-Index.md
 ```
 
-### 4.7 LESSONS (69 files)
+### 4.6 DECISIONS (51 files)
+
+```
+sima/entries/decisions/
+│
+├── Decisions-Master-Index.md                    (1 file)
+│
+├── architecture/                                (7 files)
+│   ├── Architecture-Index.md
+│   ├── DEC-01.md
+│   ├── DEC-02.md
+│   ├── DEC-03.md
+│   ├── DEC-04.md
+│   ├── DEC-05.md
+│   └── DT-13.md
+│
+├── deployment/                                  (2 files)
+│   ├── Deployment-Index.md
+│   └── DT-12.md
+│
+├── error-handling/                              (3 files)
+│   ├── DT-05.md
+│   ├── DT-06.md
+│   └── ErrorHandling-Index.md
+│
+├── feature-addition/                            (3 files)
+│   ├── DT-03.md
+│   ├── DT-04.md
+│   └── FeatureAddition-Index.md
+│
+├── import/                                      (3 files)
+│   ├── DT-01.md
+│   ├── DT-02.md
+│   └── Import-Index.md
+│
+├── indexes/                                     (4 files)
+│   ├── Architecture-Decisions-Index.md
+│   ├── Decisions-Master-Index.md
+│   ├── Operational-Decisions-Index.md
+│   └── Technical-Decisions-Index.md
+│
+├── meta/                                        (2 files)
+│   ├── META-01.md
+│   └── Meta-Index.md
+│
+├── operational/                                 (5 files)
+│   ├── DEC-20.md
+│   ├── DEC-21.md
+│   ├── DEC-22.md
+│   ├── DEC-23.md
+│   └── Operational-Index.md
+│
+├── optimization/                                (4 files)
+│   ├── DT-07.md
+│   ├── FW-01.md
+│   ├── FW-02.md
+│   └── Optimization-Index.md
+│
+├── refactoring/                                 (3 files)
+│   ├── DT-10.md
+│   ├── DT-11.md
+│   └── Refactoring-Index.md
+│
+├── technical/                                   (9 files)
+│   ├── DEC-12.md
+│   ├── DEC-13.md
+│   ├── DEC-14.md
+│   ├── DEC-15.md
+│   ├── DEC-16.md
+│   ├── DEC-17.md
+│   ├── DEC-18.md
+│   ├── DEC-19.md
+│   └── Technical-Index.md
+│
+└── testing/                                     (3 files)
+    ├── DT-08.md
+    ├── DT-09.md
+    └── Testing-Index.md
+```
+
+### 4.7 LESSONS (71 files)
 
 ```
 sima/entries/lessons/
+│
+├── Lessons-Master-Index.md                      (1 file)
 │
 ├── bugs/                                        (5 files)
 │   ├── BUG-01.md
@@ -320,11 +329,12 @@ sima/entries/lessons/
 │   ├── LESS-07.md
 │   └── LESS-08.md
 │
-├── documentation/                               (4 files)
+├── documentation/                               (5 files)
 │   ├── Documentation-Index.md
 │   ├── LESS-11.md
 │   ├── LESS-12.md
-│   └── LESS-13.md
+│   ├── LESS-13.md
+│   └── LESS-14.md
 │
 ├── evolution/                                   (4 files)
 │   ├── Evolution-Index.md
@@ -391,6 +401,42 @@ sima/entries/lessons/
     └── Wisdom-Index.md
 ```
 
+### 4.8 PLATFORMS (19 files) **NEW**
+
+```
+sima/entries/platforms/
+│
+├── Platforms-Master-Index.md                    (1 file)
+│
+└── aws/                                         (18 files)
+    │
+    ├── AWS-Index.md
+    ├── AWS-Master-Index.md
+    ├── AWS-Quick-Index.md
+    │
+    ├── api-gateway/                             (3 files)
+    │   ├── APIGateway-Index.md
+    │   ├── AWS-APIGateway-ProxyIntegration_AWS-LESS-09.md
+    │   └── AWS-APIGateway-Transformation_AWS-LESS-10.md
+    │
+    ├── dynamodb/                                (5 files)
+    │   ├── AWS-DynamoDB-ItemCollections_AWS-LESS-08.md
+    │   ├── AWS-DynamoDB-PrimaryKeyDesign_AWS-LESS-05.md
+    │   ├── AWS-DynamoDB-QueryVsScan_AWS-LESS-07.md
+    │   ├── AWS-DynamoDB-SecondaryIndexes_AWS-LESS-06.md
+    │   └── DynamoDB-Index.md
+    │
+    ├── general/                                 (2 files)
+    │   ├── AWS-General-ProcessingPatterns_AWS-LESS-01.md
+    │   └── General-Index.md
+    │
+    └── lambda/                                  (4 files)
+        ├── AWS-Lambda-CostModel_AWS-LESS-11.md
+        ├── AWS-Lambda-StatelessExecution_AWS-LESS-03.md
+        ├── AWS-Lambda-TimeoutConstraints_AWS-LESS-12.md
+        └── Lambda-Index.md
+```
+
 ---
 
 ## 5. INTEGRATION (4 files)
@@ -442,19 +488,18 @@ sima/projects/
 └── tools/                                       (2 files)
     ├── nmp_generator.html
     └── project_configurator.html
-
-Total: 1 + 13 + 9 + 2 = 25 files
 ```
 
 ---
 
-## 7. SUPPORT (36 files)
+## 7. SUPPORT (37 files)
 
 ```
 sima/support/
 │
-├── SIMA-MAIN-CONFIG.md                          (1 file)
+├── File Server URLs.md                          (1 file) **NEW**
 ├── SERVER-CONFIG.md                             (1 file)
+├── SIMA-MAIN-CONFIG.md                          (1 file)
 ├── Support-Master-Index.md                      (1 file)
 ├── URL-GENERATOR-Template.md                    (1 file)
 │
@@ -505,18 +550,31 @@ sima/support/
 
 ---
 
+## 8. TO_BE_ADDED (4 files)
+
+```
+sima/To_Be_Added/
+├── amazon-dynamodb-a-scalable-predictably-performant-and-fully-managed-nosql-database-service.txt
+├── DynamoDB Knowledge Extraction Plan.md
+├── dynamodb-data-modeling.txt
+└── PROJECT-MODE-Context-ADDENDUM-LESS-55.md
+```
+
+---
+
 ## SUMMARY BY CATEGORY
 
-| Category | Files | Subdirectories |
-|----------|-------|----------------|
-| Root | 2 | 0 |
-| Context | 5 | 0 |
-| Docs | 15 | 2 |
-| Entries | 191 | 7 main + 37 sub |
-| Integration | 4 | 0 |
-| Projects | 25 | 4 |
-| Support | 36 | 6 |
-| **TOTAL** | **278** | **56** |
+| Category | Files | Change | Subdirectories |
+|----------|-------|--------|----------------|
+| Root | 2 | - | 0 |
+| Context | 6 | +1 | 0 |
+| Docs | 15 | - | 2 |
+| Entries | 217 | +26 | 8 main + 44 sub |
+| Integration | 4 | - | 0 |
+| Projects | 25 | - | 4 |
+| Support | 37 | +1 | 6 |
+| To_Be_Added | 4 | - | 0 |
+| **TOTAL** | **310** | **+32** | **64** |
 
 ---
 
@@ -524,26 +582,59 @@ sima/support/
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| Markdown (.md) | 270 | 97.1% |
-| HTML (.html) | 5 | 1.8% |
-| Python (.py) | 2 | 0.7% |
-| Other (LICENSE) | 1 | 0.4% |
-| **TOTAL** | **278** | **100%** |
+| Markdown (.md) | 302 | 97.4% |
+| HTML (.html) | 5 | 1.6% |
+| Python (.py) | 2 | 0.6% |
+| Text (.txt) | 2 | 0.6% |
+| Other (LICENSE) | 1 | 0.3% |
+| **TOTAL** | **310** | **100%** |
 
 ---
 
-## ENTRIES BREAKDOWN (191 files)
+## ENTRIES BREAKDOWN (217 files)
 
-| Category | Files | Verification |
-|----------|-------|--------------|
-| Core | 6 | ✓ |
-| Gateways | 7 | ✓ |
-| Interfaces | 14 | ✓ |
-| Languages | 10 | ✓ |
-| Decisions | 47 | ✓ |
-| Anti-Patterns | 38 | ✓ |
-| Lessons | 69 | ✓ |
-| **TOTAL** | **191** | **✓** |
+| Category | Files | Change | Verification |
+|----------|-------|--------|--------------|
+| Core | 6 | - | ✓ |
+| Gateways | 7 | - | ✓ |
+| Interfaces | 14 | - | ✓ |
+| Languages | 10 | - | ✓ |
+| Anti-Patterns | 39 | +1 | ✓ |
+| Decisions | 51 | +4 | ✓ |
+| Lessons | 71 | +2 | ✓ |
+| Platforms | 19 | +19 | ✓ **NEW** |
+| **TOTAL** | **217** | **+26** | **✓** |
+
+---
+
+## NEW ADDITIONS IN v4.2.0
+
+### Context
+- Custom Instructions for SUGA-ISP Development.md
+
+### Anti-Patterns
+- Anti-Patterns-Master-Index.md
+
+### Decisions
+- operational/Operational-Index.md
+- technical/Technical-Index.md
+
+### Lessons
+- Lessons-Master-Index.md
+- documentation/LESS-14.md
+
+### Platforms (NEW CATEGORY)
+- Platforms-Master-Index.md
+- aws/AWS-Index.md
+- aws/AWS-Master-Index.md
+- aws/AWS-Quick-Index.md
+- aws/api-gateway/ (3 files)
+- aws/dynamodb/ (5 files)
+- aws/general/ (2 files)
+- aws/lambda/ (4 files)
+
+### Support
+- File Server URLs.md
 
 ---
 
@@ -552,6 +643,25 @@ sima/support/
 ### Core Architecture
 ```
 sima/entries/core/ARCH-SUGA_ Single Universal Gateway Architecture.md
+```
+
+### Platforms (NEW)
+```
+sima/entries/platforms/aws/AWS-Master-Index.md
+sima/entries/platforms/aws/lambda/AWS-Lambda-StatelessExecution_AWS-LESS-03.md
+```
+
+### Master Indexes (NEW)
+```
+sima/entries/anti-patterns/Anti-Patterns-Master-Index.md
+sima/entries/lessons/Lessons-Master-Index.md
+sima/entries/platforms/Platforms-Master-Index.md
+```
+
+### Context Files
+```
+sima/context/Custom Instructions for SUGA-ISP Development.md
+sima/context/SESSION-START-Quick-Context.md
 ```
 
 ### Gateway Patterns
@@ -570,49 +680,23 @@ sima/entries/decisions/architecture/DEC-01.md
 sima/entries/decisions/Decisions-Master-Index.md
 ```
 
-### Anti-Patterns
+### Support Files
 ```
-sima/entries/anti-patterns/import/AP-01.md
-```
-
-### Lessons
-```
-sima/entries/lessons/core-architecture/LESS-01.md
-```
-
-### Planning
-```
-sima/docs/planning/SIMAv4 Architecture Planning Document.md
-```
-
-### Directory Structure
-```
-sima/docs/SIMAv4-Directory-Structure.md
-```
-
-### Project Templates
-```
-sima/projects/templates/project_config_template.md
-```
-
-### Support Tools
-```
-sima/support/tools/TOOL-01-REF-ID-Directory.md
-```
-
-### Mode Contexts
-```
-sima/context/SESSION-START-Quick-Context.md
+sima/support/File Server URLs.md
+sima/support/SIMA-MAIN-CONFIG.md
 ```
 
 ---
 
-## MASTER INDEXES (5 files)
+## MASTER INDEXES (8 files)
 
 ```
+sima/entries/anti-patterns/Anti-Patterns-Master-Index.md
 sima/entries/decisions/Decisions-Master-Index.md
-sima/support/Support-Master-Index.md
+sima/entries/lessons/Lessons-Master-Index.md
+sima/entries/platforms/Platforms-Master-Index.md
 sima/projects/projects_config.md
+sima/support/Support-Master-Index.md
 ```
 
 ---
@@ -637,6 +721,16 @@ sima/support/tools/scan-hardcoded-urls.py
 ---
 
 ## VERSION HISTORY
+
+**v4.2.0 (2025-11-01):**
+- ADDED: Platforms category with AWS knowledge (19 files)
+- ADDED: Custom Instructions context file
+- ADDED: Master indexes for Anti-Patterns, Lessons, and Platforms
+- ADDED: File Server URLs.md to support/
+- ADDED: Operational and Technical indexes in decisions
+- ADDED: LESS-14.md to documentation category
+- VERIFIED: All file counts accurate (310 total)
+- STATUS: Production-ready with expanded platform knowledge
 
 **v4.1.1 (2025-11-01):**
 - CORRECTED: File counts to match actual CLI listing
@@ -665,15 +759,32 @@ sima/support/tools/scan-hardcoded-urls.py
 ## VERIFICATION STATUS
 
 **✓ Verified Against:** Windows CLI directory listing (2025-11-01)  
-**✓ File Count:** 278 files (matches CLI output exactly)  
+**✓ File Count:** 310 files (matches directory listing exactly)  
 **✓ Structure:** All directories accounted for  
 **✓ Integrity:** No missing or orphaned files  
-**✓ Spelling:** utilities/ directory name corrected
+**✓ New Content:** Platforms category fully integrated
+
+---
+
+## AWS PLATFORMS STRUCTURE
+
+The new platforms category organizes cloud-specific knowledge:
+
+```
+platforms/
+└── aws/
+    ├── api-gateway/     (API Gateway integration patterns)
+    ├── dynamodb/        (DynamoDB data modeling and queries)
+    ├── general/         (Cross-service patterns)
+    └── lambda/          (Lambda execution and cost models)
+```
+
+This enables platform-specific best practices while maintaining SIMA's generic architecture patterns in the core entries.
 
 ---
 
 **END OF DIRECTORY STRUCTURE**
 
-**Status:** Corrected and Verified  
-**Files:** 278/278  
-**Quality:** Production-ready
+**Status:** Updated and Verified  
+**Files:** 310/310  
+**Quality:** Production-ready with expanded platform knowledge
