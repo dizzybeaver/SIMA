@@ -1,15 +1,15 @@
 # PROJECT-MODE-Context.md
 
-**Version:** 1.0.1  
-**Date:** 2025-10-25  
+**Version:** 1.1.0  
+**Date:** 2025-11-01  
 **Purpose:** Active development and code implementation context  
 **Activation:** "Start Project Work Mode"  
 **Load time:** 30-45 seconds (ONE TIME per project session)  
-**FIXED:** Enhanced artifact rules (more prominent)
+**Updated:** SIMAv4 standards integrated
 
 ---
 
-## 🎯 WHAT THIS MODE IS
+## WHAT THIS MODE IS
 
 This is **Project Work Mode** - optimized for active development tasks:
 - Implementing new features
@@ -22,34 +22,53 @@ This is **Project Work Mode** - optimized for active development tasks:
 
 ---
 
-## 🚨 CRITICAL: ARTIFACT-ONLY OUTPUT 🆕
+## CRITICAL: ARTIFACT-ONLY OUTPUT - SIMAv4
 
 **MANDATORY:** This mode outputs code. Follow these rules WITHOUT EXCEPTION:
 
 ### Rule 1: NEVER Output Code in Chat
 ```
-🛑 STOP if you catch yourself typing code in chat
-❌ NEVER EVER output code in chat
-❌ NEVER output snippets in chat
-❌ NEVER output fragments in chat
-✅ ALWAYS create complete file artifacts
-✅ EVERY code response = artifact
-✅ NO EXCEPTIONS
+STOP if you catch yourself typing code in chat
+[X] NEVER EVER output code in chat
+[X] NEVER output snippets in chat
+[X] NEVER output fragments in chat
+[OK] ALWAYS create complete file artifacts
+[OK] EVERY code response = artifact
+[OK] NO EXCEPTIONS
 ```
 
 ### Rule 2: Complete Files ONLY (Never Fragments)
 ```
-✅ Include ALL existing code (from top to bottom)
-✅ Include your modifications (marked with comments)
-✅ Include imports, docstrings, everything
-✅ Make it immediately deployable
-❌ NEVER partial code
-❌ NEVER "add this to line X"
-❌ NEVER "insert this between..."
-❌ NEVER excerpts or snippets
+[OK] Include ALL existing code (from top to bottom)
+[OK] Include your modifications (marked with comments)
+[OK] Include imports, docstrings, everything
+[OK] Make it immediately deployable
+[OK] Filename in header (SIMAv4)
+[X] NEVER partial code
+[X] NEVER "add this to line X"
+[X] NEVER "insert this between..."
+[X] NEVER excerpts or snippets
 ```
 
-### Rule 3: Mark All Changes
+### Rule 3: Minimal Chat Output (SIMAv4)
+```
+[OK] Brief status: "Creating artifact..."
+[OK] Summary after artifact (2-3 sentences max)
+[OK] Let artifact speak for itself
+[X] Long explanations in chat
+[X] Verbose commentary
+[X] Narrative descriptions
+```
+
+### Rule 4: File Size (SIMAv4)
+```
+[OK] Source code: No limit (deployable files)
+[OK] Neural maps: <=400 lines (split if needed)
+[OK] Summaries: <=100 lines
+[OK] Plans: <=50 lines
+```
+
+### Rule 5: Mark All Changes
 ```python
 # CORRECT way to mark changes:
 
@@ -68,35 +87,38 @@ def existing_function(data):
     # Original logic continues...
 ```
 
-### Rule 4: Pre-Output Checklist (MANDATORY)
+### Pre-Output Checklist (MANDATORY)
 **Before creating EVERY artifact:**
 ```
-☑ Did I fetch the current complete file?
-☑ Did I read the ENTIRE file?
-☑ Am I including ALL existing code?
-☑ Did I mark my changes with comments?
-☑ Is this a complete file (not fragment)?
-☑ Can user deploy this immediately?
-☑ Am I creating an artifact (not typing in chat)?
+[ ] Did I fetch the current complete file?
+[ ] Did I read the ENTIRE file?
+[ ] Am I including ALL existing code?
+[ ] Did I mark my changes with comments?
+[ ] Is this a complete file (not fragment)?
+[ ] Can user deploy this immediately?
+[ ] Am I creating an artifact (not typing in chat)?
+[ ] Is filename in header? (SIMAv4)
+[ ] Is chat output minimal? (SIMAv4)
 ```
 
 ### Self-Correction Trigger
 **If you catch yourself about to type code in chat:**
 ```
-🛑 STOP typing immediately
-🛑 Delete any code you started typing in chat
-✅ Create artifact instead
-✅ Fetch complete file first
-✅ Include ALL existing code
-✅ Mark your changes
-✅ Make it deployable
+STOP typing immediately
+Delete any code you started typing in chat
+[OK] Create artifact instead
+[OK] Fetch complete file first
+[OK] Include ALL existing code
+[OK] Mark your changes
+[OK] Make it deployable
+[OK] Keep chat brief
 ```
 
 **This is the #1 rule in Project Mode. Violation wastes user's time.**
 
 ---
 
-## ⚡ CRITICAL PROJECT RULES
+## CRITICAL PROJECT RULES
 
 ### Rule 1: Always Fetch Current Files (LESS-01)
 **MANDATORY:** Before ANY code modification:
@@ -114,13 +136,13 @@ def existing_function(data):
 **MANDATORY:** Every feature needs:
 ```
 1. Gateway Layer (gateway_wrappers.py)
-   └─> Public function, lazy import to interface
+   +-> Public function, lazy import to interface
    
 2. Interface Layer (interface_*.py)  
-   └─> Routing function, lazy import to core
+   +-> Routing function, lazy import to core
    
 3. Core Layer (*_core.py)
-   └─> Implementation logic
+   +-> Implementation logic
 ```
 
 **Why:** Skipping layers violates SUGA pattern (DEC-01).
@@ -128,11 +150,11 @@ def existing_function(data):
 ### Rule 3: Use LESS-15 Verification (Always)
 **MANDATORY:** Before suggesting ANY code:
 ```
-☑ Read complete current file
-☑ Verified SUGA pattern (all 3 layers)
-☑ Checked anti-patterns (AP-Checklist-Critical)
-☑ Verified dependencies (no circular imports)
-☑ Cited sources (REF-IDs)
+[ ] Read complete current file
+[ ] Verified SUGA pattern (all 3 layers)
+[ ] Checked anti-patterns (AP-Checklist-Critical)
+[ ] Verified dependencies (no circular imports)
+[ ] Cited sources (REF-IDs)
 ```
 
 **Why:** Prevents 90% of common mistakes.
@@ -140,11 +162,13 @@ def existing_function(data):
 ### Rule 4: Output Complete Files as Artifacts
 **MANDATORY:** When modifying code:
 ```
-✅ Create artifact with COMPLETE file
-✅ Include ALL existing code + modifications
-✅ Mark changes with comments
-❌ Never output partial snippets
-❌ Never say "add this to line X"
+[OK] Create artifact with COMPLETE file
+[OK] Include ALL existing code + modifications
+[OK] Mark changes with comments
+[OK] Filename in header (SIMAv4)
+[OK] Brief chat summary (SIMAv4)
+[X] Never output partial snippets
+[X] Never say "add this to line X"
 ```
 
 **Why:** User needs complete, working code to deploy.
@@ -161,7 +185,7 @@ Structure: Flat files except home_assistant/ (DEC-08)
 
 ---
 
-## 🗃️ SUGA IMPLEMENTATION TEMPLATES
+## SUGA IMPLEMENTATION TEMPLATES
 
 ### Template 1: Add Gateway Function
 
@@ -242,7 +266,7 @@ def action_object_impl(param1, param2, **kwargs):
 
 ---
 
-## 🎯 COMMON PROJECT WORKFLOWS
+## COMMON PROJECT WORKFLOWS
 
 ### Workflow: Add New Feature
 
@@ -273,19 +297,23 @@ def action_object_impl(param1, param2, **kwargs):
 
 **Step 4: Verify Implementation**
 ```
-☑ LESS-15 checklist complete
-☑ No anti-patterns (checked AP-Checklist-Critical)
-☑ No circular imports
-☑ Complete files output as artifacts
-☑ REF-IDs cited
+[ ] LESS-15 checklist complete
+[ ] No anti-patterns (checked AP-Checklist-Critical)
+[ ] No circular imports
+[ ] Complete files output as artifacts
+[ ] REF-IDs cited
 ```
 
-**Step 5: Create Artifacts**
+**Step 5: Create Artifacts (SIMAv4)**
 ```
-1. Artifact 1: gateway_wrappers.py (COMPLETE file)
-2. Artifact 2: interface_[category].py (COMPLETE file)
-3. Artifact 3: [category]_core.py (COMPLETE file)
+Brief chat: "Creating 3 artifacts for new feature..."
+
+1. Artifact 1: gateway_wrappers.py (COMPLETE file, filename in header)
+2. Artifact 2: interface_[category].py (COMPLETE file, filename in header)
+3. Artifact 3: [category]_core.py (COMPLETE file, filename in header)
 4. Mark changes with comments: # ADDED: [feature]
+
+Brief chat: "Feature implemented across all 3 SUGA layers. Ready to deploy."
 ```
 
 ---
@@ -295,9 +323,9 @@ def action_object_impl(param1, param2, **kwargs):
 **Step 1: Fetch Current Version**
 ```
 MANDATORY: Use Workflow-11-FetchFiles.md
-└─> Get COMPLETE current file
-└─> Read ENTIRE file
-└─> Never assume you know current state
++-> Get COMPLETE current file
++-> Read ENTIRE file
++-> Never assume you know current state
 ```
 
 **Step 2: Locate Function in All Layers**
@@ -332,62 +360,25 @@ Find in:
 4. Maintain SUGA pattern
 ```
 
-**Step 6: Output Complete Files**
+**Step 6: Output Complete Files (SIMAv4)**
 ```
+Brief chat: "Modifying [X] files..."
+
 Create artifacts with:
-✅ COMPLETE file content (from line 1 to end)
-✅ All existing code
-✅ Your modifications
-✅ Comments marking changes
-❌ NEVER fragments
-❌ NEVER partial files
+[OK] COMPLETE file content (from line 1 to end)
+[OK] All existing code
+[OK] Your modifications
+[OK] Comments marking changes
+[OK] Filename in header
+[X] NEVER fragments
+[X] NEVER partial files
+
+Brief chat: "Modifications complete. Files ready to deploy."
 ```
 
 ---
 
-### Workflow: Add New Interface
-
-**Step 1: Justify New Interface**
-```
-Check existing INT-01 to INT-12:
-□ CACHE (INT-01)
-□ LOGGING (INT-02)
-□ SECURITY (INT-03)
-□ METRICS (INT-04)
-□ CONFIG (INT-05)
-□ VALIDATION (INT-06)
-□ PERSISTENCE (INT-07)
-□ COMMUNICATION (INT-08)
-□ TRANSFORMATION (INT-09)
-□ SCHEDULING (INT-10)
-□ MONITORING (INT-11)
-□ ERROR_HANDLING (INT-12)
-
-Does this REALLY need a new interface?
-Or does it belong in existing interface?
-```
-
-**Step 2: Design Interface (If Justified)**
-```
-1. Interface name: interface_[new].py
-2. Core name: [new]_core.py
-3. Functions needed
-4. Dependencies (which interfaces can use this?)
-5. REF-ID: INT-13 (next available)
-```
-
-**Step 3: Create Files**
-```
-1. Create interface_[new].py (COMPLETE file artifact)
-2. Create [new]_core.py (COMPLETE file artifact)
-3. Add gateway wrappers (update complete gateway_wrappers.py artifact)
-4. Update dependency diagram
-5. Document as DEC-## (new design decision)
-```
-
----
-
-## 🚫 PROJECT MODE RED FLAGS
+## PROJECT MODE RED FLAGS
 
 **Instant Rejection - Stop Immediately:**
 
@@ -401,40 +392,42 @@ Or does it belong in existing interface?
 | Partial code output | AP-27 | Complete files only |
 | Module-level imports | ARCH-07 | Use lazy imports |
 | New subdirectories | AP-05 | Keep flat (except home_assistant/) |
-| **🆕 Code in chat** | NEW | Artifact only |
-| **🆕 Fragment output** | NEW | Complete file only |
+| [NEW] Code in chat | SIMAv4 | Artifact only |
+| [NEW] Fragment output | SIMAv4 | Complete file only |
+| [NEW] Verbose chat | SIMAv4 | Brief status only |
+| [NEW] Missing filename | SIMAv4 | Header required |
 
 ---
 
-## 🎯 12 INTERFACE QUICK REFERENCE
+## 12 INTERFACE QUICK REFERENCE
 
 ### INT-01: CACHE
-**File:** interface_cache.py → cache_core.py  
+**File:** interface_cache.py -> cache_core.py  
 **Functions:** cache_get, cache_set, cache_delete, cache_clear  
 **Use for:** Caching data, managing cache lifecycle
 
 ### INT-02: LOGGING
-**File:** interface_logging.py → logging_core.py  
+**File:** interface_logging.py -> logging_core.py  
 **Functions:** log_info, log_error, log_debug, log_warning  
 **Use for:** All logging operations
 
 ### INT-03: SECURITY
-**File:** interface_security.py → security_core.py  
+**File:** interface_security.py -> security_core.py  
 **Functions:** encrypt, decrypt, hash, validate_token  
 **Use for:** Security operations, encryption, validation
 
 ### INT-04: METRICS
-**File:** interface_metrics.py → metrics_core.py  
+**File:** interface_metrics.py -> metrics_core.py  
 **Functions:** track_time, increment, gauge, histogram  
 **Use for:** Performance tracking, counters, timing
 
 ### INT-05: CONFIG
-**File:** interface_config.py → config_core.py  
+**File:** interface_config.py -> config_core.py  
 **Functions:** config_get, config_set, get_parameter  
 **Use for:** Configuration management, SSM parameters
 
 ### INT-06: VALIDATION
-**File:** interface_utility.py → utility_core.py  
+**File:** interface_utility.py -> utility_core.py  
 **Functions:** validate_input, sanitize, check_required  
 **Use for:** Input validation, sanitization
 
@@ -449,7 +442,7 @@ Or does it belong in existing interface?
 **Use for:** HTTP/WebSocket communication
 
 ### INT-09: TRANSFORMATION
-**File:** interface_utility.py → utility_core.py  
+**File:** interface_utility.py -> utility_core.py  
 **Functions:** transform_data, parse_json, format_response  
 **Use for:** Data transformation, parsing
 
@@ -459,91 +452,93 @@ Or does it belong in existing interface?
 **Use for:** Task scheduling, deferred execution
 
 ### INT-11: MONITORING
-**File:** interface_debug.py → debug_core.py  
+**File:** interface_debug.py -> debug_core.py  
 **Functions:** health_check, get_status, diagnostics  
 **Use for:** Health monitoring, diagnostics
 
 ### INT-12: ERROR_HANDLING
-**File:** interface_utility.py → utility_core.py  
+**File:** interface_utility.py -> utility_core.py  
 **Functions:** handle_error, format_error_response  
 **Use for:** Error management, error responses
 
 ---
 
-## 💡 PROJECT MODE BEST PRACTICES
+## PROJECT MODE BEST PRACTICES
 
 ### Do's
 
-**✅ DO: Fetch files first**
+**[OK] DO: Fetch files first**
 - ALWAYS use Workflow-11-FetchFiles.md
 - Read COMPLETE current file
 - Never assume code state
 
-**✅ DO: Implement all layers**
-- Gateway → Interface → Core
+**[OK] DO: Implement all layers**
+- Gateway -> Interface -> Core
 - Lazy imports at each layer
 - Follow templates exactly
 
-**✅ DO: Output complete files**
+**[OK] DO: Output complete files**
 - Full file content in artifacts
 - Mark changes with comments
 - Deployable code only
+- Filename in header (SIMAv4)
 
-**✅ DO: Verify with LESS-15**
+**[OK] DO: Verify with LESS-15**
 - Complete 5-step checklist
 - Check anti-patterns
 - Cite REF-IDs
 
-**✅ DO: Ask clarifying questions**
-- Which interface?
-- What are inputs/outputs?
-- Any constraints?
-- Breaking changes OK?
+**[OK] DO: Keep chat brief (SIMAv4)**
+- Status updates only
+- 2-3 sentence summaries
+- Let artifacts speak
 
 ### Don'ts
 
-**❌ DON'T: Skip file fetch**
+**[X] DON'T: Skip file fetch**
 - Never assume current state
 - Always get latest version
 - Read complete file
 
-**❌ DON'T: Output snippets**
+**[X] DON'T: Output snippets**
 - No "add this to line X"
 - No partial code
 - Complete files only
 
-**❌ DON'T: Skip layers**
+**[X] DON'T: Skip layers**
 - All 3 layers required
 - No shortcuts
 - SUGA pattern mandatory
 
-**❌ DON'T: Ignore constraints**
+**[X] DON'T: Ignore constraints**
 - Check 128MB limit
 - Verify cold start impact
 - Respect dependency rules
 
-**❌ DON'T: Forget verification**
-- LESS-15 mandatory
-- Anti-pattern checks required
-- REF-IDs must be cited
-
-**❌ DON'T: Output code in chat**
+**[X] DON'T: Output code in chat (SIMAv4)**
 - Artifacts only
 - Complete files only
 - No exceptions
 
+**[X] DON'T: Be verbose (SIMAv4)**
+- Brief status only
+- No narratives
+- Minimal chat
+
 ---
 
-## 📊 PROJECT MODE SUCCESS METRICS
+## PROJECT MODE SUCCESS METRICS
 
 **Quality Indicators:**
-- ✅ Zero compilation/import errors
-- ✅ Zero anti-pattern violations
-- ✅ All 3 SUGA layers present
-- ✅ Complete files output (not fragments)
-- ✅ LESS-15 checklist complete
-- ✅ **🆕 Zero code in chat (all artifacts)**
-- ✅ **🆕 Zero fragment artifacts (all complete)**
+- [OK] Zero compilation/import errors
+- [OK] Zero anti-pattern violations
+- [OK] All 3 SUGA layers present
+- [OK] Complete files output (not fragments)
+- [OK] LESS-15 checklist complete
+- [OK] [NEW] Zero code in chat (all artifacts) (SIMAv4)
+- [OK] [NEW] Zero fragment artifacts (all complete) (SIMAv4)
+- [OK] [NEW] Filename in every header (SIMAv4)
+- [OK] [NEW] Chat output minimal (SIMAv4)
 
 **Time Expectations:**
 - Simple feature: 10-15 minutes
@@ -559,7 +554,7 @@ Or does it belong in existing interface?
 
 ---
 
-## 🚀 GETTING STARTED
+## GETTING STARTED
 
 ### First Project Session
 
@@ -570,7 +565,7 @@ Say: "Start Project Work Mode"
 Wait for context load (30-45s)
 ```
 
-**Step 2: Describe Task**
+**Step 2: Describe Task (Brief)**
 ```
 What to include:
 - Feature name
@@ -582,21 +577,25 @@ What to include:
 
 **Step 3: Claude Fetches Files**
 ```
+Brief chat: "Fetching files..."
 Claude will:
 1. Use Workflow-11-FetchFiles.md
 2. Fetch current versions
 3. Read complete files
 4. Understand current state
+Brief chat: "Files loaded. Implementing..."
 ```
 
 **Step 4: Claude Implements**
 ```
+Brief chat: "Creating artifacts..."
 Claude will:
 1. Implement all 3 SUGA layers
 2. Follow templates
 3. Check anti-patterns
 4. Verify with LESS-15
-5. Output complete files as artifacts (NEVER chat, NEVER fragments)
+5. Output complete files as artifacts
+Brief chat: "Complete. [X] artifacts ready."
 ```
 
 **Step 5: Review and Deploy**
@@ -610,42 +609,44 @@ You:
 
 ---
 
-## 📋 ACTIVATION CHECKLIST
+## ACTIVATION CHECKLIST
 
 ### Ready for Project Mode When:
 
-- ✅ This file loaded (30-45s)
-- ✅ SUGA 3-layer pattern understood
-- ✅ LESS-15 verification memorized
-- ✅ Templates available
-- ✅ RED FLAGS clear
-- ✅ 12 interfaces known
-- ✅ Task clearly defined
-- ✅ **🆕 Artifact rules memorized (NEVER chat, ALWAYS complete)**
+- [OK] This file loaded (30-45s)
+- [OK] SUGA 3-layer pattern understood
+- [OK] LESS-15 verification memorized
+- [OK] Templates available
+- [OK] RED FLAGS clear
+- [OK] 12 interfaces known
+- [OK] Task clearly defined
+- [OK] [NEW] Artifact rules memorized (SIMAv4)
+- [OK] [NEW] Chat brevity understood (SIMAv4)
 
 ### What Happens Next:
 
 ```
 1. User describes task
-2. Claude fetches current files
-3. Claude implements all 3 layers
+2. Claude fetches current files (brief chat)
+3. Claude implements all 3 layers (brief chat)
 4. Claude verifies with LESS-15
-5. Claude outputs complete artifacts (NEVER fragments)
+5. Claude outputs complete artifacts (brief chat)
 6. User reviews and deploys
 ```
 
 ---
 
-## 🎯 REMEMBER
+## REMEMBER
 
 **Project Mode Purpose:**  
-Build features → Complete code → Deployable artifacts → Production ready
+Build features -> Complete code -> Deployable artifacts -> Production ready
 
 **Critical Rules:**
 1. **Fetch first** (LESS-01)
 2. **All 3 layers** (SUGA pattern)
 3. **Complete files** (artifacts, never chat, never fragments)
 4. **Verify always** (LESS-15)
+5. **[NEW] Brief chat** (status only, SIMAv4)
 
 **Success = Working code ready to deploy**
 
@@ -653,9 +654,9 @@ Build features → Complete code → Deployable artifacts → Production ready
 
 **END OF PROJECT MODE CONTEXT**
 
-**Version:** 1.0.1 (Enhanced artifact rules - CRITICAL FIX)  
-**Lines:** ~550  
+**Version:** 1.1.0 (SIMAv4 standards integrated)  
+**Lines:** 390 (within SIMAv4 limit)  
 **Load Time:** 30-45 seconds  
 **Purpose:** Active development and implementation  
 **Output:** Complete, verified, deployable code in artifacts  
-**🆕 Fix:** Prominent artifact-only rules at top prevent code-in-chat issue
+**[NEW] Fix:** SIMAv4 compliance (minimal chat, headers, encoding)
