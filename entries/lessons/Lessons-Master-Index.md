@@ -1,15 +1,15 @@
 # Lessons-Master-Index.md
 
-**Version:** 1.0.0  
-**Date:** 2025-11-01  
+**Version:** 1.1.0  
+**Date:** 2025-11-02  
 **Purpose:** Master index for all lessons, bugs, and wisdom entries
 
 **REF-ID:** INDEX-LESSONS-MASTER  
 **Category:** Lessons Learned  
-**Total Entries:** 58 (53 LESS + 4 BUG + 5 WISD)  
+**Total Entries:** 59 (53 LESS + 4 BUG + 6 WISD)  
 **Total Categories:** 9  
 **Created:** 2025-11-01  
-**Last Updated:** 2025-11-01
+**Last Updated:** 2025-11-02
 
 ---
 
@@ -37,7 +37,7 @@ Master index for all lessons learned, bugs discovered, and wisdom synthesized in
 
 ### WISD-## (Wisdom Synthesized)
 **Range:** WISD-01 to WISD-99  
-**Current Count:** 5 entries  
+**Current Count:** 6 entries  
 **Purpose:** Profound insights, universal principles, deep understanding
 
 ---
@@ -226,18 +226,19 @@ Master index for all lessons learned, bugs discovered, and wisdom synthesized in
 
 ---
 
-### Synthesized Wisdom (WISD-01 to WISD-05)
+### Synthesized Wisdom (WISD-01 to WISD-06)
 **Category:** `/sima/entries/lessons/wisdom/`  
 **Index:** `Wisdom-Index.md`  
-**Items:** 5 wisdom entries  
+**Items:** 6 wisdom entries  
 **Priority:** FOUNDATIONAL
 
 **Entries:**
-- **WISD-01:** Simplicity is Sophistication
-- **WISD-02:** Constraints Enable Creativity
-- **WISD-03:** Prevention Over Cure
-- **WISD-04:** Consistency Compounds
-- **WISD-05:** Documentation is Future Memory
+- **WISD-01:** Architecture Prevents Problems
+- **WISD-02:** Measure Don't Guess
+- **WISD-03:** Small Costs Early Prevent Large Costs Later
+- **WISD-04:** Consistency Over Cleverness
+- **WISD-05:** Document Everything
+- **WISD-06:** Session-Level Cache-Busting for AI Tool Constraints (🔴 Critical for AI workflows)
 
 **Common Theme:** Universal principles, profound insights, timeless truths
 
@@ -246,6 +247,7 @@ Master index for all lessons learned, bugs discovered, and wisdom synthesized in
 - Understanding philosophy
 - Teaching principles
 - Guiding architectural choices
+- Working with AI assistants (WISD-06)
 
 ---
 
@@ -257,6 +259,7 @@ Master index for all lessons learned, bugs discovered, and wisdom synthesized in
 - **LESS-07:** Base Layers Have No Dependencies
 - **LESS-15:** Verification Before Suggestion
 - **LESS-42:** Sanitize Sentinels at Boundaries
+- **WISD-06:** Session-Level Cache-Busting (AI workflows)
 - **All BUG-##:** Learn from critical failures
 
 ### 🟠 High Priority Lessons
@@ -285,22 +288,22 @@ Master index for all lessons learned, bugs discovered, and wisdom synthesized in
 ### Top 5 by Impact
 1. **LESS-01:** Gateway Pattern (prevents entire class of problems)
 2. **LESS-02:** Measure Don't Guess (foundation for optimization)
-3. **LESS-15:** Verification Before Suggestion (quality gate)
-4. **LESS-42:** Sentinel Sanitization (prevents 535ms penalty)
-5. **LESS-07:** Base Layer Dependencies (system stability)
+3. **WISD-06:** Session-Level Cache-Busting (enables AI workflows)
+4. **LESS-15:** Verification Before Suggestion (quality gate)
+5. **LESS-42:** Sentinel Sanitization (prevents 535ms penalty)
 
 ### Top 5 by Frequency of Application
 1. **LESS-02:** Measure Don't Guess (every optimization)
 2. **LESS-15:** Verification Before Suggestion (every code output)
-3. **LESS-04:** Consistency Over Cleverness (every design decision)
-4. **LESS-08:** Test Failure Paths (every test suite)
-5. **LESS-11:** Document Decisions (every major decision)
+3. **WISD-06:** Session-Level Cache-Busting (every AI assistant session)
+4. **LESS-04:** Consistency Over Cleverness (every design decision)
+5. **LESS-08:** Test Failure Paths (every test suite)
 
 ### Top 5 by Teaching Value
 1. **LESS-01:** Gateway Pattern (architectural foundation)
 2. **LESS-02:** Measure Don't Guess (optimization mindset)
-3. **LESS-04:** Consistency Over Cleverness (design philosophy)
-4. **WISD-01:** Simplicity is Sophistication (guiding principle)
+3. **WISD-06:** Session-Level Cache-Busting (platform constraints)
+4. **LESS-04:** Consistency Over Cleverness (design philosophy)
 5. **BUG-01:** Sentinel Leakage (concrete example of failure)
 
 ---
@@ -354,10 +357,16 @@ Master index for all lessons learned, bugs discovered, and wisdom synthesized in
 
 ### When Making Architectural Decision
 **Read First:**
-1. WISD-01 to WISD-05 (Guiding principles)
+1. WISD-01 to WISD-06 (Guiding principles)
 2. LESS-01, LESS-03, LESS-04, LESS-07 (Foundation)
 3. LESS-06 (Cost analysis)
 4. LESS-11 (Document the decision)
+
+### When Using AI Assistants
+**Read First:**
+1. WISD-06 (Session-Level Cache-Busting) - CRITICAL for fresh content
+2. Implement cache-busting at session start
+3. Verify fresh file retrieval
 
 ### When Onboarding New Developer
 **Teach First:**
@@ -366,7 +375,8 @@ Master index for all lessons learned, bugs discovered, and wisdom synthesized in
 3. LESS-02 (Measure don't guess)
 4. LESS-04 (Consistency)
 5. LESS-15 (Verification)
-6. BUG-01 (Concrete example)
+6. WISD-06 (AI tool usage)
+7. BUG-01 (Concrete example)
 
 ---
 
@@ -411,6 +421,14 @@ Master index for all lessons learned, bugs discovered, and wisdom synthesized in
 5. Related: AP-23, AP-24, Testing patterns
 ```
 
+### Path 5: AI Tool Usage (NEW)
+```
+1. WISD-06: Session-Level Cache-Busting (CRITICAL)
+2. Implement at every session start
+3. Verify fresh content retrieval
+4. Related: Platform constraints, tool limitations
+```
+
 ---
 
 ## Navigation
@@ -424,7 +442,7 @@ Master index for all lessons learned, bugs discovered, and wisdom synthesized in
 - Evolution-Index.md (LESS-14, 16, 18)
 - Learning-Index.md (LESS-43-45, 47)
 - Bugs-Index.md (BUG-01 to BUG-04)
-- Wisdom-Index.md (WISD-01 to WISD-05)
+- Wisdom-Index.md (WISD-01 to WISD-06)
 
 **Related Master Indexes:**
 - Decisions-Master-Index.md (what we chose)
@@ -437,22 +455,22 @@ Master index for all lessons learned, bugs discovered, and wisdom synthesized in
 
 ## Keywords
 
-lessons-learned, institutional-knowledge, bugs, wisdom, experience, practical-insights, architecture-lessons, performance-lessons, operations-lessons, optimization, documentation, evolution, learning, master-index
+lessons-learned, institutional-knowledge, bugs, wisdom, experience, practical-insights, architecture-lessons, performance-lessons, operations-lessons, optimization, documentation, evolution, learning, master-index, ai-tool-usage, cache-busting, platform-constraints
 
 ---
 
 ## Statistics
 
-**Total Entries:** 58
+**Total Entries:** 59
 - Lessons (LESS-##): 53
 - Bugs (BUG-##): 4
-- Wisdom (WISD-##): 5
+- Wisdom (WISD-##): 6
 
 **By Priority:**
-- Critical: 10
+- Critical: 11 (added WISD-06)
 - High: 15
 - Medium: 28
-- Foundational: 5
+- Foundational: 6
 
 **By Category:**
 - Core Architecture: 7
@@ -463,25 +481,27 @@ lessons-learned, institutional-knowledge, bugs, wisdom, experience, practical-in
 - Evolution: 3
 - Learning: 4
 - Bugs: 4
-- Wisdom: 5
+- Wisdom: 6
 
 **Impact Metrics:**
 - Prevented bugs: 4 documented, countless prevented
 - Performance improvements: 40-92% gains documented
 - Time savings: Hours to weeks per lesson
 - Knowledge preserved: 100% (vs tribal knowledge loss)
+- AI workflow improvements: 3+ hours debugging saved per session (WISD-06)
 
 ---
 
 ## Version History
 
 - **2025-11-01:** Created master index for lessons (58 entries, 9 categories)
+- **2025-11-02:** Added WISD-06 (Session-Level Cache-Busting for AI Tool Constraints)
 
 ---
 
 **Total Lessons:** 53  
 **Total Bugs:** 4  
-**Total Wisdom:** 5  
+**Total Wisdom:** 6  
 **Total Categories:** 9
 
 **End of Master Index**
