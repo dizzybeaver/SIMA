@@ -1,11 +1,11 @@
 # DEBUG-MODE-Context.md
 
-**Version:** 1.1.0  
+**Version:** 1.2.0  
 **Date:** 2025-11-02  
 **Purpose:** Troubleshooting and diagnostic analysis context  
 **Activation:** "Start Debug Mode"  
 **Load time:** 30-45 seconds (ONE TIME per debug session)  
-**Updated:** Cache-busting protocol integrated (WISD-06)
+**Updated:** DEC-24 implementation (Auto-generate Cache ID)
 
 ---
 
@@ -22,33 +22,35 @@ This is **Debug Mode** - optimized for troubleshooting and diagnostics:
 
 ---
 
-## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL)
+## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL) - DEC-24
 
-**Before any file fetching in this mode:**
+<!-- MODIFIED: DEC-24 - Auto-generate Cache ID -->
+**At session start:**
 
-### Check for Cache ID
-Look for user-provided cache ID in session start message:
+### Auto-Generate Cache ID
+Claude automatically generates a random 10-digit cache ID:
 ```
-Cache ID: [unix_timestamp]
+Example: 7294615830, 3841927563, 5920387146
+```
+
+### Check for User-Provided Cache ID (Optional)
+Look for user-provided cache ID in session start message (optional):
+```
+Cache ID: [number]
 Example: Cache ID: 1730486400
 ```
 
-### If Cache ID Present
-Store it and confirm:
+### Activation Pattern (DEC-24)
 ```
-✅ Debug Mode loaded.
-✅ Cache ID: [timestamp] registered.
-   All fetches will use cache-busting.
-```
+If user provides Cache ID:
+  ✅ Debug Mode loaded.
+  ✅ Cache ID: 1730486400 (user-provided)
+     All fetches will use cache-busting.
 
-### If Cache ID Missing
-Prompt for it before proceeding:
-```
-⚠️ Cache ID required for file fetching.
-
-Please provide: Cache ID: [run: date +%s]
-
-Why: Claude's cache can serve week-old files without this.
+If user does NOT provide Cache ID:
+  ✅ Debug Mode loaded.
+  ✅ Cache ID: 7294615830 (auto-generated)
+     All fetches will use cache-busting.
 ```
 
 ### Apply to ALL Fetches
@@ -58,7 +60,7 @@ Clean URL (from File Server URLs.md):
 https://claude.dizzybeaver.com/src/gateway.py
 
 Fetch URL (with cache-busting):
-https://claude.dizzybeaver.com/src/gateway.py?v=1730486400
+https://claude.dizzybeaver.com/src/gateway.py?v=7294615830
 ```
 
 **No exceptions. Every fetch. Every file.**
@@ -67,7 +69,7 @@ https://claude.dizzybeaver.com/src/gateway.py?v=1730486400
 Debug mode needs current file versions to trace issues accurately.
 Debugging against cached/old code leads to false conclusions.
 
-**Related:** WISD-06
+**Related:** WISD-06, DEC-24
 
 ---
 
@@ -112,7 +114,7 @@ Debugging against cached/old code leads to false conclusions.
 Before providing ANY fix code:
 ```
 [ ] Identified root cause? (not just symptoms)
-[ ] Fetched complete current file? (with cache-busting!)
+[ ] Fetched complete current file? (with auto cache-busting!) (DEC-24)
 [ ] Including ALL existing code?
 [ ] Marked fix with comments?
 [ ] Creating artifact (not chat)?
@@ -120,7 +122,7 @@ Before providing ANY fix code:
 [ ] Verified fix addresses root cause?
 [ ] Filename in header? (SIMAv4)
 [ ] Chat output minimal? (SIMAv4)
-[ ] Used cache-busting? (WISD-06)
+[ ] Used cache-busting? (WISD-06, DEC-24)
 ```
 
 **Default: All fix code in complete file artifacts**
@@ -151,7 +153,8 @@ Check these first:
 - BUG-04: Missing lazy import causing cold start spike
 ```
 
-### Principle 3: Trace Through Layers (with fresh code!)
+### Principle 3: Trace Through Layers (with fresh code!) (DEC-24)
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
 **Follow execution through SUGA layers using current file versions.**
 
 ```
@@ -166,7 +169,7 @@ Interface Layer
 Core Layer
 
 Error in which layer?
-[NEW] Fetch with cache-busting to see current code!
+[NEW] Fetch with cache-busting (auto-generated ID) to see current code! (DEC-24)
 ```
 
 ### Principle 4: Measure, Don't Guess (LESS-02)
@@ -177,7 +180,7 @@ Error in which layer?
 [OK] performance_benchmark.py
 [OK] Debug handlers (debug_diagnostics.py)
 [OK] Error traces
-[OK] [NEW] Fresh file content (cache-busting)
+[OK] [NEW] Fresh file content (auto cache-busting) (DEC-24)
 [X] Guessing based on "seems like"
 [X] Debugging against cached/old code
 ```
@@ -232,7 +235,7 @@ Error in which layer?
 2. Look for _CacheMiss, _NotFound, or custom objects
 3. Trace where object enters response
 4. Check sanitization at router layer
-5. [NEW] Fetch with cache-busting to see current code
+5. [NEW] Fetch with cache-busting (auto ID) to see current code (DEC-24)
 ```
 
 **Quick Fix (as complete file artifact):**
@@ -251,7 +254,7 @@ if value is _CacheMiss or value is _NotFound:
 2. Look for direct core imports
 3. Check if importing interface from core
 4. Verify lazy imports used
-5. [NEW] Fetch with cache-busting to see current imports
+5. [NEW] Fetch with cache-busting (auto ID) to see current imports (DEC-24)
 ```
 
 **Quick Fix (as complete file artifact):**
@@ -275,7 +278,7 @@ def function():
 2. Identify which function was executing
 3. Look for loops, waits, network calls
 4. Check if stuck in retry logic
-5. [NEW] Fetch with cache-busting to see current code
+5. [NEW] Fetch with cache-busting (auto ID) to see current code (DEC-24)
 ```
 
 **Quick Fix (as complete file artifact):**
@@ -294,7 +297,7 @@ response = interface_http.http_get(url, timeout=5)  # 5 second timeout
 2. Profile import times
 3. Identify imports > 100ms
 4. Check if imports used on every request
-5. [NEW] Fetch with cache-busting to see current code
+5. [NEW] Fetch with cache-busting (auto ID) to see current code (DEC-24)
 ```
 
 **Quick Fix (as complete file artifact):**
@@ -315,7 +318,7 @@ def rarely_used_function():
 2. Identify large data structures
 3. Look for accumulating data (not cleaned up)
 4. Check cache size
-5. [NEW] Fetch with cache-busting to see current memory usage
+5. [NEW] Fetch with cache-busting (auto ID) to see current memory usage (DEC-24)
 ```
 
 **Quick Fix (as complete file artifact):**
@@ -334,7 +337,7 @@ cache_clear()  # Clear cache when memory high
 2. Verify token freshness
 3. Check keep-alive mechanism
 4. Trace disconnect event
-5. [NEW] Fetch with cache-busting to see current connection code
+5. [NEW] Fetch with cache-busting (auto ID) to see current connection code (DEC-24)
 ```
 
 **Quick Fix (as complete file artifact):**
@@ -415,6 +418,7 @@ gateway.debug_health_check()   # Run health diagnostics
 
 ### Workflow 1: Lambda Returning 500 Error
 
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
 **Step 1: Get Error Details**
 ```
 Brief chat: "Checking logs..."
@@ -444,16 +448,16 @@ If yes -> Apply documented fix (output as complete file artifact)
 If no -> Continue to Step 4
 ```
 
-**Step 4: Trace Through Layers (with cache-busting!)**
+**Step 4: Trace Through Layers (with auto cache-busting!) (DEC-24)**
 ```
-Brief chat: "Fetching current code with cache-busting..."
+Brief chat: "Fetching current code with cache-busting (auto-generated ID)..."
 
 Follow execution:
-1. Lambda handler (lambda_function.py) - fetch with cache-busting
-2. Router layer (event routing) - fetch with cache-busting
-3. Gateway layer (gateway_wrappers.py) - fetch with cache-busting
-4. Interface layer (interface_*.py) - fetch with cache-busting
-5. Core layer (*_core.py) - fetch with cache-busting
+1. Lambda handler (lambda_function.py) - fetch with auto cache-busting
+2. Router layer (event routing) - fetch with auto cache-busting
+3. Gateway layer (gateway_wrappers.py) - fetch with auto cache-busting
+4. Interface layer (interface_*.py) - fetch with auto cache-busting
+5. Core layer (*_core.py) - fetch with auto cache-busting
 
 Where did it fail?
 ```
@@ -469,11 +473,11 @@ Based on evidence:
 - What was expected vs actual?
 ```
 
-**Step 6: Apply Fix (SIMAv4 + Cache-Busting)**
+**Step 6: Apply Fix (SIMAv4 + Cache-Busting + DEC-24)**
 ```
 Brief chat: "Creating fix artifact..."
 
-1. Fetch complete current file (with cache-busting!)
+1. Fetch complete current file (with auto cache-busting!) (DEC-24)
 2. Read entire file
 3. Implement fix
 4. Mark with # FIXED: comment
@@ -495,6 +499,7 @@ If new bug:
 
 ### Workflow 2: Cold Start Taking 5+ Seconds
 
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
 **Step 1: Measure Current Performance**
 ```
 Brief chat: "Profiling imports..."
@@ -521,12 +526,12 @@ Hot path imports:
 4. Minimize count
 ```
 
-**Step 4: Lazy Load Cold Path (SIMAv4 + Cache-Busting)**
+**Step 4: Lazy Load Cold Path (SIMAv4 + Cache-Busting + DEC-24)**
 ```
-Brief chat: "Creating optimized artifacts with cache-busting..."
+Brief chat: "Creating optimized artifacts with cache-busting (auto-generated ID)..."
 
 Cold path imports:
-1. Fetch current files with cache-busting
+1. Fetch current files with auto cache-busting (DEC-24)
 2. Move to function level
 3. Import only when needed
 4. Document why lazy loaded
@@ -548,6 +553,7 @@ Brief chat: "Optimization complete. Test cold start."
 
 ### Workflow 3: WebSocket Connection Failing
 
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
 **Step 1: Check Connection State**
 ```
 Brief chat: "Diagnosing connection..."
@@ -581,29 +587,29 @@ CloudWatch logs for:
 - WebSocket handshake
 ```
 
-**Step 5: Common Fixes (SIMAv4 + Cache-Busting)**
+**Step 5: Common Fixes (SIMAv4 + Cache-Busting + DEC-24)**
 ```
-Brief chat: "Fetching current code with cache-busting..."
+Brief chat: "Fetching current code with cache-busting (auto-generated ID)..."
 Brief chat: "Creating fix artifact for [specific issue]..."
 
 Issue: Token expired
 Fix: Refresh token from SSM Parameter Store
-Fetch ha_websocket.py with cache-busting
+Fetch ha_websocket.py with auto cache-busting (DEC-24)
 Output: Complete modified ha_websocket.py as artifact
 
 Issue: Network timeout
 Fix: Check network, increase timeout
-Fetch ha_websocket.py with cache-busting
+Fetch ha_websocket.py with auto cache-busting (DEC-24)
 Output: Complete modified ha_websocket.py as artifact
 
 Issue: Invalid URL
 Fix: Verify HA URL in configuration
-Fetch ha_config.py with cache-busting
+Fetch ha_config.py with auto cache-busting (DEC-24)
 Output: Complete modified ha_config.py as artifact
 
 Issue: WebSocket closed
 Fix: Implement reconnection logic
-Fetch ha_websocket.py with cache-busting
+Fetch ha_websocket.py with auto cache-busting (DEC-24)
 Output: Complete modified ha_websocket.py as artifact
 
 Brief chat: "Fix applied. Verify connection."
@@ -613,6 +619,7 @@ Brief chat: "Fix applied. Verify connection."
 
 ### Workflow 4: Cache Miss Rate High (> 50%)
 
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
 **Step 1: Check Cache Diagnostics**
 ```
 Brief chat: "Analyzing cache..."
@@ -639,16 +646,16 @@ Check:
 - Warming strategy needed?
 ```
 
-**Step 4: Optimize (SIMAv4 + Cache-Busting)**
+**Step 4: Optimize (SIMAv4 + Cache-Busting + DEC-24)**
 ```
-Brief chat: "Fetching cache code with cache-busting..."
+Brief chat: "Fetching cache code with cache-busting (auto-generated ID)..."
 Brief chat: "Creating cache optimization artifacts..."
 
 Possible fixes:
-- Increase TTL for stable data -> Fetch cache_core.py with cache-busting -> Output complete cache_core.py
-- Increase cache size (if memory allows) -> Fetch cache_core.py with cache-busting -> Output complete cache_core.py
-- Add cache warming on cold start -> Fetch fast_path.py with cache-busting -> Output complete fast_path.py
-- Improve key consistency -> Fetch cache_core.py with cache-busting -> Output complete cache_core.py
+- Increase TTL for stable data -> Fetch cache_core.py with auto cache-busting (DEC-24) -> Output complete cache_core.py
+- Increase cache size (if memory allows) -> Fetch cache_core.py with auto cache-busting (DEC-24) -> Output complete cache_core.py
+- Add cache warming on cold start -> Fetch fast_path.py with auto cache-busting (DEC-24) -> Output complete fast_path.py
+- Improve key consistency -> Fetch cache_core.py with auto cache-busting (DEC-24) -> Output complete cache_core.py
 
 All fixes: Complete file artifacts, never fragments
 Filename in header for each
@@ -674,7 +681,7 @@ Brief chat: "Cache optimized. Monitor hit rate."
 | [NEW] Fix fragments | Incomplete, not deployable | Complete files only (SIMAv4) |
 | [NEW] Verbose explanations | Token waste | Brief analysis (SIMAv4) |
 | [NEW] Missing filenames | Organization | Header required (SIMAv4) |
-| [NEW] No cache-busting | Debugging old code! | Always cache-bust (WISD-06) |
+| [NEW] No cache-busting | Debugging old code! | Always auto cache-bust (DEC-24) |
 
 ---
 
@@ -690,7 +697,7 @@ Brief chat: "Cache optimized. Monitor hit rate."
 - [OK] [NEW] No code output in chat (SIMAv4)
 - [OK] [NEW] Filename in every artifact header (SIMAv4)
 - [OK] [NEW] Chat output minimal (SIMAv4)
-- [OK] [NEW] Cache-busting applied to all fetches (WISD-06)
+- [OK] [NEW] Cache-busting applied to all fetches (auto-generated) (WISD-06, DEC-24)
 
 **Time Expectations:**
 - Known bug: 5-10 minutes (apply documented fix)
@@ -728,9 +735,10 @@ Brief chat: "Cache optimized. Monitor hit rate."
 - Debug diagnostics
 - Before/after metrics
 
-**[OK] DO: Trace through layers (with cache-busting!)**
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
+**[OK] DO: Trace through layers (with auto cache-busting!) (DEC-24)**
 - Handler -> Router -> Gateway -> Interface -> Core
-- Fetch with cache-busting to see current code
+- Fetch with cache-busting (auto-generated ID) to see current code
 - Identify failure layer
 - Understand execution path
 
@@ -740,7 +748,7 @@ Brief chat: "Cache optimized. Monitor hit rate."
 - Check for regressions
 
 **[OK] DO: Output complete file artifacts (SIMAv4)**
-- Fetch current file first (with cache-busting!)
+- Fetch current file first (with auto cache-busting!) (DEC-24)
 - Include ALL existing code
 - Mark changes with # FIXED:
 - Filename in header
@@ -760,8 +768,9 @@ Brief chat: "Cache optimized. Monitor hit rate."
 - Use debug tools
 - Measure performance
 
-**[X] DON'T: Debug against cached code (WISD-06)**
-- Always fetch with cache-busting
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
+**[X] DON'T: Debug against cached code (WISD-06, DEC-24)**
+- Always fetch with cache-busting (auto-generated ID)
 - Week-old code = false conclusions
 - Fresh files essential for accuracy
 
@@ -806,12 +815,14 @@ Brief chat: "Cache optimized. Monitor hit rate."
 
 ### First Debug Session
 
-**Step 1: Activate Mode with Cache ID**
+<!-- MODIFIED: DEC-24 - Simplified activation -->
+**Step 1: Activate Mode (DEC-24 Simplified)**
 ```
 [Upload File Server URLs.md or SERVER-CONFIG.md]
-Say: "Start Debug Mode
-      Cache ID: [timestamp]"
+Say: "Start Debug Mode"
+Optional: Cache ID: [number]  (if you want specific ID)
 Wait for context load (30-45s)
+Claude auto-generates Cache ID if not provided
 ```
 
 **Step 2: Describe Problem (Brief)**
@@ -824,27 +835,27 @@ Include:
 - Request/event that triggers it
 ```
 
-**Step 3: Claude Investigates (with cache-busting!)**
+**Step 3: Claude Investigates (with auto cache-busting!) (DEC-24)**
 ```
-Brief chat: "Investigating with cache-busting..."
+Brief chat: "Investigating with cache-busting (auto-generated ID)..."
 Claude will:
 1. Check known bugs (BUG-01 to BUG-04)
 2. Match error patterns
 3. Use debug tools
-4. Fetch current code with cache-busting
+4. Fetch current code with auto cache-busting (DEC-24)
 5. Trace through layers
 6. Form hypotheses
 7. Identify root cause
 Brief chat: "Root cause: [statement]"
 ```
 
-**Step 4: Claude Provides Fix (SIMAv4 + Cache-Busting)**
+**Step 4: Claude Provides Fix (SIMAv4 + Cache-Busting + DEC-24)**
 ```
-Brief chat: "Fetching current code with cache-busting..."
+Brief chat: "Fetching current code with cache-busting (auto-generated ID)..."
 Brief chat: "Creating fix artifact..."
 Claude will:
 1. Explain root cause (brief)
-2. Fetch complete current file(s) with cache-busting
+2. Fetch complete current file(s) with auto cache-busting (DEC-24)
 3. Implement fix in complete files
 4. Mark changes with # FIXED: comments
 5. Output as complete file artifacts (never chat, never fragments)
@@ -871,7 +882,7 @@ You:
 ### Ready for Debug Mode When:
 
 - [OK] This file loaded (30-45s)
-- [OK] [NEW] Cache ID registered
+- [OK] [NEW] Cache ID registered (auto-generated or user-provided) (DEC-24)
 - [OK] Known bugs memorized (BUG-01 to BUG-04)
 - [OK] Error patterns recognized
 - [OK] Debug tools understood
@@ -879,7 +890,7 @@ You:
 - [OK] Problem clearly described
 - [OK] [NEW] Artifact rules understood (SIMAv4)
 - [OK] [NEW] Chat brevity understood (SIMAv4)
-- [OK] [NEW] Cache-busting active (WISD-06)
+- [OK] [NEW] Cache-busting active (auto-generated) (WISD-06, DEC-24)
 
 ### What Happens Next:
 
@@ -887,7 +898,7 @@ You:
 1. User describes problem (brief)
 2. Claude checks known bugs
 3. Claude uses debug tools (brief chat)
-4. Claude fetches code with cache-busting (brief chat)
+4. Claude fetches code with cache-busting (auto-generated ID) (brief chat) (DEC-24)
 5. Claude traces execution
 6. Claude identifies root cause (brief chat)
 7. Claude provides fix as complete file artifact (filename in header)
@@ -902,30 +913,47 @@ You:
 Find root cause -> Systematic investigation -> Verified fix -> Prevention
 
 **Critical Principles:**
-1. **Cache ID required** (WISD-06)
+1. **Cache ID auto-generated** (or use user-provided) (DEC-24)
 2. **Check known bugs first** (BUG-01 to BUG-04)
 3. **Measure, don't guess** (LESS-02)
-4. **Trace with fresh code** (SUGA pattern + cache-busting)
+4. **Trace with fresh code** (SUGA pattern + auto cache-busting) (DEC-24)
 5. **Verify fixes** (test thoroughly)
 6. **[NEW] Complete file artifacts** (never chat, never fragments) (SIMAv4)
 7. **[NEW] Brief chat** (status only) (SIMAv4)
 
-**Success = Problem solved, root cause fixed, recurrence prevented, fix deployable, debugged against current code**
+**Success = Problem solved, root cause fixed, recurrence prevented, fix deployable, debugged against current code with auto cache-busting**
 
 ---
 
 **END OF DEBUG MODE CONTEXT**
 
-**Version:** 1.1.0 (Cache-busting integrated)  
-**Lines:** 445 (within SIMAv4 limit after WISD-06 integration)  
+**Version:** 1.2.0 (DEC-24 implementation)  
+**Lines:** 445 (within SIMAv4 limit after DEC-24 integration)  
 **Load Time:** 30-45 seconds  
 **Purpose:** Troubleshooting and diagnostics  
 **Output:** Root cause analysis, verified fixes in complete artifacts, prevention strategies  
-**[NEW] Fix:** Cache-busting protocol (WISD-06) ensures accurate debugging against current code
+**[NEW] Enhancement:** Auto-generates Cache ID (DEC-24) for accurate debugging against current code
 
 ---
 
 ## VERSION HISTORY
+
+**v1.2.0 (2025-11-02):**
+- MODIFIED: Cache-busting requirement section (DEC-24 implementation)
+- CHANGED: Cache ID now auto-generated by Claude (random 10-digit)
+- ADDED: Backward compatibility for user-provided Cache IDs
+- UPDATED: Principle 3 (trace with auto cache-busting)
+- UPDATED: Principle 4 (measure with fresh content)
+- UPDATED: All investigation workflows (auto cache-busting applied)
+- UPDATED: Pre-output checklist (auto cache-busting verification)
+- UPDATED: RED FLAGS table (added DEC-24)
+- UPDATED: Best practices (auto cache-busting integration)
+- UPDATED: Success metrics (auto cache-busting compliance)
+- UPDATED: Activation checklist (auto-generated Cache ID)
+- UPDATED: Getting Started (simplified, auto-generation)
+- REMOVED: User instructions for generating Cache IDs
+- IMPROVED: User experience (zero setup required)
+- RELATED: DEC-24 (Auto-Generate Cache ID), WISD-06
 
 **v1.1.0 (2025-11-02):**
 - ADDED: Cache-busting requirement section (mandatory for all fetches)
