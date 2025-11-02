@@ -1,11 +1,11 @@
 # PROJECT-MODE-Context.md
 
-**Version:** 1.3.0  
+**Version:** 1.4.0  
 **Date:** 2025-11-02  
 **Purpose:** Active development and code implementation context  
 **Activation:** "Start Project Work Mode"  
 **Load time:** 30-45 seconds (ONE TIME per project session)  
-**Updated:** DEC-24 implementation (Auto-generate Cache ID)
+**Updated:** fileserver.php implementation (replaces DEC-24 auto-generation)
 
 ---
 
@@ -22,54 +22,36 @@ This is **Project Work Mode** - optimized for active development tasks:
 
 ---
 
-## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL) - DEC-24
+## 🔄 FILE RETRIEVAL SYSTEM (CRITICAL)
 
-<!-- MODIFIED: DEC-24 - Auto-generate Cache ID -->
-**At session start:**
+<!-- MODIFIED: fileserver.php implementation (replaces DEC-24 auto-generation) -->
 
-### Auto-Generate Cache ID
-Claude automatically generates a random 10-digit cache ID:
-```
-Example: 7294615830, 3841927563, 5920387146
-```
+### Session Start Requirement
 
-### Check for User-Provided Cache ID (Optional)
-Look for user-provided cache ID in session start message (optional):
+**User uploads File Server URLs.md containing:**
 ```
-Cache ID: [number]
-Example: Cache ID: 1730486400
+https://claude.dizzybeaver.com/fileserver.php
 ```
 
-### Activation Pattern (DEC-24)
-```
-If user provides Cache ID:
-  ✅ Project Work Mode loaded.
-  ✅ Cache ID: 1730486400 (user-provided)
-     All fetches will use cache-busting.
+**Claude automatically:**
+1. Fetches fileserver.php at session start
+2. Receives ~412 URLs with cache-busting (?v=random-10-digits)
+3. Generated fresh each session (69ms execution)
+4. All files from /src and /sima directories
 
-If user does NOT provide Cache ID:
-  ✅ Project Work Mode loaded.
-  ✅ Cache ID: 7294615830 (auto-generated)
-     All fetches will use cache-busting.
+**Claude can now fetch any file:**
 ```
-
-### Apply to ALL Fetches
-Transform every URL automatically:
-```
-Clean URL (from File Server URLs.md):
-https://claude.dizzybeaver.com/src/gateway.py
-
-Fetch URL (with cache-busting):
-https://claude.dizzybeaver.com/src/gateway.py?v=7294615830
+Example from fileserver.php output:
+https://claude.dizzybeaver.com/src/gateway.py?v=8228685071
 ```
 
-**No exceptions. Every fetch. Every file.**
+**Result:** Fresh file content, bypasses Anthropic's cache
 
 **CRITICAL for Project Mode:**
 Week-old source code = broken implementations!
 This mode MUST have fresh files for accurate development.
 
-**Related:** WISD-06, DEC-24
+**Related:** WISD-06 (Cache-Busting Platform Limitation)
 
 ---
 
@@ -141,7 +123,7 @@ def existing_function(data):
 ### Pre-Output Checklist (MANDATORY)
 **Before creating EVERY artifact:**
 ```
-[ ] Did I fetch the current complete file? (with auto cache-busting!) (DEC-24)
+[ ] Did I fetch the current complete file? (via fileserver.php URLs!)
 [ ] Did I read the ENTIRE file?
 [ ] Am I including ALL existing code?
 [ ] Did I mark my changes with comments?
@@ -150,7 +132,7 @@ def existing_function(data):
 [ ] Am I creating an artifact (not typing in chat)?
 [ ] Is filename in header? (SIMAv4)
 [ ] Is chat output minimal? (SIMAv4)
-[ ] Used cache-busting on fetch? (WISD-06, DEC-24)
+[ ] Used fileserver.php URL? (fresh file) (WISD-06)
 ```
 
 ### Self-Correction Trigger
@@ -159,7 +141,7 @@ def existing_function(data):
 STOP typing immediately
 Delete any code you started typing in chat
 [OK] Create artifact instead
-[OK] Fetch complete file first (with auto cache-busting!) (DEC-24)
+[OK] Fetch complete file first (via fileserver.php URLs!)
 [OK] Include ALL existing code
 [OK] Mark your changes
 [OK] Make it deployable
@@ -172,19 +154,17 @@ Delete any code you started typing in chat
 
 ## CRITICAL PROJECT RULES
 
-### Rule 1: Always Fetch Current Files (LESS-01 + WISD-06 + DEC-24)
-<!-- MODIFIED: DEC-24 - Auto cache-busting -->
+### Rule 1: Always Fetch Current Files (LESS-01 + WISD-06)
 **MANDATORY:** Before ANY code modification:
 ```
-1. Use Workflow-11-FetchFiles.md
-2. Apply cache-busting (auto-generated ID) to ALL URLs (DEC-24)
-3. Fetch COMPLETE current file
-4. Read ENTIRE file (don't skim)
-5. Understand full context
-6. THEN and ONLY THEN modify
+1. Use fileserver.php URLs (from session start fetch)
+2. Fetch COMPLETE current file
+3. Read ENTIRE file (don't skim)
+4. Understand full context
+5. THEN and ONLY THEN modify
 ```
 
-**Why:** Assumptions about code state cause 90% of errors. Week-old cached files cause broken implementations.
+**Why:** Assumptions about code state cause 90% of errors. Cached files from weeks ago cause broken implementations.
 
 ### Rule 2: Implement All 3 SUGA Layers
 **MANDATORY:** Every feature needs:
@@ -204,7 +184,7 @@ Delete any code you started typing in chat
 ### Rule 3: Use LESS-15 Verification (Always)
 **MANDATORY:** Before suggesting ANY code:
 ```
-[ ] Read complete current file (with auto cache-busting!) (DEC-24)
+[ ] Read complete current file (via fileserver.php URLs!)
 [ ] Verified SUGA pattern (all 3 layers)
 [ ] Checked anti-patterns (AP-Checklist-Critical)
 [ ] Verified dependencies (no circular imports)
@@ -324,7 +304,6 @@ def action_object_impl(param1, param2, **kwargs):
 
 ### Workflow: Add New Feature
 
-<!-- MODIFIED: DEC-24 - Auto cache-busting -->
 **Step 1: Understand Requirements**
 ```
 1. What does feature need to do?
@@ -333,14 +312,13 @@ def action_object_impl(param1, param2, **kwargs):
 4. Any constraints? (memory, performance, dependencies)
 ```
 
-**Step 2: Check Existing Implementation (with auto cache-busting!) (DEC-24)**
+**Step 2: Check Existing Implementation (via fileserver.php!)**
 ```
-1. Use Workflow-11-FetchFiles.md
-2. Apply cache-busting (auto-generated ID) to ALL fetches
-3. Fetch gateway_wrappers.py
-4. Fetch interface_[category].py
-5. Fetch [category]_core.py
-6. Understand current structure
+1. Use fileserver.php URLs (from session start)
+2. Fetch gateway_wrappers.py
+3. Fetch interface_[category].py
+4. Fetch [category]_core.py
+5. Understand current structure
 ```
 
 **Step 3: Implement All 3 Layers**
@@ -358,7 +336,7 @@ def action_object_impl(param1, param2, **kwargs):
 [ ] No circular imports
 [ ] Complete files output as artifacts
 [ ] REF-IDs cited
-[ ] Cache-busting applied to all fetches (auto-generated) (DEC-24)
+[ ] Used fileserver.php URLs (fresh files) (WISD-06)
 ```
 
 **Step 5: Create Artifacts (SIMAv4)**
@@ -377,11 +355,9 @@ Brief chat: "Feature implemented across all 3 SUGA layers. Ready to deploy."
 
 ### Workflow: Modify Existing Function
 
-<!-- MODIFIED: DEC-24 - Auto cache-busting -->
-**Step 1: Fetch Current Version (with auto cache-busting!) (DEC-24)**
+**Step 1: Fetch Current Version (via fileserver.php!)**
 ```
-MANDATORY: Use Workflow-11-FetchFiles.md
-+-> Apply cache-busting (auto-generated ID) to URL
+MANDATORY: Use fileserver.php URLs (from session start)
 +-> Get COMPLETE current file
 +-> Read ENTIRE file
 +-> Never assume you know current state
@@ -447,7 +423,7 @@ Brief chat: "Modifications complete. Files ready to deploy."
 | Direct core import | AP-01 | Always via gateway |
 | Threading locks | AP-08 | Use atomic operations |
 | Sentinel leakage | AP-19 | Sanitize at router |
-| Skipping file fetch | LESS-01 | ALWAYS fetch first (auto cache-bust) (DEC-24) |
+| Skipping file fetch | LESS-01 | ALWAYS fetch first (fileserver.php) |
 | Partial code output | AP-27 | Complete files only |
 | Module-level imports | ARCH-07 | Use lazy imports |
 | New subdirectories | AP-05 | Keep flat (except home_assistant/) |
@@ -455,7 +431,7 @@ Brief chat: "Modifications complete. Files ready to deploy."
 | [NEW] Fragment output | SIMAv4 | Complete file only |
 | [NEW] Verbose chat | SIMAv4 | Brief status only |
 | [NEW] Missing filename | SIMAv4 | Header required |
-| [NEW] No cache-busting | WISD-06, DEC-24 | Week-old code! |
+| [NEW] Skip fileserver.php | WISD-06 | Week-old code! |
 
 ---
 
@@ -527,12 +503,11 @@ Brief chat: "Modifications complete. Files ready to deploy."
 
 ### Do's
 
-<!-- MODIFIED: DEC-24 - Auto cache-busting -->
-**[OK] DO: Fetch files first (with auto cache-busting!) (DEC-24)**
-- ALWAYS use Workflow-11-FetchFiles.md
-- Apply cache-busting (auto-generated ID) to ALL URLs
+**[OK] DO: Fetch files first (via fileserver.php!)**
+- ALWAYS use fileserver.php URLs (from session start)
 - Read COMPLETE current file
 - Never assume code state
+- Fresh files every session
 
 **[OK] DO: Implement all layers**
 - Gateway -> Interface -> Core
@@ -559,11 +534,11 @@ Brief chat: "Modifications complete. Files ready to deploy."
 
 **[X] DON'T: Skip file fetch**
 - Never assume current state
-- Always get latest version (auto cache-bust) (DEC-24)
+- Always get latest version (via fileserver.php)
 - Read complete file
 
-**[X] DON'T: Skip cache-busting (WISD-06, DEC-24)**
-- Always apply (auto-generated ID)
+**[X] DON'T: Skip fileserver.php (WISD-06)**
+- Always use URLs from session start fetch
 - Week-old code = broken implementations
 - No exceptions
 
@@ -606,7 +581,7 @@ Brief chat: "Modifications complete. Files ready to deploy."
 - [OK] [NEW] Zero fragment artifacts (all complete) (SIMAv4)
 - [OK] [NEW] Filename in every header (SIMAv4)
 - [OK] [NEW] Chat output minimal (SIMAv4)
-- [OK] [NEW] Cache-busting applied to all fetches (auto-generated) (WISD-06, DEC-24)
+- [OK] [NEW] fileserver.php URLs used (fresh files) (WISD-06)
 
 **Time Expectations:**
 - Simple feature: 10-15 minutes
@@ -626,14 +601,12 @@ Brief chat: "Modifications complete. Files ready to deploy."
 
 ### First Project Session
 
-<!-- MODIFIED: DEC-24 - Simplified activation -->
-**Step 1: Activate Mode (DEC-24 Simplified)**
+**Step 1: Activate Mode**
 ```
-[Upload File Server URLs.md or SERVER-CONFIG.md]
+[Upload File Server URLs.md containing fileserver.php URL]
 Say: "Start Project Work Mode"
-Optional: Cache ID: [number]  (if you want specific ID)
 Wait for context load (30-45s)
-Claude auto-generates Cache ID if not provided
+Claude fetches fileserver.php automatically (69ms)
 ```
 
 **Step 2: Describe Task (Brief)**
@@ -646,15 +619,14 @@ What to include:
 - Files to modify
 ```
 
-**Step 3: Claude Fetches Files (with auto cache-busting!) (DEC-24)**
+**Step 3: Claude Fetches Files (via fileserver.php!)**
 ```
-Brief chat: "Fetching files with cache-busting (auto-generated ID)..."
+Brief chat: "Fetching files (fresh content via fileserver.php)..."
 Claude will:
-1. Use Workflow-11-FetchFiles.md
-2. Apply cache-busting (auto-generated ID) to all URLs
-3. Fetch current versions
-4. Read complete files
-5. Understand current state
+1. Use fileserver.php URLs from session start
+2. Fetch current versions
+3. Read complete files
+4. Understand current state
 Brief chat: "Files loaded. Implementing..."
 ```
 
@@ -686,7 +658,7 @@ You:
 ### Ready for Project Mode When:
 
 - [OK] This file loaded (30-45s)
-- [OK] [NEW] Cache ID registered (auto-generated or user-provided) (DEC-24)
+- [OK] [NEW] fileserver.php fetched (automatic at session start)
 - [OK] SUGA 3-layer pattern understood
 - [OK] LESS-15 verification memorized
 - [OK] Templates available
@@ -695,13 +667,13 @@ You:
 - [OK] Task clearly defined
 - [OK] [NEW] Artifact rules memorized (SIMAv4)
 - [OK] [NEW] Chat brevity understood (SIMAv4)
-- [OK] [NEW] Cache-busting active (auto-generated) (WISD-06, DEC-24)
+- [OK] [NEW] fileserver.php URLs available (fresh files) (WISD-06)
 
 ### What Happens Next:
 
 ```
 1. User describes task
-2. Claude fetches current files with cache-busting (auto-generated ID) (brief chat) (DEC-24)
+2. Claude fetches current files via fileserver.php URLs (brief chat)
 3. Claude implements all 3 layers (brief chat)
 4. Claude verifies with LESS-15
 5. Claude outputs complete artifacts (brief chat)
@@ -716,58 +688,53 @@ You:
 Build features -> Complete code -> Deployable artifacts -> Production ready
 
 **Critical Rules:**
-1. **Cache ID auto-generated** (or use user-provided) (DEC-24)
-2. **Fetch first** (LESS-01 + auto cache-busting!) (DEC-24)
+1. **fileserver.php fetched** (automatic at session start)
+2. **Fetch first** (LESS-01 + use fileserver.php URLs!)
 3. **All 3 layers** (SUGA pattern)
 4. **Complete files** (artifacts, never chat, never fragments)
 5. **Verify always** (LESS-15)
 6. **[NEW] Brief chat** (status only, SIMAv4)
 
-**Success = Working code ready to deploy, fetched fresh with auto cache-busting, no cache issues**
+**Success = Working code ready to deploy, fresh files via fileserver.php, no cache issues**
 
 ---
 
 **END OF PROJECT MODE CONTEXT**
 
-**Version:** 1.3.0 (DEC-24 implementation)  
-**Lines:** 450 (within SIMAv4 limit after DEC-24 integration)  
+**Version:** 1.4.0 (fileserver.php implementation)  
+**Lines:** 448 (within SIMAv4 limit)  
 **Load Time:** 30-45 seconds  
 **Purpose:** Active development and implementation  
-**Output:** Complete, verified, deployable code in artifacts with fresh content (auto cache-busting)  
-**[NEW] Enhancement:** Auto-generates Cache ID (DEC-24) for zero user setup
+**Output:** Complete, verified, deployable code in artifacts with fresh content (fileserver.php)  
+**[NEW] Enhancement:** fileserver.php automatic fetch (69ms, 412 URLs, zero maintenance)
 
 ---
 
 ## VERSION HISTORY
 
-**v1.3.0 (2025-11-02):**
-- MODIFIED: Cache-busting requirement section (DEC-24 implementation)
-- CHANGED: Cache ID now auto-generated by Claude (random 10-digit)
-- ADDED: Backward compatibility for user-provided Cache IDs
-- UPDATED: Rule 1 (fetch with auto cache-busting)
-- UPDATED: Workflows (auto cache-busting applied)
-- UPDATED: Pre-output checklist (auto cache-busting verification)
-- UPDATED: RED FLAGS table (added DEC-24)
-- UPDATED: Best practices (auto cache-busting integration)
-- UPDATED: Success metrics (auto cache-busting compliance)
-- UPDATED: Activation checklist (auto-generated Cache ID)
-- UPDATED: Getting Started (simplified, auto-generation)
-- REMOVED: User instructions for generating Cache IDs
-- IMPROVED: User experience (zero setup required)
-- RELATED: DEC-24 (Auto-Generate Cache ID), WISD-06
+**v1.4.0 (2025-11-02):**
+- REPLACED: DEC-24 auto-generation with fileserver.php dynamic generation
+- CHANGED: File fetch workflow to use fileserver.php URLs
+- REMOVED: All references to manual Cache ID generation
+- REMOVED: Claude auto-generates Cache ID logic
+- ADDED: fileserver.php workflow integration
+- UPDATED: Rule 1 (fetch via fileserver.php URLs)
+- UPDATED: Workflows (use fileserver.php URLs throughout)
+- UPDATED: Pre-output checklist (fileserver.php verification)
+- UPDATED: RED FLAGS table (added skip fileserver.php)
+- UPDATED: Best practices (fileserver.php integration)
+- UPDATED: Success metrics (fileserver.php compliance)
+- UPDATED: Activation checklist (fileserver.php automatic)
+- UPDATED: Getting Started (simplified)
+- RELATED: WISD-06 (Cache-Busting Platform Limitation)
 
-**v1.2.0 (2025-11-02):**
-- ADDED: Cache-busting requirement section (mandatory for all fetches)
-- ADDED: Cache ID verification at session start
-- FIXED: Platform caching issue preventing fresh file retrieval during development
-- UPDATED: Rule 1 (fetch with cache-busting)
-- UPDATED: Workflows (apply cache-busting to all file fetches)
-- UPDATED: Pre-output checklist (cache-busting verification)
-- UPDATED: RED FLAGS table (added no cache-busting)
-- UPDATED: Best practices (cache-busting integration)
-- UPDATED: Success metrics (cache-busting compliance)
-- UPDATED: Activation checklist (Cache ID required)
-- RELATED: WISD-06 (Session-Level Cache-Busting)
+**v1.3.0 (2025-11-02):** [DEPRECATED]
+- DEC-24 auto-generation approach had platform limitations
+- Manual Cache ID with query parameters caused permission errors
+
+**v1.2.0 (2025-11-02):** [DEPRECATED]
+- Attempted cache-busting with manual approach
+- Platform limitation discovered
 
 **v1.1.0 (2025-11-01):** 
 - SIMAv4 standards integrated (artifact rules, minimal chat, headers, encoding)
