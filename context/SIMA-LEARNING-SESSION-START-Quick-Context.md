@@ -1,11 +1,11 @@
 # SIMA-LEARNING-SESSION-START-Quick-Context.md
 
-**Version:** 2.3.0  
+**Version:** 2.4.0  
 **Date:** 2025-11-02  
 **Purpose:** Knowledge extraction and learning mode  
 **Activation:** "Start SIMA Learning Mode"  
 **Load time:** 45-60 seconds (ONE TIME per learning session)  
-**Updated:** DEC-24 implementation (Auto-generate Cache ID)
+**Updated:** fileserver.php implementation + SIMAv4 path corrections
 
 ---
 
@@ -16,10 +16,10 @@ This is your **knowledge extraction bootstrap file**. Read it ONCE when entering
 - Extraction workflows with **genericization** and **duplicate checks**
 - Quality standards emphasizing **brevity**
 - REF-ID assignment rules
-- SIMA v3 routing logic
+- SIMAv4 routing logic
 - Post-extraction protocols
-- [NEW] **SIMAv4 compliance** (minimal chat, <=400 lines, headers, encoding)
-- [NEW] **Cache-busting requirements** (WISD-06, DEC-24)
+- **SIMAv4 compliance** (minimal chat, ≤400 lines, headers, encoding)
+- **File retrieval system** (fileserver.php, WISD-06)
 
 **Purpose:** Transform raw material into structured, **generic, unique, concise** neural map entries.
 
@@ -27,54 +27,46 @@ This is your **knowledge extraction bootstrap file**. Read it ONCE when entering
 
 ---
 
-## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL) - DEC-24
+## 🔄 FILE RETRIEVAL SYSTEM (CRITICAL)
 
-<!-- MODIFIED: DEC-24 - Auto-generate Cache ID -->
-**At session start:**
+<!-- MODIFIED: fileserver.php implementation (replaces DEC-24 auto-generation) -->
 
-### Auto-Generate Cache ID
-Claude automatically generates a random 10-digit cache ID:
-```
-Example: 7294615830, 3841927563, 5920387146
-```
+### Session Start Requirement
 
-### Check for User-Provided Cache ID (Optional)
-Look for user-provided cache ID in session start message (optional):
+**User uploads File Server URLs.md containing:**
 ```
-Cache ID: [number]
-Example: Cache ID: 1730486400
+https://claude.dizzybeaver.com/fileserver.php
 ```
 
-### Activation Pattern (DEC-24)
-```
-If user provides Cache ID:
-  ✅ Learning Mode loaded.
-  ✅ Cache ID: 1730486400 (user-provided)
-     All fetches will use cache-busting.
+**Claude automatically:**
+1. Fetches fileserver.php at session start
+2. Receives ~412 URLs with cache-busting (?v=random-10-digits)
+3. Generated fresh each session (69ms execution)
+4. All files from /src and /sima directories
 
-If user does NOT provide Cache ID:
-  ✅ Learning Mode loaded.
-  ✅ Cache ID: 7294615830 (auto-generated)
-     All fetches will use cache-busting.
+**Claude can now fetch any file:**
 ```
-
-### Apply to ALL Fetches
-Transform every URL automatically:
-```
-Clean URL (from File Server URLs.md):
-https://claude.dizzybeaver.com/src/gateway.py
-
-Fetch URL (with cache-busting):
-https://claude.dizzybeaver.com/src/gateway.py?v=7294615830
+Example from fileserver.php output:
+https://claude.dizzybeaver.com/sima/entries/lessons/wisdom/WISD-06.md?v=6144453293
 ```
 
-**No exceptions. Every fetch. Every file.**
+**Result:** Fresh file content, bypasses Anthropic's cache
+
+### Why This Works
+
+**Platform Limitation:**
+Anthropic's web_fetch caches files for weeks, ignoring all server headers.
+
+**Solution:**
+- fileserver.php URL explicitly listed (permission granted)
+- Generated URLs come from fetch result (secondary permission)
+- Random parameters bypass platform cache
+- Zero user maintenance (no manual steps)
 
 **Note for Learning Mode:**
-Learning mode creates and updates neural map files.
-Cache-busting ensures we read the latest versions when checking for duplicates.
+Learning mode creates and updates neural map files. fileserver.php ensures we read fresh neural maps when checking for duplicates, preventing duplicate work on cached entries.
 
-**Related:** WISD-06, DEC-24
+**Related:** WISD-06 (Cache-Busting Platform Limitation)
 
 ---
 
@@ -89,7 +81,7 @@ Cache-busting ensures we read the latest versions when checking for duplicates.
 [OK] Index updates -> Artifacts
 [OK] Cross-references -> Include in artifacts
 [OK] Filename in header (SIMAv4)
-[OK] File <=400 lines (SIMAv4)
+[OK] File ≤400 lines (SIMAv4)
 [X] Don't output neural maps in chat
 [X] Don't condense multiple topics in one file
 ```
@@ -100,7 +92,7 @@ Cache-busting ensures we read the latest versions when checking for duplicates.
 [OK] Proper REF-ID format
 [OK] 4-8 keywords
 [OK] 3-7 related topics
-[OK] Brief (<=400 lines per file)
+[OK] Brief (≤400 lines per file)
 [OK] Generic (no project-specifics)
 [OK] Unique (not duplicate)
 [OK] Filename in header
@@ -159,7 +151,7 @@ BEFORE creating any new entry:
    - Same REF-ID prefix (LESS, AP, DEC, etc.)
    - Related keywords
    - Similar patterns
-   - [NEW] Fetch with cache-busting when checking (DEC-24)
+   - [NEW] Use fileserver.php URLs when checking
 
 2. If similar entry exists:
    -> DON'T create duplicate
@@ -192,7 +184,7 @@ BEFORE creating any new entry:
 - Examples: 1-2 lines code + 1 line explanation
 - Descriptions: Direct, no filler words
 - Cross-refs: REF-IDs only, no explanatory text
-- Files: <=400 lines (SIMAv4)
+- Files: ≤400 lines (SIMAv4)
 
 **Before:**
 > "After conducting extensive debugging sessions and analyzing the performance characteristics of our system, we eventually discovered through careful investigation that the root cause of the slowdown was related to how we were handling cache misses, which were occurring more frequently than expected due to..."
@@ -258,7 +250,7 @@ BEFORE creating any new entry:
 
 ## ENHANCED EXTRACTION WORKFLOWS
 
-### Universal Extraction Template (SIMAv4 + Cache-Busting)
+### Universal Extraction Template (SIMAv4 + fileserver.php)
 
 **Use this for ALL knowledge types:**
 
@@ -267,9 +259,9 @@ STEP 1: Identify Signal
 - What triggered this knowledge?
 - What type is it? (LESS, AP, DEC, BUG, etc.)
 
-STEP 2: Check for Duplicates (with cache-busting!) (DEC-24)
+STEP 2: Check for Duplicates (with fileserver.php URLs)
 - Search existing entries: "[keyword] [type]"
-- [NEW] Fetch relevant entries with cache-busting (auto-generated ID)
+- Use fileserver.php URLs to fetch relevant entries
 - Similar concept already documented?
 - If YES -> Update existing, don't create new
 - If NO -> Proceed to Step 3
@@ -297,7 +289,7 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 - 3-7 related topics
 - Minimal cross-ref text
 - Filename in header
-- File <=400 lines
+- File ≤400 lines
 - Output as markdown artifact
 - Brief chat: "Creating [TYPE-##] artifact..."
 ```
@@ -306,14 +298,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## WORKFLOW 1: Extract LESSONS (LESS-##)
 
-**Enhanced Process (SIMAv4 + Cache-Busting + DEC-24):**
+**Enhanced Process (SIMAv4 + fileserver.php):**
 
 ```
 1. Identify learning moment
 
-2. CHECK DUPLICATES (with auto-generated cache-busting!) (DEC-24)
+2. CHECK DUPLICATES (with fileserver.php URLs)
    Search: "project_knowledge_search: [topic] lesson"
-   [NEW] Fetch with cache-busting (auto-generated ID) if needed
+   Use fileserver.php URLs if needed
    If similar exists -> Update that entry instead
 
 3. GENERICIZE
@@ -333,18 +325,18 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 6. Create file as artifact (SIMAv4):
    Brief chat: "Creating LESS-## artifact..."
-   - File: NM06/NM06-Lessons-[Topic]_LESS-##.md
+   - File: /sima/entries/lessons/[category]/LESS-##.md
    - Filename in header
    - Format: Markdown
-   - <=400 lines
+   - ≤400 lines
    - Output: Complete artifact
    Brief chat: "LESS-## created. [1-sentence summary]"
 ```
 
 **Quality Check:**
 - [OK] Generic (no unnecessary project-specifics)
-- [OK] Unique (not duplicate - checked with auto cache-busting) (DEC-24)
-- [OK] Brief (<=400 lines)
+- [OK] Unique (not duplicate - checked with fileserver.php URLs)
+- [OK] Brief (≤400 lines)
 - [OK] Clear application context
 - [OK] [NEW] Filename in header (SIMAv4)
 - [OK] [NEW] Output as artifact
@@ -354,14 +346,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## WORKFLOW 2: Extract ANTI-PATTERNS (AP-##)
 
-**Enhanced Process (SIMAv4 + Cache-Busting + DEC-24):**
+**Enhanced Process (SIMAv4 + fileserver.php):**
 
 ```
 1. Identify anti-pattern
 
-2. CHECK DUPLICATES (with auto-generated cache-busting!) (DEC-24)
+2. CHECK DUPLICATES (with fileserver.php URLs)
    Search: "project_knowledge_search: [pattern] anti-pattern"
-   [NEW] Fetch with cache-busting (auto-generated ID) if needed
+   Use fileserver.php URLs if needed
    Check: Is this already AP-## somewhere?
 
 3. GENERICIZE
@@ -381,10 +373,10 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 6. Create file as artifact (SIMAv4):
    Brief chat: "Creating AP-## artifact..."
-   - File: NM05/NM05-AntiPatterns-[Category]_AP-##.md
+   - File: /sima/entries/anti-patterns/[category]/AP-##.md
    - Filename in header
    - Format: Markdown
-   - <=400 lines
+   - ≤400 lines
    - Output: Complete artifact
    Brief chat: "AP-## created. [1-sentence summary]"
 ```
@@ -401,14 +393,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## WORKFLOW 3: Extract WISDOM (WISD-##)
 
-**Enhanced Process (SIMAv4 + Cache-Busting + DEC-24):**
+**Enhanced Process (SIMAv4 + fileserver.php):**
 
 ```
 1. Identify wisdom moment (profound insight)
 
-2. CHECK DUPLICATES (with auto-generated cache-busting!) (DEC-24)
+2. CHECK DUPLICATES (with fileserver.php URLs)
    Search: "project_knowledge_search: [concept] wisdom"
-   [NEW] Fetch with cache-busting (auto-generated ID) if needed
+   Use fileserver.php URLs if needed
    Wisdom should be genuinely NEW insight
 
 3. GENERICIZE (Critical for wisdom!)
@@ -427,10 +419,10 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 6. Create file as artifact (SIMAv4):
    Brief chat: "Creating WISD-## artifact..."
-   - File: NM06/NM06-Wisdom-Synthesized_WISD-##.md
+   - File: /sima/entries/lessons/wisdom/WISD-##.md
    - Filename in header
    - Format: Markdown
-   - <=400 lines
+   - ≤400 lines
    - Output: Complete artifact
    Brief chat: "WISD-## created. [1-sentence summary]"
 ```
@@ -447,14 +439,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## WORKFLOW 4: Extract BUGS (BUG-##)
 
-**Enhanced Process (SIMAv4 + Cache-Busting + DEC-24):**
+**Enhanced Process (SIMAv4 + fileserver.php):**
 
 ```
 1. Identify bug
 
-2. CHECK DUPLICATES (with auto-generated cache-busting!) (DEC-24)
+2. CHECK DUPLICATES (with fileserver.php URLs)
    Search: "project_knowledge_search: [symptom] bug"
-   [NEW] Fetch with cache-busting (auto-generated ID) if needed
+   Use fileserver.php URLs if needed
    Same root cause already documented?
 
 3. GENERICIZE
@@ -474,10 +466,10 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 6. Create file as artifact (SIMAv4):
    Brief chat: "Creating BUG-## artifact..."
-   - File: NM06/NM06-Bugs-Critical_BUG-##.md
+   - File: /sima/entries/lessons/bugs/BUG-##.md
    - Filename in header
    - Format: Markdown
-   - <=400 lines
+   - ≤400 lines
    - Output: Complete artifact
    Brief chat: "BUG-## created. [1-sentence summary]"
 ```
@@ -491,14 +483,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## WORKFLOW 5: Extract DECISIONS (DEC-##)
 
-**Enhanced Process (SIMAv4 + Cache-Busting + DEC-24):**
+**Enhanced Process (SIMAv4 + fileserver.php):**
 
 ```
 1. Identify decision point
 
-2. CHECK DUPLICATES (with auto-generated cache-busting!) (DEC-24)
+2. CHECK DUPLICATES (with fileserver.php URLs)
    Search: "project_knowledge_search: [topic] decision"
-   [NEW] Fetch with cache-busting (auto-generated ID) if needed
+   Use fileserver.php URLs if needed
    Same decision already documented?
 
 3. GENERICIZE
@@ -519,10 +511,10 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 6. Create file as artifact (SIMAv4):
    Brief chat: "Creating DEC-## artifact..."
-   - File: NM04/NM04-Decisions-[Category]_DEC-##.md
+   - File: /sima/entries/decisions/[category]/DEC-##.md
    - Filename in header
    - Format: Markdown
-   - <=400 lines
+   - ≤400 lines
    - Output: Complete artifact
    Brief chat: "DEC-## created. [1-sentence summary]"
 ```
@@ -536,7 +528,7 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## ENHANCED QUALITY STANDARDS
 
-### Updated Quality Criteria (SIMAv4 + Cache-Busting + DEC-24)
+### Updated Quality Criteria (SIMAv4 + fileserver.php)
 
 **1. Actionable** (unchanged)
 - [OK] Can be applied immediately
@@ -549,15 +541,15 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 - [OK] Universal principles extracted
 - [X] Project names, tool names (unless core)
 
-**3. Unique (with auto cache-busting!) (DEC-24)**
+**3. Unique (with fileserver.php)**
 - [OK] Not duplicate of existing entry
 - [OK] Adds new insight/perspective
 - [OK] Distinct from related entries
-- [OK] [NEW] Checked with fresh file content (auto cache-busting)
+- [OK] [NEW] Checked with fresh file content (fileserver.php URLs)
 - [X] Rehashing documented knowledge
 
 **4. Brief (SIMAv4 Enhanced)**
-- [OK] <=400 lines total per file
+- [OK] ≤400 lines total per file
 - [OK] Summaries: 2-3 sentences
 - [OK] Examples: 2-3 lines
 - [OK] Separate files (never condense)
@@ -579,11 +571,11 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## ENHANCED POST-EXTRACTION PROTOCOL
 
-### After Creating Each Entry (SIMAv4 + Cache-Busting + DEC-24)
+### After Creating Each Entry (SIMAv4 + fileserver.php)
 
-**Step 1: Duplicate Verification (with auto cache-busting!) (DEC-24)**
+**Step 1: Duplicate Verification (with fileserver.php)**
 - [OK] Searched before creating
-- [OK] [NEW] Fetched with cache-busting (auto-generated ID) when checking
+- [OK] [NEW] Used fileserver.php URLs when checking
 - [OK] Confirmed uniqueness
 - [OK] Not rehashing existing entry
 - [OK] If similar found, updated that instead
@@ -595,14 +587,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 - [OK] Transferable across contexts
 
 **Step 3: Brevity Check (SIMAv4)**
-- [OK] Total lines <=400 per file
-- [OK] Summary <=3 sentences
-- [OK] Examples <=3 lines each
+- [OK] Total lines ≤400 per file
+- [OK] Summary ≤3 sentences
+- [OK] Examples ≤3 lines each
 - [OK] No filler words
 - [OK] Separate files (not condensed)
 
 **Step 4: File Creation (SIMAv4)**
-- [OK] Correct NM##/ directory
+- [OK] Correct /sima/entries/ directory
 - [OK] Named correctly
 - [OK] Template followed
 - [OK] All sections completed
@@ -624,9 +616,9 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ---
 
-## EXTRACTION EXAMPLES (Enhanced with Auto Cache-Busting + DEC-24)
+## EXTRACTION EXAMPLES (Enhanced with fileserver.php)
 
-### Example 1: LESSON Extraction (SIMAv4 + Cache-Busting + DEC-24)
+### Example 1: LESSON Extraction (SIMAv4 + fileserver.php)
 
 **Raw Material:**
 ```
@@ -641,13 +633,13 @@ LESS-##: Always sanitize sentinels before JSON serialization
 Context: In SUGA-ISP Lambda, _CacheMiss sentinels...
 ```
 
-**NEW Way (SIMAv4 + Cache-Busting + DEC-24):**
+**NEW Way (SIMAv4 + fileserver.php):**
 ```
-Brief chat: "Extracting lesson... Checking for duplicates with cache-busting (auto-generated ID)..."
+Brief chat: "Extracting lesson... Checking for duplicates with fileserver.php URLs..."
 
-1. Check duplicates (with auto cache-busting!) (DEC-24):
+1. Check duplicates (with fileserver.php):
    Search: "sentinel serialization lesson"
-   Fetch relevant entries with cache-busting (auto-generated ID)
+   Fetch relevant entries via fileserver.php URLs
    -> Found none, proceed
 
 2. Genericize:
@@ -656,7 +648,7 @@ Brief chat: "Extracting lesson... Checking for duplicates with cache-busting (au
 
 3. Create (BRIEF) as artifact:
 
-# NM06-Lessons-Serialization_LESS-##.md
+# LESS-##.md
 **Version:** 1.0.0
 **Date:** 2025-11-02
 **Purpose:** Sanitize implementation sentinels at boundaries
@@ -676,13 +668,13 @@ Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 
 ---
 
-## LEARNING MODE BEST PRACTICES (SIMAv4 + Cache-Busting + DEC-24)
+## LEARNING MODE BEST PRACTICES (SIMAv4 + fileserver.php)
 
 ### Enhanced Do's
 
-**[OK] DO: Check duplicates FIRST (with auto cache-busting!) (DEC-24)**
+**[OK] DO: Check duplicates FIRST (with fileserver.php)**
 - Search before every extraction
-- [NEW] Fetch with cache-busting (auto-generated ID) to ensure fresh content
+- Use fileserver.php URLs to ensure fresh content
 - Update existing vs create new
 - Strengthen connections over proliferation
 
@@ -696,7 +688,7 @@ Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 - 2-3 sentence summaries
 - 2-3 line examples
 - No filler, no stories
-- <=400 lines per file
+- ≤400 lines per file
 
 **[OK] DO: Extract immediately**
 - Capture while fresh
@@ -720,15 +712,15 @@ Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 - Brief summaries (2-3 sentences)
 - No long narratives
 
-**[OK] DO: Use cache-busting (WISD-06, DEC-24)**
-- Apply to all file fetches (auto-generated ID)
+**[OK] DO: Use fileserver.php URLs (WISD-06)**
+- Apply to all file fetches
 - Ensures fresh content when checking duplicates
 - Prevents working with outdated entries
 
 ### Enhanced Don'ts
 
 **[X] DON'T: Create duplicates**
-- Always search first (with auto cache-busting!) (DEC-24)
+- Always search first (with fileserver.php URLs)
 - Update existing entries
 - Prevent proliferation
 
@@ -767,26 +759,26 @@ Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 - Let artifacts speak
 
 **[X] DON'T: Exceed 400 lines (SIMAv4)**
-- Neural maps: <=400 lines
+- Neural maps: ≤400 lines
 - Split if needed
 - Keep files focused
 
-**[X] DON'T: Skip cache-busting (WISD-06, DEC-24)**
-- Always fetch with cache-busting (auto-generated ID)
+**[X] DON'T: Skip fileserver.php (WISD-06)**
+- Always use fileserver.php URLs
 - Prevents duplicate work on cached entries
 - Ensures accurate duplicate detection
 
 ---
 
-## SUCCESS METRICS (SIMAv4 + Cache-Busting + DEC-24)
+## SUCCESS METRICS (SIMAv4 + fileserver.php)
 
 ### New Metrics
 
-**Metric 1: Uniqueness Rate (with auto cache-busting!) (DEC-24)**
+**Metric 1: Uniqueness Rate (with fileserver.php)**
 - Target: 100% unique entries (no duplicates)
 - Measure: Duplicate searches performed / entries created
 - Goal: 1:1 ratio (search before every creation)
-- [NEW] Verification: Cache-busting (auto-generated ID) applied to all duplicate checks
+- [NEW] Verification: fileserver.php URLs applied to all duplicate checks
 
 **Metric 2: Genericization Score**
 - Target: <2 project-specific terms per entry
@@ -794,7 +786,7 @@ Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 - Goal: <5% project-specific content
 
 **Metric 3: Brevity Score (SIMAv4)**
-- Target: <=400 lines per file (strict limit)
+- Target: ≤400 lines per file (strict limit)
 - Measure: Total lines / file
 - Goal: All files within limit
 
@@ -811,7 +803,7 @@ Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 - Goal: 1:1 ratio (every entry as artifact)
 
 **Metric 7: Chat Brevity (SIMAv4)**
-- Target: <=5 sentences chat per entry
+- Target: ≤5 sentences chat per entry
 - Measure: Chat words / entry
 - Goal: Minimal chat overhead
 
@@ -820,23 +812,23 @@ Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 - Measure: Topics / files
 - Goal: 1:1 ratio (separate files always)
 
-**Metric 9: Cache-Busting Compliance (WISD-06, DEC-24)**
-- Target: 100% cache-busting applied (auto-generated ID)
-- Measure: Cache-busted fetches / total fetches
-- Goal: 1:1 ratio (every fetch cache-busted)
+**Metric 9: fileserver.php Compliance (WISD-06)**
+- Target: 100% fileserver.php URLs applied
+- Measure: fileserver.php fetches / total fetches
+- Goal: 1:1 ratio (every fetch via fileserver.php)
 
 ---
 
-## GETTING STARTED (SIMAv4 + Cache-Busting + DEC-24)
+## GETTING STARTED (SIMAv4 + fileserver.php)
 
 ### First Learning Session
 
-**Step 1: Activate Learning Mode (DEC-24 Simplified)**
+**Step 1: Activate Learning Mode (Simplified)**
 ```
+[Upload File Server URLs.md containing fileserver.php URL]
 Say: "Start SIMA Learning Mode"
-Optional: Cache ID: [number]  (if you want specific ID)
+Claude fetches fileserver.php automatically (69ms, 412 URLs)
 Claude loads this enhanced context file
-Claude auto-generates Cache ID if not provided (DEC-24)
 ```
 
 **Step 2: Provide Source Material**
@@ -847,14 +839,14 @@ Claude auto-generates Cache ID if not provided (DEC-24)
 - Share notes
 ```
 
-**Step 3: Enhanced Guided Extraction (SIMAv4 + Cache-Busting + DEC-24)**
+**Step 3: Enhanced Guided Extraction (SIMAv4 + fileserver.php)**
 ```
-Brief chat: "Extracting knowledge with cache-busting (auto-generated ID)..."
+Brief chat: "Extracting knowledge with fileserver.php URLs..."
 Claude will:
 1. Identify extraction signals
-2. Search for duplicates FIRST (with auto cache-busting!) (DEC-24)
+2. Search for duplicates FIRST (with fileserver.php URLs)
 3. Genericize content
-4. Create brief entries (<=400 lines)
+4. Create brief entries (≤400 lines)
 5. Propose knowledge items
 6. Apply workflows
 7. Create neural map entries as markdown artifacts
@@ -873,7 +865,7 @@ Claude provides:
 - REF-IDs assigned
 - Indexes updated (as separate artifacts)
 - Brief summary only
-- [NEW] Cache-busting applied throughout (auto-generated ID) (DEC-24)
+- Fresh files guaranteed (fileserver.php)
 ```
 
 ---
@@ -883,34 +875,35 @@ Claude provides:
 ### Ready for Learning Mode When:
 
 - [OK] This file loaded (45-60s)
-- [OK] [NEW] Cache ID registered (auto-generated or user-provided) (DEC-24)
+- [OK] fileserver.php fetched (automatic, 69ms, 412 URLs)
 - [OK] Extraction signals memorized
-- [OK] Duplicate detection protocol understood (with auto cache-busting!) (DEC-24)
+- [OK] Duplicate detection protocol understood (with fileserver.php)
 - [OK] Genericization rules internalized
-- [OK] Brevity standards clear (<=400 lines)
+- [OK] Brevity standards clear (≤400 lines)
 - [OK] Workflow patterns understood
 - [OK] REF-ID counts current
 - [OK] Source material identified
 - [OK] [NEW] Artifact output format understood (SIMAv4)
 - [OK] [NEW] Chat brevity understood (SIMAv4)
 - [OK] [NEW] File separation understood (SIMAv4)
-- [OK] [NEW] Cache-busting active (auto-generated) (WISD-06, DEC-24)
+- [OK] [NEW] fileserver.php URLs active (WISD-06)
 
 ### What Happens Next:
 
 ```
-1. User says "Start SIMA Learning Mode"
-   Optional: Cache ID: [number]
-2. Claude confirms activation (brief) + Cache ID (auto-generated or user-provided) (DEC-24)
-3. User provides source material
-4. Claude extracts systematically:
-   - Checks duplicates before creating (with auto cache-busting!) (DEC-24)
+1. User uploads File Server URLs.md (fileserver.php URL)
+2. User says "Start SIMA Learning Mode"
+3. Claude fetches fileserver.php (69ms, 412 URLs)
+4. Claude confirms activation (brief)
+5. User provides source material
+6. Claude extracts systematically:
+   - Checks duplicates before creating (with fileserver.php URLs)
    - Genericizes all content
-   - Minimizes token usage (<=400 lines/file)
+   - Minimizes token usage (≤400 lines/file)
    - Outputs as artifacts (markdown)
    - Keeps chat minimal
-5. New knowledge added to neural maps
-6. Brief session summary
+7. New knowledge added to neural maps
+8. Brief session summary
 ```
 
 ---
@@ -920,71 +913,75 @@ Claude provides:
 **Learning Mode Purpose:**
 Transform experience -> **Generic, Unique, Brief** knowledge -> Institutional memory
 
-**Six Critical Rules (SIMAv4 + Cache-Busting + DEC-24):**
-1. **Check Cache ID** - Auto-generated if not provided (DEC-24)
-2. **Check duplicates** - Update existing, don't create duplicates (with auto cache-busting!) (DEC-24)
+**Six Critical Rules (SIMAv4 + fileserver.php):**
+1. **Upload File Server URLs.md** - fileserver.php fetched automatically
+2. **Check duplicates** - Update existing, don't create duplicates (with fileserver.php)
 3. **Genericize** - Strip project-specifics, extract universal principles
-4. **Be brief** - Minimize tokens (<=400 lines), maximize assimilation capacity
+4. **Be brief** - Minimize tokens (≤400 lines), maximize assimilation capacity
 5. **[NEW] Output as artifacts** - Neural map files as markdown artifacts (SIMAv4)
 6. **[NEW] Keep chat minimal** - Brief status only (SIMAv4)
 
-**Success = Knowledge compounds without duplication or bloat, properly formatted, separate files, with fresh content from auto cache-busting**
+**Success = Knowledge compounds without duplication or bloat, properly formatted, separate files, with fresh content from fileserver.php**
 
 ---
 
 **END OF SIMA LEARNING MODE CONTEXT**
 
-**Version:** 2.3.0 (DEC-24 implementation)  
-**Lines:** 445 (within SIMAv4 limit after DEC-24 integration)  
+**Version:** 2.4.0 (fileserver.php implementation + SIMAv4 paths)  
+**Lines:** 870 (context file, no line limit)  
 **Load Time:** 45-60 seconds  
 **Enhancements:**
-- Duplicate detection mandatory (with auto cache-busting!) (DEC-24)
+- Duplicate detection mandatory (with fileserver.php URLs)
 - Genericization by default
-- Extreme brevity standards (<=400 lines)
-- [NEW] Artifact output for neural map files (SIMAv4)
-- [NEW] Minimal chat output (SIMAv4)
-- [NEW] File separation (no condensing) (SIMAv4)
-- [NEW] Filename in headers (SIMAv4)
-- [NEW] Cache-busting protocol (auto-generated) (WISD-06, DEC-24)
-**ROI:** Captures 3-5 unique, generic, brief entries per session as proper artifacts with fresh content via auto cache-busting  
+- Extreme brevity standards (≤400 lines)
+- Artifact output for neural map files (SIMAv4)
+- Minimal chat output (SIMAv4)
+- File separation (no condensing) (SIMAv4)
+- Filename in headers (SIMAv4)
+- File retrieval via fileserver.php (WISD-06)
+**ROI:** Captures 3-5 unique, generic, brief entries per session as proper artifacts with fresh content via fileserver.php  
 **Value:** Permanent, transferable, efficient institutional memory in proper format with accurate duplicate detection using fresh files
 
 ---
 
 **To activate:**
 ```
+[Upload File Server URLs.md]
 "Start SIMA Learning Mode"
-Optional: Cache ID: [number]
 ```
 
 ---
 
 ## VERSION HISTORY
 
-**v2.3.0 (2025-11-02):**
-- MODIFIED: Cache-busting requirement section (DEC-24 implementation)
-- CHANGED: Cache ID now auto-generated by Claude (random 10-digit)
-- ADDED: Backward compatibility for user-provided Cache IDs
-- UPDATED: Duplicate detection workflows (auto cache-busting applied)
-- UPDATED: Extraction workflows (auto cache-busting integration)
-- UPDATED: Quality criteria (auto cache-busting verification)
-- UPDATED: Success metrics (auto cache-busting compliance)
-- UPDATED: Activation checklist (auto-generated Cache ID)
-- UPDATED: Getting Started (simplified, auto-generation)
-- REMOVED: User instructions for generating Cache IDs
+**v2.4.0 (2025-11-02):**
+- REPLACED: DEC-24 auto-generation with fileserver.php dynamic generation
+- CHANGED: All NM##/ references updated to /sima/entries/ structure (SIMAv4)
+- REMOVED: All references to manual/auto Cache ID generation
+- UPDATED: All workflow examples (fileserver.php URLs)
+- UPDATED: Duplicate detection protocols (fileserver.php integration)
+- UPDATED: Extraction workflows (fileserver.php throughout)
+- UPDATED: Quality criteria (fileserver.php verification)
+- UPDATED: Success metrics (fileserver.php compliance)
+- UPDATED: Activation checklist (fileserver.php automatic)
+- UPDATED: Getting Started (simplified, fileserver.php)
+- UPDATED: File paths (NM##/ → /sima/entries/[category]/)
+- UPDATED: Example filenames (SIMAv4 structure)
+- UPDATED: Post-extraction protocol (SIMAv4 paths)
 - IMPROVED: User experience (zero setup required)
-- RELATED: DEC-24 (Auto-Generate Cache ID), WISD-06
+- RELATED: WISD-06 (Cache-Busting Platform Limitation)
 
-**v2.2.0 (2025-11-02):**
-- ADDED: Cache-busting requirement section (mandatory for all fetches)
-- ADDED: Cache ID verification at session start
-- FIXED: Platform caching issue preventing fresh file retrieval during duplicate checks
-- UPDATED: Duplicate detection workflows (apply cache-busting)
-- UPDATED: Extraction workflows (cache-busting integration)
-- UPDATED: Quality criteria (cache-busting verification)
-- UPDATED: Success metrics (cache-busting compliance)
-- UPDATED: Activation checklist (Cache ID required)
-- RELATED: WISD-06 (Session-Level Cache-Busting)
+**v2.3.0 (2025-11-02):** [DEPRECATED]
+- DEC-24 auto-generation approach had platform limitations
+- Manual Cache ID with query parameters caused permission errors
+- Used SIMAv3 directory structure (NM##/)
+- Superseded by fileserver.php dynamic generation + SIMAv4 paths
 
-**v2.1.0 (2025-11-01):** 
-- SIMAv4 standards integrated (artifact rules, file limits, encoding, headers)
+**v2.2.0 (2025-11-02):** [DEPRECATED]
+- Cache-busting requirement section (manual approach)
+- Cache ID verification at session start
+- Superseded by fileserver.php approach
+
+**v2.1.0 (2025-11-01):** [DEPRECATED]
+- SIMAv4 standards integrated
+- Superseded by fileserver.php approach
