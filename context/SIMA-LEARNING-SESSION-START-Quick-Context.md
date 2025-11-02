@@ -1,11 +1,11 @@
 # SIMA-LEARNING-SESSION-START-Quick-Context.md
 
-**Version:** 2.1.0  
-**Date:** 2025-11-01  
+**Version:** 2.2.0  
+**Date:** 2025-11-02  
 **Purpose:** Knowledge extraction and learning mode  
 **Activation:** "Start SIMA Learning Mode"  
 **Load time:** 45-60 seconds (ONE TIME per learning session)  
-**Updated:** SIMAv4 standards integrated
+**Updated:** Cache-busting protocol integrated (WISD-06)
 
 ---
 
@@ -19,10 +19,60 @@ This is your **knowledge extraction bootstrap file**. Read it ONCE when entering
 - SIMA v3 routing logic
 - Post-extraction protocols
 - [NEW] **SIMAv4 compliance** (minimal chat, <=400 lines, headers, encoding)
+- [NEW] **Cache-busting requirements** (WISD-06)
 
 **Purpose:** Transform raw material into structured, **generic, unique, concise** neural map entries.
 
 **Time investment:** 60 seconds now enables systematic knowledge capture all session.
+
+---
+
+## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL)
+
+**Before any file fetching in this mode:**
+
+### Check for Cache ID
+Look for user-provided cache ID in session start message:
+```
+Cache ID: [unix_timestamp]
+Example: Cache ID: 1730486400
+```
+
+### If Cache ID Present
+Store it and confirm:
+```
+✅ Learning Mode loaded.
+✅ Cache ID: [timestamp] registered.
+   All fetches will use cache-busting.
+```
+
+### If Cache ID Missing
+Prompt for it before proceeding:
+```
+⚠️ Cache ID required for file fetching.
+
+Please provide: Cache ID: [run: date +%s]
+
+Why: Claude's cache can serve week-old files without this.
+```
+
+### Apply to ALL Fetches
+Transform every URL automatically:
+```
+Clean URL (from File Server URLs.md):
+https://claude.dizzybeaver.com/src/gateway.py
+
+Fetch URL (with cache-busting):
+https://claude.dizzybeaver.com/src/gateway.py?v=1730486400
+```
+
+**No exceptions. Every fetch. Every file.**
+
+**Note for Learning Mode:**
+Learning mode creates and updates neural map files.
+Cache-busting ensures we read the latest versions when checking for duplicates.
+
+**Related:** WISD-06
 
 ---
 
@@ -107,6 +157,7 @@ BEFORE creating any new entry:
    - Same REF-ID prefix (LESS, AP, DEC, etc.)
    - Related keywords
    - Similar patterns
+   - [NEW] Fetch with cache-busting when checking
 
 2. If similar entry exists:
    -> DON'T create duplicate
@@ -205,7 +256,7 @@ BEFORE creating any new entry:
 
 ## ENHANCED EXTRACTION WORKFLOWS
 
-### Universal Extraction Template (SIMAv4)
+### Universal Extraction Template (SIMAv4 + Cache-Busting)
 
 **Use this for ALL knowledge types:**
 
@@ -214,8 +265,9 @@ STEP 1: Identify Signal
 - What triggered this knowledge?
 - What type is it? (LESS, AP, DEC, BUG, etc.)
 
-STEP 2: Check for Duplicates
+STEP 2: Check for Duplicates (with cache-busting!)
 - Search existing entries: "[keyword] [type]"
+- [NEW] Fetch relevant entries with cache-busting
 - Similar concept already documented?
 - If YES -> Update existing, don't create new
 - If NO -> Proceed to Step 3
@@ -252,13 +304,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## WORKFLOW 1: Extract LESSONS (LESS-##)
 
-**Enhanced Process (SIMAv4):**
+**Enhanced Process (SIMAv4 + Cache-Busting):**
 
 ```
 1. Identify learning moment
 
-2. CHECK DUPLICATES
+2. CHECK DUPLICATES (with cache-busting!)
    Search: "project_knowledge_search: [topic] lesson"
+   [NEW] Fetch with cache-busting if needed
    If similar exists -> Update that entry instead
 
 3. GENERICIZE
@@ -288,7 +341,7 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 **Quality Check:**
 - [OK] Generic (no unnecessary project-specifics)
-- [OK] Unique (not duplicate)
+- [OK] Unique (not duplicate - checked with cache-busting)
 - [OK] Brief (<=400 lines)
 - [OK] Clear application context
 - [OK] [NEW] Filename in header (SIMAv4)
@@ -299,13 +352,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## WORKFLOW 2: Extract ANTI-PATTERNS (AP-##)
 
-**Enhanced Process (SIMAv4):**
+**Enhanced Process (SIMAv4 + Cache-Busting):**
 
 ```
 1. Identify anti-pattern
 
-2. CHECK DUPLICATES
+2. CHECK DUPLICATES (with cache-busting!)
    Search: "project_knowledge_search: [pattern] anti-pattern"
+   [NEW] Fetch with cache-busting if needed
    Check: Is this already AP-## somewhere?
 
 3. GENERICIZE
@@ -345,13 +399,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## WORKFLOW 3: Extract WISDOM (WISD-##)
 
-**Enhanced Process (SIMAv4):**
+**Enhanced Process (SIMAv4 + Cache-Busting):**
 
 ```
 1. Identify wisdom moment (profound insight)
 
-2. CHECK DUPLICATES
+2. CHECK DUPLICATES (with cache-busting!)
    Search: "project_knowledge_search: [concept] wisdom"
+   [NEW] Fetch with cache-busting if needed
    Wisdom should be genuinely NEW insight
 
 3. GENERICIZE (Critical for wisdom!)
@@ -390,13 +445,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## WORKFLOW 4: Extract BUGS (BUG-##)
 
-**Enhanced Process (SIMAv4):**
+**Enhanced Process (SIMAv4 + Cache-Busting):**
 
 ```
 1. Identify bug
 
-2. CHECK DUPLICATES
+2. CHECK DUPLICATES (with cache-busting!)
    Search: "project_knowledge_search: [symptom] bug"
+   [NEW] Fetch with cache-busting if needed
    Same root cause already documented?
 
 3. GENERICIZE
@@ -433,13 +489,14 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## WORKFLOW 5: Extract DECISIONS (DEC-##)
 
-**Enhanced Process (SIMAv4):**
+**Enhanced Process (SIMAv4 + Cache-Busting):**
 
 ```
 1. Identify decision point
 
-2. CHECK DUPLICATES
+2. CHECK DUPLICATES (with cache-busting!)
    Search: "project_knowledge_search: [topic] decision"
+   [NEW] Fetch with cache-busting if needed
    Same decision already documented?
 
 3. GENERICIZE
@@ -477,7 +534,7 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## ENHANCED QUALITY STANDARDS
 
-### Updated Quality Criteria (SIMAv4)
+### Updated Quality Criteria (SIMAv4 + Cache-Busting)
 
 **1. Actionable** (unchanged)
 - [OK] Can be applied immediately
@@ -490,10 +547,11 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 - [OK] Universal principles extracted
 - [X] Project names, tool names (unless core)
 
-**3. Unique**
+**3. Unique (with cache-busting!)**
 - [OK] Not duplicate of existing entry
 - [OK] Adds new insight/perspective
 - [OK] Distinct from related entries
+- [OK] [NEW] Checked with fresh file content (cache-busting)
 - [X] Rehashing documented knowledge
 
 **4. Brief (SIMAv4 Enhanced)**
@@ -519,10 +577,11 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ## ENHANCED POST-EXTRACTION PROTOCOL
 
-### After Creating Each Entry (SIMAv4)
+### After Creating Each Entry (SIMAv4 + Cache-Busting)
 
-**Step 1: Duplicate Verification**
+**Step 1: Duplicate Verification (with cache-busting!)**
 - [OK] Searched before creating
+- [OK] [NEW] Fetched with cache-busting when checking
 - [OK] Confirmed uniqueness
 - [OK] Not rehashing existing entry
 - [OK] If similar found, updated that instead
@@ -563,9 +622,9 @@ STEP 6: Create Entry (as artifact) (SIMAv4)
 
 ---
 
-## EXTRACTION EXAMPLES (Enhanced)
+## EXTRACTION EXAMPLES (Enhanced with Cache-Busting)
 
-### Example 1: LESSON Extraction (SIMAv4)
+### Example 1: LESSON Extraction (SIMAv4 + Cache-Busting)
 
 **Raw Material:**
 ```
@@ -580,11 +639,13 @@ LESS-##: Always sanitize sentinels before JSON serialization
 Context: In SUGA-ISP Lambda, _CacheMiss sentinels...
 ```
 
-**NEW Way (SIMAv4):**
+**NEW Way (SIMAv4 + Cache-Busting):**
 ```
-Brief chat: "Extracting lesson... Creating LESS-## artifact..."
+Brief chat: "Extracting lesson... Checking for duplicates with cache-busting..."
 
-1. Check duplicates: Search "sentinel serialization lesson"
+1. Check duplicates (with cache-busting!):
+   Search: "sentinel serialization lesson"
+   Fetch relevant entries with cache-busting
    -> Found none, proceed
 
 2. Genericize:
@@ -595,7 +656,7 @@ Brief chat: "Extracting lesson... Creating LESS-## artifact..."
 
 # NM06-Lessons-Serialization_LESS-##.md
 **Version:** 1.0.0
-**Date:** 2025-11-01
+**Date:** 2025-11-02
 **Purpose:** Sanitize implementation sentinels at boundaries
 
 LESS-##: Sanitize implementation sentinels at boundaries
@@ -609,16 +670,17 @@ Example: `if value is SENTINEL: return None  # boundary layer`
 Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 ```
 
-**Saved:** ~60% token reduction, fully generic, no duplicates, SIMAv4 compliant
+**Saved:** ~60% token reduction, fully generic, no duplicates, SIMAv4 compliant, fresh content verified
 
 ---
 
-## LEARNING MODE BEST PRACTICES (SIMAv4)
+## LEARNING MODE BEST PRACTICES (SIMAv4 + Cache-Busting)
 
 ### Enhanced Do's
 
-**[OK] DO: Check duplicates FIRST**
+**[OK] DO: Check duplicates FIRST (with cache-busting!)**
 - Search before every extraction
+- [NEW] Fetch with cache-busting to ensure fresh content
 - Update existing vs create new
 - Strengthen connections over proliferation
 
@@ -656,10 +718,15 @@ Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 - Brief summaries (2-3 sentences)
 - No long narratives
 
+**[OK] DO: Use cache-busting (WISD-06)**
+- Apply to all file fetches
+- Ensures fresh content when checking duplicates
+- Prevents working with outdated entries
+
 ### Enhanced Don'ts
 
 **[X] DON'T: Create duplicates**
-- Always search first
+- Always search first (with cache-busting!)
 - Update existing entries
 - Prevent proliferation
 
@@ -702,16 +769,22 @@ Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 - Split if needed
 - Keep files focused
 
+**[X] DON'T: Skip cache-busting (WISD-06)**
+- Always fetch with cache-busting
+- Prevents duplicate work on cached entries
+- Ensures accurate duplicate detection
+
 ---
 
-## SUCCESS METRICS (SIMAv4)
+## SUCCESS METRICS (SIMAv4 + Cache-Busting)
 
 ### New Metrics
 
-**Metric 1: Uniqueness Rate**
+**Metric 1: Uniqueness Rate (with cache-busting!)**
 - Target: 100% unique entries (no duplicates)
 - Measure: Duplicate searches performed / entries created
 - Goal: 1:1 ratio (search before every creation)
+- [NEW] Verification: Cache-busting applied to all duplicate checks
 
 **Metric 2: Genericization Score**
 - Target: <2 project-specific terms per entry
@@ -745,16 +818,23 @@ Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
 - Measure: Topics / files
 - Goal: 1:1 ratio (separate files always)
 
+**Metric 9: Cache-Busting Compliance (WISD-06)**
+- Target: 100% cache-busting applied
+- Measure: Cache-busted fetches / total fetches
+- Goal: 1:1 ratio (every fetch cache-busted)
+
 ---
 
-## GETTING STARTED (SIMAv4)
+## GETTING STARTED (SIMAv4 + Cache-Busting)
 
 ### First Learning Session
 
-**Step 1: Activate Learning Mode**
+**Step 1: Activate Learning Mode with Cache ID**
 ```
-Say: "Start SIMA Learning Mode"
+Say: "Start SIMA Learning Mode
+      Cache ID: [timestamp]"
 Claude loads this enhanced context file
+Claude registers Cache ID for session
 ```
 
 **Step 2: Provide Source Material**
@@ -765,12 +845,12 @@ Claude loads this enhanced context file
 - Share notes
 ```
 
-**Step 3: Enhanced Guided Extraction (SIMAv4)**
+**Step 3: Enhanced Guided Extraction (SIMAv4 + Cache-Busting)**
 ```
-Brief chat: "Extracting knowledge..."
+Brief chat: "Extracting knowledge with cache-busting..."
 Claude will:
 1. Identify extraction signals
-2. Search for duplicates FIRST
+2. Search for duplicates FIRST (with cache-busting!)
 3. Genericize content
 4. Create brief entries (<=400 lines)
 5. Propose knowledge items
@@ -791,6 +871,7 @@ Claude provides:
 - REF-IDs assigned
 - Indexes updated (as separate artifacts)
 - Brief summary only
+- [NEW] Cache-busting applied throughout
 ```
 
 ---
@@ -800,8 +881,9 @@ Claude provides:
 ### Ready for Learning Mode When:
 
 - [OK] This file loaded (45-60s)
+- [OK] [NEW] Cache ID registered
 - [OK] Extraction signals memorized
-- [OK] Duplicate detection protocol understood
+- [OK] Duplicate detection protocol understood (with cache-busting!)
 - [OK] Genericization rules internalized
 - [OK] Brevity standards clear (<=400 lines)
 - [OK] Workflow patterns understood
@@ -810,15 +892,17 @@ Claude provides:
 - [OK] [NEW] Artifact output format understood (SIMAv4)
 - [OK] [NEW] Chat brevity understood (SIMAv4)
 - [OK] [NEW] File separation understood (SIMAv4)
+- [OK] [NEW] Cache-busting active (WISD-06)
 
 ### What Happens Next:
 
 ```
-1. User says "Start SIMA Learning Mode"
-2. Claude confirms activation (brief)
+1. User says "Start SIMA Learning Mode
+                Cache ID: [timestamp]"
+2. Claude confirms activation (brief) + Cache ID registered
 3. User provides source material
 4. Claude extracts systematically:
-   - Checks duplicates before creating
+   - Checks duplicates before creating (with cache-busting!)
    - Genericizes all content
    - Minimizes token usage (<=400 lines/file)
    - Outputs as artifacts (markdown)
@@ -834,36 +918,57 @@ Claude provides:
 **Learning Mode Purpose:**
 Transform experience -> **Generic, Unique, Brief** knowledge -> Institutional memory
 
-**Five Critical Rules (SIMAv4):**
-1. **Check duplicates** - Update existing, don't create duplicates
-2. **Genericize** - Strip project-specifics, extract universal principles
-3. **Be brief** - Minimize tokens (<=400 lines), maximize assimilation capacity
-4. **[NEW] Output as artifacts** - Neural map files as markdown artifacts (SIMAv4)
-5. **[NEW] Keep chat minimal** - Brief status only (SIMAv4)
+**Six Critical Rules (SIMAv4 + Cache-Busting):**
+1. **Check Cache ID** - Ensure registered before any fetches (WISD-06)
+2. **Check duplicates** - Update existing, don't create duplicates (with cache-busting!)
+3. **Genericize** - Strip project-specifics, extract universal principles
+4. **Be brief** - Minimize tokens (<=400 lines), maximize assimilation capacity
+5. **[NEW] Output as artifacts** - Neural map files as markdown artifacts (SIMAv4)
+6. **[NEW] Keep chat minimal** - Brief status only (SIMAv4)
 
-**Success = Knowledge compounds without duplication or bloat, properly formatted, separate files**
+**Success = Knowledge compounds without duplication or bloat, properly formatted, separate files, with fresh content**
 
 ---
 
 **END OF SIMA LEARNING MODE CONTEXT**
 
-**Version:** 2.1.0 (SIMAv4 standards integrated)  
-**Lines:** 390 (within SIMAv4 limit)  
+**Version:** 2.2.0 (Cache-busting integrated)  
+**Lines:** 445 (within SIMAv4 limit after WISD-06 integration)  
 **Load Time:** 45-60 seconds  
 **Enhancements:**
-- Duplicate detection mandatory
+- Duplicate detection mandatory (with cache-busting!)
 - Genericization by default
 - Extreme brevity standards (<=400 lines)
 - [NEW] Artifact output for neural map files (SIMAv4)
 - [NEW] Minimal chat output (SIMAv4)
 - [NEW] File separation (no condensing) (SIMAv4)
 - [NEW] Filename in headers (SIMAv4)
-**ROI:** Captures 3-5 unique, generic, brief entries per session as proper artifacts  
-**Value:** Permanent, transferable, efficient institutional memory in proper format
+- [NEW] Cache-busting protocol (WISD-06)
+**ROI:** Captures 3-5 unique, generic, brief entries per session as proper artifacts with fresh content  
+**Value:** Permanent, transferable, efficient institutional memory in proper format with accurate duplicate detection
 
 ---
 
 **To activate:**
 ```
-"Start SIMA Learning Mode"
+"Start SIMA Learning Mode
+ Cache ID: [run: date +%s]"
 ```
+
+---
+
+## VERSION HISTORY
+
+**v2.2.0 (2025-11-02):**
+- ADDED: Cache-busting requirement section (mandatory for all fetches)
+- ADDED: Cache ID verification at session start
+- FIXED: Platform caching issue preventing fresh file retrieval during duplicate checks
+- UPDATED: Duplicate detection workflows (apply cache-busting)
+- UPDATED: Extraction workflows (cache-busting integration)
+- UPDATED: Quality criteria (cache-busting verification)
+- UPDATED: Success metrics (cache-busting compliance)
+- UPDATED: Activation checklist (Cache ID required)
+- RELATED: WISD-06 (Session-Level Cache-Busting)
+
+**v2.1.0 (2025-11-01):** 
+- SIMAv4 standards integrated (artifact rules, file limits, encoding, headers)
