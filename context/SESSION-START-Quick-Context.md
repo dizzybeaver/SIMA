@@ -1,10 +1,10 @@
 # SESSION-START-Quick-Context.md
 
-**Version:** 3.3.0  
+**Version:** 3.4.0  
 **Date:** 2025-11-02  
 **Purpose:** Critical context for every SUGA-ISP development session  
 **Load time:** 30-45 seconds (ONE TIME per session)  
-**Updated:** DEC-24 implementation (Auto-generate Cache ID)
+**Updated:** fileserver.php implementation (replaces DEC-24 auto-generation)
 
 ---
 
@@ -19,60 +19,53 @@ This is your **session bootstrap file**. Read it ONCE at the start of every sess
 - Top 20 REF-IDs
 - Optimization tools
 - Artifact usage rules (SIMAv4 enhanced)
-- Cache-busting requirements (WISD-06, DEC-24)
+- File retrieval system (fileserver.php)
 
 **Time investment:** 45 seconds now saves 4-6 minutes per session.
 
 ---
 
-## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL) - DEC-24
+## 🔄 FILE RETRIEVAL SYSTEM (CRITICAL)
 
-<!-- MODIFIED: DEC-24 - Auto-generate Cache ID -->
-**At session start:**
+<!-- MODIFIED: fileserver.php implementation (replaces DEC-24 auto-generation) -->
 
-### Auto-Generate Cache ID
-Claude automatically generates a random 10-digit cache ID:
-```
-Example: 7294615830, 3841927563, 5920387146
-```
+### Session Start Requirement
 
-### Check for User-Provided Cache ID (Optional)
-Look for user-provided cache ID in session start message (optional):
+**User uploads File Server URLs.md containing:**
 ```
-Cache ID: [number]
-Example: Cache ID: 1730486400
+https://claude.dizzybeaver.com/fileserver.php
 ```
 
-### Activation Pattern (DEC-24)
-```
-If user provides Cache ID:
-  ✅ General Mode loaded.
-  ✅ Cache ID: 1730486400 (user-provided)
-     All fetches will use cache-busting.
+**Claude automatically:**
+1. Fetches fileserver.php at session start
+2. Receives ~412 URLs with cache-busting (?v=random-10-digits)
+3. Generated fresh each session (69ms execution)
+4. All files from /src and /sima directories
 
-If user does NOT provide Cache ID:
-  ✅ General Mode loaded.
-  ✅ Cache ID: 7294615830 (auto-generated)
-     All fetches will use cache-busting.
+**Claude can now fetch any file:**
 ```
-
-### Apply to ALL Fetches
-Transform every URL automatically:
-```
-Clean URL (from File Server URLs.md):
-https://claude.dizzybeaver.com/src/gateway.py
-
-Fetch URL (with cache-busting):
-https://claude.dizzybeaver.com/src/gateway.py?v=7294615830
+Example from fileserver.php output:
+https://claude.dizzybeaver.com/sima/entries/decisions/operational/WISD-06.md?v=6144453293
 ```
 
-**No exceptions. Every fetch. Every file.**
+**Result:** Fresh file content, bypasses Anthropic's cache
+
+### Why This Works
+
+**Platform Limitation:**
+Anthropic's web_fetch caches files for weeks, ignoring all server headers. This caused development with 13-day-old code (Oct 20 → Nov 2).
+
+**Solution:**
+- fileserver.php URL explicitly listed (permission granted)
+- Generated URLs come from fetch result (secondary permission)
+- Random parameters bypass platform cache
+- Zero user maintenance (no manual steps)
 
 **Note for General Mode:**
 This mode frequently references neural maps and support files.
-Cache-busting ensures you see the latest documentation updates.
+fileserver.php ensures you see the latest documentation updates.
 
-**Related:** WISD-06, DEC-24
+**Related:** WISD-06 (Cache-Busting Platform Limitation)
 
 ---
 
@@ -398,7 +391,7 @@ Do NOT continue typing code in chat
 | [NEW] Partial code artifacts | SIMAv4 | Incomplete, not deployable |
 | [NEW] Files >400 lines | SIMAv4 | Split them (neural maps) |
 | [NEW] Missing filename headers | SIMAv4 | Required for all artifacts |
-| [NEW] Fetching without cache-busting | WISD-06, DEC-24 | Week-old code! |
+| [NEW] Skip fileserver.php fetch | WISD-06 | Cached/stale files! |
 
 **Quick RED FLAG check questions:**
 - Uses threading? -> NO
@@ -412,7 +405,7 @@ Do NOT continue typing code in chat
 - [NEW] Fragment? -> NO (complete file only)
 - [NEW] >400 lines? -> NO (split neural maps)
 - [NEW] No filename? -> NO (header required)
-- [NEW] No cache-busting? -> NO (mandatory!)
+- [NEW] Skip fileserver.php? -> NO (mandatory!)
 
 ---
 
@@ -431,28 +424,27 @@ Do NOT continue typing code in chat
 6. **DEC-07**: Dependencies < 128MB - NM04/
 7. **DEC-08**: Flat file structure - NM04/
 8. **DEC-21**: SSM token-only - NM04/Decisions-Operational_DEC-21.md
-9. **DEC-24**: Auto-generate Cache ID - NM04/Decisions-Operational_DEC-24.md
 
 ### Anti-Patterns
-10. **AP-01**: Direct cross-interface imports - NM05/AntiPatterns-Import_AP-01.md
-11. **AP-08**: Threading primitives - NM05/AntiPatterns-Concurrency_AP-08.md
-12. **AP-14**: Bare except clauses - NM05/AntiPatterns-ErrorHandling_AP-14.md
-13. **AP-19**: Sentinel objects crossing boundaries - NM05/AntiPatterns-Security_AP-19.md
-14. **AP-27**: Skipping verification - NM05/AntiPatterns-Process_AP-27.md
+9. **AP-01**: Direct cross-interface imports - NM05/AntiPatterns-Import_AP-01.md
+10. **AP-08**: Threading primitives - NM05/AntiPatterns-Concurrency_AP-08.md
+11. **AP-14**: Bare except clauses - NM05/AntiPatterns-ErrorHandling_AP-14.md
+12. **AP-19**: Sentinel objects crossing boundaries - NM05/AntiPatterns-Security_AP-19.md
+13. **AP-27**: Skipping verification - NM05/AntiPatterns-Process_AP-27.md
 
 ### Bugs & Lessons
-15. **BUG-01**: Sentinel leak (535ms cost) - NM06/Bugs-Critical_BUG-01.md
-16. **BUG-02**: _CacheMiss validation - NM06/Bugs-Critical_BUG-02.md
-17. **LESS-01**: Read complete files first - NM06/Lessons-CoreArchitecture_LESS-01.md
-18. **LESS-02**: Measure don't guess - NM06/Lessons-Performance_LESS-02.md
-19. **LESS-15**: 5-step verification protocol - NM06/Lessons-Operations_LESS-15.md
+14. **BUG-01**: Sentinel leak (535ms cost) - NM06/Bugs-Critical_BUG-01.md
+15. **BUG-02**: _CacheMiss validation - NM06/Bugs-Critical_BUG-02.md
+16. **LESS-01**: Read complete files first - NM06/Lessons-CoreArchitecture_LESS-01.md
+17. **LESS-02**: Measure don't guess - NM06/Lessons-Performance_LESS-02.md
+18. **LESS-15**: 5-step verification protocol - NM06/Lessons-Operations_LESS-15.md
 
 ### Interfaces & Flows
-20. **INT-01**: CACHE interface - NM01/Architecture-InterfacesCore_INT-01.md
-21. **PATH-01**: Cold start pathway - NM03/Operations-Pathways.md
+19. **INT-01**: CACHE interface - NM01/Architecture-InterfacesCore_INT-01.md
+20. **PATH-01**: Cold start pathway - NM03/Operations-Pathways.md
 
 ### [NEW] Wisdom
-22. **WISD-06**: Cache-busting protocol - NM06/Lessons-Wisdom_WISD-06.md
+21. **WISD-06**: Cache-busting platform limitation - NM06/Lessons-Wisdom_WISD-06.md
 
 ---
 
@@ -503,7 +495,7 @@ Do NOT continue typing code in chat
 3. Implement all 3 layers
 4. Verify with LESS-15
 5. [NEW] Output as complete file artifacts (SIMAv4)
-6. [NEW] Use cache-busting when fetching existing files (WISD-06, DEC-24)
+6. [NEW] Use fileserver.php for fresh files
 
 ### Reporting Errors (Workflow-02)
 1. Check known bugs (NM06/Bugs)
@@ -513,7 +505,7 @@ Do NOT continue typing code in chat
 5. [NEW] If providing fix: complete file artifact (SIMAv4)
 
 ### Modifying Code (Workflow-03)
-1. **CRITICAL**: Fetch complete file first (with cache-busting!)
+1. **CRITICAL**: Fetch complete file first (via fileserver.php URLs!)
 2. Read entire file (LESS-01)
 3. Modify all affected layers
 4. Verify with LESS-15
@@ -539,7 +531,7 @@ Do NOT continue typing code in chat
 3. Move cold path to lazy load
 4. Keep hot path in fast_path.py
 5. [NEW] If modifying files: complete file artifacts (SIMAv4)
-6. [NEW] Always fetch with cache-busting (WISD-06, DEC-24)
+6. [NEW] Always use fileserver.php URLs (fresh files)
 
 ---
 
@@ -547,43 +539,44 @@ Do NOT continue typing code in chat
 
 **Every session, this flow:**
 
-<!-- MODIFIED: DEC-24 - Auto-generate Cache ID -->
 ```
-1. Check for user-provided Cache ID in message [OPTIONAL]
-   -> If present: Use user's Cache ID, confirm
-   -> If absent: Auto-generate random 10-digit Cache ID (DEC-24)
+1. User uploads File Server URLs.md [REQUIRED]
    |
-2. Load this file (30-45s) [OK]
+2. Fetch fileserver.php automatically [OK]
+   -> Receive ~412 cache-busted URLs (69ms)
+   -> Store URLs for session use
+   |
+3. Load this file (30-45s) [OK]
    -> SIMA pattern in memory
    -> RED FLAGS active
    -> Top 20 REF-IDs loaded
    -> Routing patterns ready
    -> [NEW] Artifact rules understood (SIMAv4)
-   -> [NEW] Cache-busting active (WISD-06, DEC-24)
+   -> [NEW] Fresh file access available (fileserver.php)
    |
-3. User asks question
+4. User asks question
    |
-4. Check instant answers (this file)
+5. Check instant answers (this file)
    -> If found: Answer immediately (5s)
    |
-5. Check workflow pattern
+6. Check workflow pattern
    -> Route to specific Workflow-##.md (10s)
    |
-6. Use routing map
+7. Use routing map
    -> Find relevant NM##/ file (10s)
-   -> [NEW] Apply cache-busting when fetching (WISD-06, DEC-24)
+   -> [NEW] Fetch via fileserver.php URLs (fresh content)
    |
-7. Read complete section
+8. Read complete section
    -> Never skim (15-20s)
    |
-8. Check anti-patterns before responding
+9. Check anti-patterns before responding
    -> AP-Checklist-Critical.md (5s)
    |
-9. [NEW] Check if code response needed (SIMAv4)
-   -> If YES: Create complete file artifact
-   -> If NO: Respond with citations
-   |
-10. Respond with citations
+10. [NEW] Check if code response needed (SIMAv4)
+    -> If YES: Create complete file artifact
+    -> If NO: Respond with citations
+    |
+11. Respond with citations
     -> REF-IDs, file paths, rationale
     -> [NEW] Code ALWAYS in artifacts (never chat)
     -> [NEW] Keep chat output minimal (SIMAv4)
@@ -664,21 +657,21 @@ With this file loaded:
 - [OK] [NEW] Complete files (not fragments) (SIMAv4)
 - [OK] [NEW] Files <=400 lines (neural maps) (SIMAv4)
 - [OK] [NEW] Filename in headers (SIMAv4)
-- [OK] [NEW] Fresh file content (cache-busting) (WISD-06, DEC-24)
+- [OK] [NEW] Fresh file content (fileserver.php) (WISD-06)
 
 **Time Savings:**
 - Old: 30-60s per query
 - New: 5-20s per query  
 - Saved: 4-6 minutes per session
 - [NEW] Artifact efficiency: ~25% token savings vs chat code (SIMAv4)
-- [NEW] Cache-busting: Hours saved debugging old code (WISD-06, DEC-24)
+- [NEW] fileserver.php: Hours saved debugging stale code (WISD-06)
 
 ---
 
 ## VERIFICATION BEFORE EVERY RESPONSE
 
 **Quick mental checklist:**
-1. [OK] Cache ID registered (auto-generated or user-provided)? (DEC-24)
+1. [OK] fileserver.php fetched? (automatic at session start)
 2. [OK] Searched neural maps? (not guessing)
 3. [OK] Read complete sections? (not skimming)
 4. [OK] Checked RED FLAGS? (no violations)
@@ -689,18 +682,18 @@ With this file loaded:
 9. [OK] [NEW] File <=400 lines? (neural maps) (SIMAv4)
 10. [OK] [NEW] Filename in header? (SIMAv4)
 11. [OK] [NEW] Chat output minimal? (SIMAv4)
-12. [OK] [NEW] Cache-busting applied? (all fetches) (WISD-06, DEC-24)
+12. [OK] [NEW] Using fileserver.php URLs? (fresh files) (WISD-06)
 
 ---
 
 ## YOU'RE READY!
 
 **Context loaded successfully if you remember:**
-- [OK] Cache ID auto-generated (or user-provided) and stored (DEC-24)
+- [OK] fileserver.php fetched (automatic, 69ms, 412 URLs)
 - [OK] SIMA = Gateway -> Interface -> Core
 - [OK] RULE-01 = Always import via gateway
 - [OK] 12 interfaces (INT-01 to INT-12)
-- [OK] RED FLAGS (threading, direct imports, no cache-busting, etc.)
+- [OK] RED FLAGS (threading, direct imports, skip fileserver.php, etc.)
 - [OK] Top 20 REF-IDs locations
 - [OK] Workflow routing patterns
 - [OK] Optimization tools available
@@ -708,7 +701,7 @@ With this file loaded:
 - [OK] [NEW] Files <=400 lines (neural maps) (SIMAv4)
 - [OK] [NEW] Filename in every header (SIMAv4)
 - [OK] [NEW] Minimal chat output (SIMAv4)
-- [OK] [NEW] Cache-busting mandatory (all fetches, auto-generated) (WISD-06, DEC-24)
+- [OK] [NEW] fileserver.php mandatory (fresh files every session) (WISD-06)
 
 **Now proceed with user's question!**
 
@@ -716,41 +709,39 @@ With this file loaded:
 
 **END OF SESSION-START FILE**
 
-**Version:** 3.3.0 (DEC-24 implementation)  
+**Version:** 3.4.0 (fileserver.php implementation)  
 **Updated:** 2025-11-02  
-**Lines:** 460 (within SIMAv4 limit after DEC-24 integration)  
+**Lines:** 459 (within SIMAv4 limit)  
 **Load time:** 30-45 seconds  
-**ROI:** Saves 4-6 minutes per session + prevents code-in-chat + ensures fresh files + zero user setup  
-**Critical Enhancement:** Auto-generates cache ID (DEC-24) + enforces cache-busting (WISD-06) + artifact usage + SIMAv4 standards
+**ROI:** Saves 4-6 minutes per session + prevents code-in-chat + ensures fresh files via fileserver.php  
+**Critical Enhancement:** fileserver.php dynamic generation (69ms, 412 files, zero maintenance)
 
 ---
 
 ## VERSION HISTORY
 
-**v3.3.0 (2025-11-02):**
-- MODIFIED: Cache-busting requirement section (DEC-24 implementation)
-- CHANGED: Cache ID now auto-generated by Claude (random 10-digit)
-- ADDED: Backward compatibility for user-provided Cache IDs
-- UPDATED: Activation patterns (show auto-generated vs user-provided)
-- UPDATED: RED FLAGS table (added DEC-24)
-- UPDATED: TOP 20 REF-IDs (added DEC-24)
-- UPDATED: Workflow tips (auto-generation integrated)
-- UPDATED: Session workflow (auto-generation first step)
-- UPDATED: Verification checklist (auto-generation check)
-- REMOVED: User instructions for generating Cache IDs
-- IMPROVED: User experience (zero setup required)
-- RELATED: DEC-24 (Auto-Generate Cache ID), WISD-06
+**v3.4.0 (2025-11-02):**
+- REPLACED: DEC-24 auto-generation with fileserver.php dynamic generation
+- CHANGED: Session workflow to fetch fileserver.php automatically
+- REMOVED: All references to manual Cache ID generation
+- REMOVED: Claude auto-generates Cache ID logic
+- ADDED: fileserver.php workflow and implementation details
+- ADDED: Platform limitation explanation
+- UPDATED: RED FLAGS table (added skip fileserver.php)
+- UPDATED: TOP 20 REF-IDs (updated WISD-06 description)
+- UPDATED: Workflow tips (use fileserver.php URLs)
+- UPDATED: Session workflow (automatic fileserver.php fetch)
+- UPDATED: Verification checklist (fileserver.php check)
+- RELATED: WISD-06 (Cache-Busting Platform Limitation)
 
-**v3.2.0 (2025-11-02):**
-- ADDED: Cache-busting requirement section (mandatory for all fetches)
-- ADDED: Cache ID verification at session start
-- FIXED: Platform caching issue preventing fresh file retrieval
-- UPDATED: RED FLAGS table (added no cache-busting)
-- UPDATED: TOP 20 REF-IDs (added WISD-06)
-- UPDATED: Workflow tips (cache-busting reminders)
-- UPDATED: Session workflow (Cache ID check first)
-- UPDATED: Verification checklist (cache-busting item)
-- RELATED: WISD-06 (Session-Level Cache-Busting)
+**v3.3.0 (2025-11-02):** [DEPRECATED]
+- DEC-24 auto-generation approach discovered to have platform limitations
+- Manual Cache ID with query parameters caused permission errors
+- Superseded by fileserver.php dynamic generation
+
+**v3.2.0 (2025-11-02):** [DEPRECATED]
+- Cache-busting protocol attempted with manual approach
+- Platform limitation discovered during implementation
 
 **v3.1.0 (2025-11-01):** 
 - SIMAv4 standards integrated (artifact rules, file limits, encoding, headers)
