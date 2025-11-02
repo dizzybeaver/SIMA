@@ -1,11 +1,11 @@
 # PROJECT-MODE-Context.md
 
-**Version:** 1.2.0  
+**Version:** 1.3.0  
 **Date:** 2025-11-02  
 **Purpose:** Active development and code implementation context  
 **Activation:** "Start Project Work Mode"  
 **Load time:** 30-45 seconds (ONE TIME per project session)  
-**Updated:** Cache-busting protocol integrated (WISD-06)
+**Updated:** DEC-24 implementation (Auto-generate Cache ID)
 
 ---
 
@@ -22,33 +22,35 @@ This is **Project Work Mode** - optimized for active development tasks:
 
 ---
 
-## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL)
+## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL) - DEC-24
 
-**Before any file fetching in this mode:**
+<!-- MODIFIED: DEC-24 - Auto-generate Cache ID -->
+**At session start:**
 
-### Check for Cache ID
-Look for user-provided cache ID in session start message:
+### Auto-Generate Cache ID
+Claude automatically generates a random 10-digit cache ID:
 ```
-Cache ID: [unix_timestamp]
+Example: 7294615830, 3841927563, 5920387146
+```
+
+### Check for User-Provided Cache ID (Optional)
+Look for user-provided cache ID in session start message (optional):
+```
+Cache ID: [number]
 Example: Cache ID: 1730486400
 ```
 
-### If Cache ID Present
-Store it and confirm:
+### Activation Pattern (DEC-24)
 ```
-✅ Project Work Mode loaded.
-✅ Cache ID: [timestamp] registered.
-   All fetches will use cache-busting.
-```
+If user provides Cache ID:
+  ✅ Project Work Mode loaded.
+  ✅ Cache ID: 1730486400 (user-provided)
+     All fetches will use cache-busting.
 
-### If Cache ID Missing
-Prompt for it before proceeding:
-```
-⚠️ Cache ID required for file fetching.
-
-Please provide: Cache ID: [run: date +%s]
-
-Why: Claude's cache can serve week-old files without this.
+If user does NOT provide Cache ID:
+  ✅ Project Work Mode loaded.
+  ✅ Cache ID: 7294615830 (auto-generated)
+     All fetches will use cache-busting.
 ```
 
 ### Apply to ALL Fetches
@@ -58,7 +60,7 @@ Clean URL (from File Server URLs.md):
 https://claude.dizzybeaver.com/src/gateway.py
 
 Fetch URL (with cache-busting):
-https://claude.dizzybeaver.com/src/gateway.py?v=1730486400
+https://claude.dizzybeaver.com/src/gateway.py?v=7294615830
 ```
 
 **No exceptions. Every fetch. Every file.**
@@ -67,7 +69,7 @@ https://claude.dizzybeaver.com/src/gateway.py?v=1730486400
 Week-old source code = broken implementations!
 This mode MUST have fresh files for accurate development.
 
-**Related:** WISD-06
+**Related:** WISD-06, DEC-24
 
 ---
 
@@ -139,7 +141,7 @@ def existing_function(data):
 ### Pre-Output Checklist (MANDATORY)
 **Before creating EVERY artifact:**
 ```
-[ ] Did I fetch the current complete file? (with cache-busting!)
+[ ] Did I fetch the current complete file? (with auto cache-busting!) (DEC-24)
 [ ] Did I read the ENTIRE file?
 [ ] Am I including ALL existing code?
 [ ] Did I mark my changes with comments?
@@ -148,7 +150,7 @@ def existing_function(data):
 [ ] Am I creating an artifact (not typing in chat)?
 [ ] Is filename in header? (SIMAv4)
 [ ] Is chat output minimal? (SIMAv4)
-[ ] Used cache-busting on fetch? (WISD-06)
+[ ] Used cache-busting on fetch? (WISD-06, DEC-24)
 ```
 
 ### Self-Correction Trigger
@@ -157,7 +159,7 @@ def existing_function(data):
 STOP typing immediately
 Delete any code you started typing in chat
 [OK] Create artifact instead
-[OK] Fetch complete file first (with cache-busting!)
+[OK] Fetch complete file first (with auto cache-busting!) (DEC-24)
 [OK] Include ALL existing code
 [OK] Mark your changes
 [OK] Make it deployable
@@ -170,11 +172,12 @@ Delete any code you started typing in chat
 
 ## CRITICAL PROJECT RULES
 
-### Rule 1: Always Fetch Current Files (LESS-01 + WISD-06)
+### Rule 1: Always Fetch Current Files (LESS-01 + WISD-06 + DEC-24)
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
 **MANDATORY:** Before ANY code modification:
 ```
 1. Use Workflow-11-FetchFiles.md
-2. Apply cache-busting to ALL URLs
+2. Apply cache-busting (auto-generated ID) to ALL URLs (DEC-24)
 3. Fetch COMPLETE current file
 4. Read ENTIRE file (don't skim)
 5. Understand full context
@@ -201,7 +204,7 @@ Delete any code you started typing in chat
 ### Rule 3: Use LESS-15 Verification (Always)
 **MANDATORY:** Before suggesting ANY code:
 ```
-[ ] Read complete current file (with cache-busting!)
+[ ] Read complete current file (with auto cache-busting!) (DEC-24)
 [ ] Verified SUGA pattern (all 3 layers)
 [ ] Checked anti-patterns (AP-Checklist-Critical)
 [ ] Verified dependencies (no circular imports)
@@ -321,6 +324,7 @@ def action_object_impl(param1, param2, **kwargs):
 
 ### Workflow: Add New Feature
 
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
 **Step 1: Understand Requirements**
 ```
 1. What does feature need to do?
@@ -329,10 +333,10 @@ def action_object_impl(param1, param2, **kwargs):
 4. Any constraints? (memory, performance, dependencies)
 ```
 
-**Step 2: Check Existing Implementation (with cache-busting!)**
+**Step 2: Check Existing Implementation (with auto cache-busting!) (DEC-24)**
 ```
 1. Use Workflow-11-FetchFiles.md
-2. Apply cache-busting to ALL fetches
+2. Apply cache-busting (auto-generated ID) to ALL fetches
 3. Fetch gateway_wrappers.py
 4. Fetch interface_[category].py
 5. Fetch [category]_core.py
@@ -354,7 +358,7 @@ def action_object_impl(param1, param2, **kwargs):
 [ ] No circular imports
 [ ] Complete files output as artifacts
 [ ] REF-IDs cited
-[ ] Cache-busting applied to all fetches
+[ ] Cache-busting applied to all fetches (auto-generated) (DEC-24)
 ```
 
 **Step 5: Create Artifacts (SIMAv4)**
@@ -373,10 +377,11 @@ Brief chat: "Feature implemented across all 3 SUGA layers. Ready to deploy."
 
 ### Workflow: Modify Existing Function
 
-**Step 1: Fetch Current Version (with cache-busting!)**
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
+**Step 1: Fetch Current Version (with auto cache-busting!) (DEC-24)**
 ```
 MANDATORY: Use Workflow-11-FetchFiles.md
-+-> Apply cache-busting to URL
++-> Apply cache-busting (auto-generated ID) to URL
 +-> Get COMPLETE current file
 +-> Read ENTIRE file
 +-> Never assume you know current state
@@ -442,7 +447,7 @@ Brief chat: "Modifications complete. Files ready to deploy."
 | Direct core import | AP-01 | Always via gateway |
 | Threading locks | AP-08 | Use atomic operations |
 | Sentinel leakage | AP-19 | Sanitize at router |
-| Skipping file fetch | LESS-01 | ALWAYS fetch first |
+| Skipping file fetch | LESS-01 | ALWAYS fetch first (auto cache-bust) (DEC-24) |
 | Partial code output | AP-27 | Complete files only |
 | Module-level imports | ARCH-07 | Use lazy imports |
 | New subdirectories | AP-05 | Keep flat (except home_assistant/) |
@@ -450,7 +455,7 @@ Brief chat: "Modifications complete. Files ready to deploy."
 | [NEW] Fragment output | SIMAv4 | Complete file only |
 | [NEW] Verbose chat | SIMAv4 | Brief status only |
 | [NEW] Missing filename | SIMAv4 | Header required |
-| [NEW] No cache-busting | WISD-06 | Week-old code! |
+| [NEW] No cache-busting | WISD-06, DEC-24 | Week-old code! |
 
 ---
 
@@ -522,9 +527,10 @@ Brief chat: "Modifications complete. Files ready to deploy."
 
 ### Do's
 
-**[OK] DO: Fetch files first (with cache-busting!)**
+<!-- MODIFIED: DEC-24 - Auto cache-busting -->
+**[OK] DO: Fetch files first (with auto cache-busting!) (DEC-24)**
 - ALWAYS use Workflow-11-FetchFiles.md
-- Apply cache-busting to ALL URLs
+- Apply cache-busting (auto-generated ID) to ALL URLs
 - Read COMPLETE current file
 - Never assume code state
 
@@ -553,11 +559,11 @@ Brief chat: "Modifications complete. Files ready to deploy."
 
 **[X] DON'T: Skip file fetch**
 - Never assume current state
-- Always get latest version
+- Always get latest version (auto cache-bust) (DEC-24)
 - Read complete file
 
-**[X] DON'T: Skip cache-busting (WISD-06)**
-- Always apply to fetches
+**[X] DON'T: Skip cache-busting (WISD-06, DEC-24)**
+- Always apply (auto-generated ID)
 - Week-old code = broken implementations
 - No exceptions
 
@@ -600,7 +606,7 @@ Brief chat: "Modifications complete. Files ready to deploy."
 - [OK] [NEW] Zero fragment artifacts (all complete) (SIMAv4)
 - [OK] [NEW] Filename in every header (SIMAv4)
 - [OK] [NEW] Chat output minimal (SIMAv4)
-- [OK] [NEW] Cache-busting applied to all fetches (WISD-06)
+- [OK] [NEW] Cache-busting applied to all fetches (auto-generated) (WISD-06, DEC-24)
 
 **Time Expectations:**
 - Simple feature: 10-15 minutes
@@ -620,12 +626,14 @@ Brief chat: "Modifications complete. Files ready to deploy."
 
 ### First Project Session
 
-**Step 1: Activate Mode with Cache ID**
+<!-- MODIFIED: DEC-24 - Simplified activation -->
+**Step 1: Activate Mode (DEC-24 Simplified)**
 ```
 [Upload File Server URLs.md or SERVER-CONFIG.md]
-Say: "Start Project Work Mode
-      Cache ID: [timestamp]"
+Say: "Start Project Work Mode"
+Optional: Cache ID: [number]  (if you want specific ID)
 Wait for context load (30-45s)
+Claude auto-generates Cache ID if not provided
 ```
 
 **Step 2: Describe Task (Brief)**
@@ -638,12 +646,12 @@ What to include:
 - Files to modify
 ```
 
-**Step 3: Claude Fetches Files (with cache-busting!)**
+**Step 3: Claude Fetches Files (with auto cache-busting!) (DEC-24)**
 ```
-Brief chat: "Fetching files with cache-busting..."
+Brief chat: "Fetching files with cache-busting (auto-generated ID)..."
 Claude will:
 1. Use Workflow-11-FetchFiles.md
-2. Apply cache-busting to all URLs
+2. Apply cache-busting (auto-generated ID) to all URLs
 3. Fetch current versions
 4. Read complete files
 5. Understand current state
@@ -678,7 +686,7 @@ You:
 ### Ready for Project Mode When:
 
 - [OK] This file loaded (30-45s)
-- [OK] [NEW] Cache ID registered
+- [OK] [NEW] Cache ID registered (auto-generated or user-provided) (DEC-24)
 - [OK] SUGA 3-layer pattern understood
 - [OK] LESS-15 verification memorized
 - [OK] Templates available
@@ -687,13 +695,13 @@ You:
 - [OK] Task clearly defined
 - [OK] [NEW] Artifact rules memorized (SIMAv4)
 - [OK] [NEW] Chat brevity understood (SIMAv4)
-- [OK] [NEW] Cache-busting active (WISD-06)
+- [OK] [NEW] Cache-busting active (auto-generated) (WISD-06, DEC-24)
 
 ### What Happens Next:
 
 ```
 1. User describes task
-2. Claude fetches current files with cache-busting (brief chat)
+2. Claude fetches current files with cache-busting (auto-generated ID) (brief chat) (DEC-24)
 3. Claude implements all 3 layers (brief chat)
 4. Claude verifies with LESS-15
 5. Claude outputs complete artifacts (brief chat)
@@ -708,29 +716,45 @@ You:
 Build features -> Complete code -> Deployable artifacts -> Production ready
 
 **Critical Rules:**
-1. **Cache ID required** (WISD-06)
-2. **Fetch first** (LESS-01 + cache-busting!)
+1. **Cache ID auto-generated** (or use user-provided) (DEC-24)
+2. **Fetch first** (LESS-01 + auto cache-busting!) (DEC-24)
 3. **All 3 layers** (SUGA pattern)
 4. **Complete files** (artifacts, never chat, never fragments)
 5. **Verify always** (LESS-15)
 6. **[NEW] Brief chat** (status only, SIMAv4)
 
-**Success = Working code ready to deploy, fetched fresh, no cache issues**
+**Success = Working code ready to deploy, fetched fresh with auto cache-busting, no cache issues**
 
 ---
 
 **END OF PROJECT MODE CONTEXT**
 
-**Version:** 1.2.0 (Cache-busting integrated)  
-**Lines:** 450 (within SIMAv4 limit after WISD-06 integration)  
+**Version:** 1.3.0 (DEC-24 implementation)  
+**Lines:** 450 (within SIMAv4 limit after DEC-24 integration)  
 **Load Time:** 30-45 seconds  
 **Purpose:** Active development and implementation  
-**Output:** Complete, verified, deployable code in artifacts with fresh content  
-**[NEW] Fix:** Cache-busting protocol (WISD-06) ensures fresh source files for accurate implementations
+**Output:** Complete, verified, deployable code in artifacts with fresh content (auto cache-busting)  
+**[NEW] Enhancement:** Auto-generates Cache ID (DEC-24) for zero user setup
 
 ---
 
 ## VERSION HISTORY
+
+**v1.3.0 (2025-11-02):**
+- MODIFIED: Cache-busting requirement section (DEC-24 implementation)
+- CHANGED: Cache ID now auto-generated by Claude (random 10-digit)
+- ADDED: Backward compatibility for user-provided Cache IDs
+- UPDATED: Rule 1 (fetch with auto cache-busting)
+- UPDATED: Workflows (auto cache-busting applied)
+- UPDATED: Pre-output checklist (auto cache-busting verification)
+- UPDATED: RED FLAGS table (added DEC-24)
+- UPDATED: Best practices (auto cache-busting integration)
+- UPDATED: Success metrics (auto cache-busting compliance)
+- UPDATED: Activation checklist (auto-generated Cache ID)
+- UPDATED: Getting Started (simplified, auto-generation)
+- REMOVED: User instructions for generating Cache IDs
+- IMPROVED: User experience (zero setup required)
+- RELATED: DEC-24 (Auto-Generate Cache ID), WISD-06
 
 **v1.2.0 (2025-11-02):**
 - ADDED: Cache-busting requirement section (mandatory for all fetches)
