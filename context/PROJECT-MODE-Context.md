@@ -1,11 +1,11 @@
 # PROJECT-MODE-Context.md
 
-**Version:** 1.1.0  
-**Date:** 2025-11-01  
+**Version:** 1.2.0  
+**Date:** 2025-11-02  
 **Purpose:** Active development and code implementation context  
 **Activation:** "Start Project Work Mode"  
 **Load time:** 30-45 seconds (ONE TIME per project session)  
-**Updated:** SIMAv4 standards integrated
+**Updated:** Cache-busting protocol integrated (WISD-06)
 
 ---
 
@@ -19,6 +19,55 @@ This is **Project Work Mode** - optimized for active development tasks:
 - Extending functionality
 
 **Not for:** Q&A (use General Mode), Debugging (use Debug Mode), or Knowledge extraction (use Learning Mode)
+
+---
+
+## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL)
+
+**Before any file fetching in this mode:**
+
+### Check for Cache ID
+Look for user-provided cache ID in session start message:
+```
+Cache ID: [unix_timestamp]
+Example: Cache ID: 1730486400
+```
+
+### If Cache ID Present
+Store it and confirm:
+```
+✅ Project Work Mode loaded.
+✅ Cache ID: [timestamp] registered.
+   All fetches will use cache-busting.
+```
+
+### If Cache ID Missing
+Prompt for it before proceeding:
+```
+⚠️ Cache ID required for file fetching.
+
+Please provide: Cache ID: [run: date +%s]
+
+Why: Claude's cache can serve week-old files without this.
+```
+
+### Apply to ALL Fetches
+Transform every URL automatically:
+```
+Clean URL (from File Server URLs.md):
+https://claude.dizzybeaver.com/src/gateway.py
+
+Fetch URL (with cache-busting):
+https://claude.dizzybeaver.com/src/gateway.py?v=1730486400
+```
+
+**No exceptions. Every fetch. Every file.**
+
+**CRITICAL for Project Mode:**
+Week-old source code = broken implementations!
+This mode MUST have fresh files for accurate development.
+
+**Related:** WISD-06
 
 ---
 
@@ -90,7 +139,7 @@ def existing_function(data):
 ### Pre-Output Checklist (MANDATORY)
 **Before creating EVERY artifact:**
 ```
-[ ] Did I fetch the current complete file?
+[ ] Did I fetch the current complete file? (with cache-busting!)
 [ ] Did I read the ENTIRE file?
 [ ] Am I including ALL existing code?
 [ ] Did I mark my changes with comments?
@@ -99,6 +148,7 @@ def existing_function(data):
 [ ] Am I creating an artifact (not typing in chat)?
 [ ] Is filename in header? (SIMAv4)
 [ ] Is chat output minimal? (SIMAv4)
+[ ] Used cache-busting on fetch? (WISD-06)
 ```
 
 ### Self-Correction Trigger
@@ -107,7 +157,7 @@ def existing_function(data):
 STOP typing immediately
 Delete any code you started typing in chat
 [OK] Create artifact instead
-[OK] Fetch complete file first
+[OK] Fetch complete file first (with cache-busting!)
 [OK] Include ALL existing code
 [OK] Mark your changes
 [OK] Make it deployable
@@ -120,17 +170,18 @@ Delete any code you started typing in chat
 
 ## CRITICAL PROJECT RULES
 
-### Rule 1: Always Fetch Current Files (LESS-01)
+### Rule 1: Always Fetch Current Files (LESS-01 + WISD-06)
 **MANDATORY:** Before ANY code modification:
 ```
 1. Use Workflow-11-FetchFiles.md
-2. Fetch COMPLETE current file
-3. Read ENTIRE file (don't skim)
-4. Understand full context
-5. THEN and ONLY THEN modify
+2. Apply cache-busting to ALL URLs
+3. Fetch COMPLETE current file
+4. Read ENTIRE file (don't skim)
+5. Understand full context
+6. THEN and ONLY THEN modify
 ```
 
-**Why:** Assumptions about code state cause 90% of errors.
+**Why:** Assumptions about code state cause 90% of errors. Week-old cached files cause broken implementations.
 
 ### Rule 2: Implement All 3 SUGA Layers
 **MANDATORY:** Every feature needs:
@@ -150,7 +201,7 @@ Delete any code you started typing in chat
 ### Rule 3: Use LESS-15 Verification (Always)
 **MANDATORY:** Before suggesting ANY code:
 ```
-[ ] Read complete current file
+[ ] Read complete current file (with cache-busting!)
 [ ] Verified SUGA pattern (all 3 layers)
 [ ] Checked anti-patterns (AP-Checklist-Critical)
 [ ] Verified dependencies (no circular imports)
@@ -278,13 +329,14 @@ def action_object_impl(param1, param2, **kwargs):
 4. Any constraints? (memory, performance, dependencies)
 ```
 
-**Step 2: Check Existing Implementation**
+**Step 2: Check Existing Implementation (with cache-busting!)**
 ```
 1. Use Workflow-11-FetchFiles.md
-2. Fetch gateway_wrappers.py
-3. Fetch interface_[category].py
-4. Fetch [category]_core.py
-5. Understand current structure
+2. Apply cache-busting to ALL fetches
+3. Fetch gateway_wrappers.py
+4. Fetch interface_[category].py
+5. Fetch [category]_core.py
+6. Understand current structure
 ```
 
 **Step 3: Implement All 3 Layers**
@@ -302,6 +354,7 @@ def action_object_impl(param1, param2, **kwargs):
 [ ] No circular imports
 [ ] Complete files output as artifacts
 [ ] REF-IDs cited
+[ ] Cache-busting applied to all fetches
 ```
 
 **Step 5: Create Artifacts (SIMAv4)**
@@ -320,9 +373,10 @@ Brief chat: "Feature implemented across all 3 SUGA layers. Ready to deploy."
 
 ### Workflow: Modify Existing Function
 
-**Step 1: Fetch Current Version**
+**Step 1: Fetch Current Version (with cache-busting!)**
 ```
 MANDATORY: Use Workflow-11-FetchFiles.md
++-> Apply cache-busting to URL
 +-> Get COMPLETE current file
 +-> Read ENTIRE file
 +-> Never assume you know current state
@@ -396,6 +450,7 @@ Brief chat: "Modifications complete. Files ready to deploy."
 | [NEW] Fragment output | SIMAv4 | Complete file only |
 | [NEW] Verbose chat | SIMAv4 | Brief status only |
 | [NEW] Missing filename | SIMAv4 | Header required |
+| [NEW] No cache-busting | WISD-06 | Week-old code! |
 
 ---
 
@@ -467,8 +522,9 @@ Brief chat: "Modifications complete. Files ready to deploy."
 
 ### Do's
 
-**[OK] DO: Fetch files first**
+**[OK] DO: Fetch files first (with cache-busting!)**
 - ALWAYS use Workflow-11-FetchFiles.md
+- Apply cache-busting to ALL URLs
 - Read COMPLETE current file
 - Never assume code state
 
@@ -499,6 +555,11 @@ Brief chat: "Modifications complete. Files ready to deploy."
 - Never assume current state
 - Always get latest version
 - Read complete file
+
+**[X] DON'T: Skip cache-busting (WISD-06)**
+- Always apply to fetches
+- Week-old code = broken implementations
+- No exceptions
 
 **[X] DON'T: Output snippets**
 - No "add this to line X"
@@ -539,6 +600,7 @@ Brief chat: "Modifications complete. Files ready to deploy."
 - [OK] [NEW] Zero fragment artifacts (all complete) (SIMAv4)
 - [OK] [NEW] Filename in every header (SIMAv4)
 - [OK] [NEW] Chat output minimal (SIMAv4)
+- [OK] [NEW] Cache-busting applied to all fetches (WISD-06)
 
 **Time Expectations:**
 - Simple feature: 10-15 minutes
@@ -558,10 +620,11 @@ Brief chat: "Modifications complete. Files ready to deploy."
 
 ### First Project Session
 
-**Step 1: Activate Mode**
+**Step 1: Activate Mode with Cache ID**
 ```
 [Upload File Server URLs.md or SERVER-CONFIG.md]
-Say: "Start Project Work Mode"
+Say: "Start Project Work Mode
+      Cache ID: [timestamp]"
 Wait for context load (30-45s)
 ```
 
@@ -575,14 +638,15 @@ What to include:
 - Files to modify
 ```
 
-**Step 3: Claude Fetches Files**
+**Step 3: Claude Fetches Files (with cache-busting!)**
 ```
-Brief chat: "Fetching files..."
+Brief chat: "Fetching files with cache-busting..."
 Claude will:
 1. Use Workflow-11-FetchFiles.md
-2. Fetch current versions
-3. Read complete files
-4. Understand current state
+2. Apply cache-busting to all URLs
+3. Fetch current versions
+4. Read complete files
+5. Understand current state
 Brief chat: "Files loaded. Implementing..."
 ```
 
@@ -614,6 +678,7 @@ You:
 ### Ready for Project Mode When:
 
 - [OK] This file loaded (30-45s)
+- [OK] [NEW] Cache ID registered
 - [OK] SUGA 3-layer pattern understood
 - [OK] LESS-15 verification memorized
 - [OK] Templates available
@@ -622,12 +687,13 @@ You:
 - [OK] Task clearly defined
 - [OK] [NEW] Artifact rules memorized (SIMAv4)
 - [OK] [NEW] Chat brevity understood (SIMAv4)
+- [OK] [NEW] Cache-busting active (WISD-06)
 
 ### What Happens Next:
 
 ```
 1. User describes task
-2. Claude fetches current files (brief chat)
+2. Claude fetches current files with cache-busting (brief chat)
 3. Claude implements all 3 layers (brief chat)
 4. Claude verifies with LESS-15
 5. Claude outputs complete artifacts (brief chat)
@@ -642,21 +708,42 @@ You:
 Build features -> Complete code -> Deployable artifacts -> Production ready
 
 **Critical Rules:**
-1. **Fetch first** (LESS-01)
-2. **All 3 layers** (SUGA pattern)
-3. **Complete files** (artifacts, never chat, never fragments)
-4. **Verify always** (LESS-15)
-5. **[NEW] Brief chat** (status only, SIMAv4)
+1. **Cache ID required** (WISD-06)
+2. **Fetch first** (LESS-01 + cache-busting!)
+3. **All 3 layers** (SUGA pattern)
+4. **Complete files** (artifacts, never chat, never fragments)
+5. **Verify always** (LESS-15)
+6. **[NEW] Brief chat** (status only, SIMAv4)
 
-**Success = Working code ready to deploy**
+**Success = Working code ready to deploy, fetched fresh, no cache issues**
 
 ---
 
 **END OF PROJECT MODE CONTEXT**
 
-**Version:** 1.1.0 (SIMAv4 standards integrated)  
-**Lines:** 390 (within SIMAv4 limit)  
+**Version:** 1.2.0 (Cache-busting integrated)  
+**Lines:** 450 (within SIMAv4 limit after WISD-06 integration)  
 **Load Time:** 30-45 seconds  
 **Purpose:** Active development and implementation  
-**Output:** Complete, verified, deployable code in artifacts  
-**[NEW] Fix:** SIMAv4 compliance (minimal chat, headers, encoding)
+**Output:** Complete, verified, deployable code in artifacts with fresh content  
+**[NEW] Fix:** Cache-busting protocol (WISD-06) ensures fresh source files for accurate implementations
+
+---
+
+## VERSION HISTORY
+
+**v1.2.0 (2025-11-02):**
+- ADDED: Cache-busting requirement section (mandatory for all fetches)
+- ADDED: Cache ID verification at session start
+- FIXED: Platform caching issue preventing fresh file retrieval during development
+- UPDATED: Rule 1 (fetch with cache-busting)
+- UPDATED: Workflows (apply cache-busting to all file fetches)
+- UPDATED: Pre-output checklist (cache-busting verification)
+- UPDATED: RED FLAGS table (added no cache-busting)
+- UPDATED: Best practices (cache-busting integration)
+- UPDATED: Success metrics (cache-busting compliance)
+- UPDATED: Activation checklist (Cache ID required)
+- RELATED: WISD-06 (Session-Level Cache-Busting)
+
+**v1.1.0 (2025-11-01):** 
+- SIMAv4 standards integrated (artifact rules, minimal chat, headers, encoding)
