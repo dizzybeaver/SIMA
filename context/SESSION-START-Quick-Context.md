@@ -1,10 +1,10 @@
 # SESSION-START-Quick-Context.md
 
-**Version:** 3.2.0  
+**Version:** 3.3.0  
 **Date:** 2025-11-02  
 **Purpose:** Critical context for every SUGA-ISP development session  
 **Load time:** 30-45 seconds (ONE TIME per session)  
-**Updated:** Cache-busting protocol integrated (WISD-06)
+**Updated:** DEC-24 implementation (Auto-generate Cache ID)
 
 ---
 
@@ -19,39 +19,41 @@ This is your **session bootstrap file**. Read it ONCE at the start of every sess
 - Top 20 REF-IDs
 - Optimization tools
 - Artifact usage rules (SIMAv4 enhanced)
-- Cache-busting requirements (WISD-06)
+- Cache-busting requirements (WISD-06, DEC-24)
 
 **Time investment:** 45 seconds now saves 4-6 minutes per session.
 
 ---
 
-## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL)
+## 🔄 CACHE-BUSTING REQUIREMENT (CRITICAL) - DEC-24
 
-**Before any file fetching in this mode:**
+<!-- MODIFIED: DEC-24 - Auto-generate Cache ID -->
+**At session start:**
 
-### Check for Cache ID
-Look for user-provided cache ID in session start message:
+### Auto-Generate Cache ID
+Claude automatically generates a random 10-digit cache ID:
 ```
-Cache ID: [unix_timestamp]
+Example: 7294615830, 3841927563, 5920387146
+```
+
+### Check for User-Provided Cache ID (Optional)
+Look for user-provided cache ID in session start message (optional):
+```
+Cache ID: [number]
 Example: Cache ID: 1730486400
 ```
 
-### If Cache ID Present
-Store it and confirm:
+### Activation Pattern (DEC-24)
 ```
-✅ General Mode loaded.
-✅ Cache ID: [timestamp] registered.
-   All fetches will use cache-busting.
-```
+If user provides Cache ID:
+  ✅ General Mode loaded.
+  ✅ Cache ID: 1730486400 (user-provided)
+     All fetches will use cache-busting.
 
-### If Cache ID Missing
-Prompt for it before proceeding:
-```
-⚠️ Cache ID required for file fetching.
-
-Please provide: Cache ID: [run: date +%s]
-
-Why: Claude's cache can serve week-old files without this.
+If user does NOT provide Cache ID:
+  ✅ General Mode loaded.
+  ✅ Cache ID: 7294615830 (auto-generated)
+     All fetches will use cache-busting.
 ```
 
 ### Apply to ALL Fetches
@@ -61,16 +63,16 @@ Clean URL (from File Server URLs.md):
 https://claude.dizzybeaver.com/src/gateway.py
 
 Fetch URL (with cache-busting):
-https://claude.dizzybeaver.com/src/gateway.py?v=1730486400
+https://claude.dizzybeaver.com/src/gateway.py?v=7294615830
 ```
 
 **No exceptions. Every fetch. Every file.**
 
 **Note for General Mode:**
 This mode frequently references neural maps and support files.
-Cache-busting ensures you see your latest documentation updates.
+Cache-busting ensures you see the latest documentation updates.
 
-**Related:** WISD-06
+**Related:** WISD-06, DEC-24
 
 ---
 
@@ -316,7 +318,7 @@ Do NOT continue typing code in chat
 |   |-- NM04-Decisions_Index.md
 |   |-- Architecture_DEC-01.md to DEC-05.md
 |   |-- Technical_DEC-12.md to DEC-19.md
-|   +-- Operational_DEC-20.md to DEC-23.md
+|   +-- Operational_DEC-20.md to DEC-24.md
 |
 |-- NM05/ (Anti-Patterns - 41 files)
 |   |-- NM05-AntiPatterns_Index.md
@@ -396,7 +398,7 @@ Do NOT continue typing code in chat
 | [NEW] Partial code artifacts | SIMAv4 | Incomplete, not deployable |
 | [NEW] Files >400 lines | SIMAv4 | Split them (neural maps) |
 | [NEW] Missing filename headers | SIMAv4 | Required for all artifacts |
-| [NEW] Fetching without cache-busting | WISD-06 | Week-old code! |
+| [NEW] Fetching without cache-busting | WISD-06, DEC-24 | Week-old code! |
 
 **Quick RED FLAG check questions:**
 - Uses threading? -> NO
@@ -429,27 +431,28 @@ Do NOT continue typing code in chat
 6. **DEC-07**: Dependencies < 128MB - NM04/
 7. **DEC-08**: Flat file structure - NM04/
 8. **DEC-21**: SSM token-only - NM04/Decisions-Operational_DEC-21.md
+9. **DEC-24**: Auto-generate Cache ID - NM04/Decisions-Operational_DEC-24.md
 
 ### Anti-Patterns
-9. **AP-01**: Direct cross-interface imports - NM05/AntiPatterns-Import_AP-01.md
-10. **AP-08**: Threading primitives - NM05/AntiPatterns-Concurrency_AP-08.md
-11. **AP-14**: Bare except clauses - NM05/AntiPatterns-ErrorHandling_AP-14.md
-12. **AP-19**: Sentinel objects crossing boundaries - NM05/AntiPatterns-Security_AP-19.md
-13. **AP-27**: Skipping verification - NM05/AntiPatterns-Process_AP-27.md
+10. **AP-01**: Direct cross-interface imports - NM05/AntiPatterns-Import_AP-01.md
+11. **AP-08**: Threading primitives - NM05/AntiPatterns-Concurrency_AP-08.md
+12. **AP-14**: Bare except clauses - NM05/AntiPatterns-ErrorHandling_AP-14.md
+13. **AP-19**: Sentinel objects crossing boundaries - NM05/AntiPatterns-Security_AP-19.md
+14. **AP-27**: Skipping verification - NM05/AntiPatterns-Process_AP-27.md
 
 ### Bugs & Lessons
-14. **BUG-01**: Sentinel leak (535ms cost) - NM06/Bugs-Critical_BUG-01.md
-15. **BUG-02**: _CacheMiss validation - NM06/Bugs-Critical_BUG-02.md
-16. **LESS-01**: Read complete files first - NM06/Lessons-CoreArchitecture_LESS-01.md
-17. **LESS-02**: Measure don't guess - NM06/Lessons-Performance_LESS-02.md
-18. **LESS-15**: 5-step verification protocol - NM06/Lessons-Operations_LESS-15.md
+15. **BUG-01**: Sentinel leak (535ms cost) - NM06/Bugs-Critical_BUG-01.md
+16. **BUG-02**: _CacheMiss validation - NM06/Bugs-Critical_BUG-02.md
+17. **LESS-01**: Read complete files first - NM06/Lessons-CoreArchitecture_LESS-01.md
+18. **LESS-02**: Measure don't guess - NM06/Lessons-Performance_LESS-02.md
+19. **LESS-15**: 5-step verification protocol - NM06/Lessons-Operations_LESS-15.md
 
 ### Interfaces & Flows
-19. **INT-01**: CACHE interface - NM01/Architecture-InterfacesCore_INT-01.md
-20. **PATH-01**: Cold start pathway - NM03/Operations-Pathways.md
+20. **INT-01**: CACHE interface - NM01/Architecture-InterfacesCore_INT-01.md
+21. **PATH-01**: Cold start pathway - NM03/Operations-Pathways.md
 
 ### [NEW] Wisdom
-21. **WISD-06**: Cache-busting protocol - NM06/Lessons-Wisdom_WISD-06.md
+22. **WISD-06**: Cache-busting protocol - NM06/Lessons-Wisdom_WISD-06.md
 
 ---
 
@@ -500,7 +503,7 @@ Do NOT continue typing code in chat
 3. Implement all 3 layers
 4. Verify with LESS-15
 5. [NEW] Output as complete file artifacts (SIMAv4)
-6. [NEW] Use cache-busting when fetching existing files (WISD-06)
+6. [NEW] Use cache-busting when fetching existing files (WISD-06, DEC-24)
 
 ### Reporting Errors (Workflow-02)
 1. Check known bugs (NM06/Bugs)
@@ -536,7 +539,7 @@ Do NOT continue typing code in chat
 3. Move cold path to lazy load
 4. Keep hot path in fast_path.py
 5. [NEW] If modifying files: complete file artifacts (SIMAv4)
-6. [NEW] Always fetch with cache-busting (WISD-06)
+6. [NEW] Always fetch with cache-busting (WISD-06, DEC-24)
 
 ---
 
@@ -544,10 +547,11 @@ Do NOT continue typing code in chat
 
 **Every session, this flow:**
 
+<!-- MODIFIED: DEC-24 - Auto-generate Cache ID -->
 ```
-1. Check for Cache ID in user message [CRITICAL]
-   -> If present: Register and confirm
-   -> If absent: Prompt user immediately
+1. Check for user-provided Cache ID in message [OPTIONAL]
+   -> If present: Use user's Cache ID, confirm
+   -> If absent: Auto-generate random 10-digit Cache ID (DEC-24)
    |
 2. Load this file (30-45s) [OK]
    -> SIMA pattern in memory
@@ -555,7 +559,7 @@ Do NOT continue typing code in chat
    -> Top 20 REF-IDs loaded
    -> Routing patterns ready
    -> [NEW] Artifact rules understood (SIMAv4)
-   -> [NEW] Cache-busting active (WISD-06)
+   -> [NEW] Cache-busting active (WISD-06, DEC-24)
    |
 3. User asks question
    |
@@ -567,7 +571,7 @@ Do NOT continue typing code in chat
    |
 6. Use routing map
    -> Find relevant NM##/ file (10s)
-   -> [NEW] Apply cache-busting when fetching (WISD-06)
+   -> [NEW] Apply cache-busting when fetching (WISD-06, DEC-24)
    |
 7. Read complete section
    -> Never skim (15-20s)
@@ -660,21 +664,21 @@ With this file loaded:
 - [OK] [NEW] Complete files (not fragments) (SIMAv4)
 - [OK] [NEW] Files <=400 lines (neural maps) (SIMAv4)
 - [OK] [NEW] Filename in headers (SIMAv4)
-- [OK] [NEW] Fresh file content (cache-busting) (WISD-06)
+- [OK] [NEW] Fresh file content (cache-busting) (WISD-06, DEC-24)
 
 **Time Savings:**
 - Old: 30-60s per query
 - New: 5-20s per query  
 - Saved: 4-6 minutes per session
 - [NEW] Artifact efficiency: ~25% token savings vs chat code (SIMAv4)
-- [NEW] Cache-busting: Hours saved debugging old code (WISD-06)
+- [NEW] Cache-busting: Hours saved debugging old code (WISD-06, DEC-24)
 
 ---
 
 ## VERIFICATION BEFORE EVERY RESPONSE
 
 **Quick mental checklist:**
-1. [OK] Cache ID registered? (WISD-06)
+1. [OK] Cache ID registered (auto-generated or user-provided)? (DEC-24)
 2. [OK] Searched neural maps? (not guessing)
 3. [OK] Read complete sections? (not skimming)
 4. [OK] Checked RED FLAGS? (no violations)
@@ -685,14 +689,14 @@ With this file loaded:
 9. [OK] [NEW] File <=400 lines? (neural maps) (SIMAv4)
 10. [OK] [NEW] Filename in header? (SIMAv4)
 11. [OK] [NEW] Chat output minimal? (SIMAv4)
-12. [OK] [NEW] Cache-busting applied? (all fetches) (WISD-06)
+12. [OK] [NEW] Cache-busting applied? (all fetches) (WISD-06, DEC-24)
 
 ---
 
 ## YOU'RE READY!
 
 **Context loaded successfully if you remember:**
-- [OK] Cache ID registered and stored
+- [OK] Cache ID auto-generated (or user-provided) and stored (DEC-24)
 - [OK] SIMA = Gateway -> Interface -> Core
 - [OK] RULE-01 = Always import via gateway
 - [OK] 12 interfaces (INT-01 to INT-12)
@@ -704,7 +708,7 @@ With this file loaded:
 - [OK] [NEW] Files <=400 lines (neural maps) (SIMAv4)
 - [OK] [NEW] Filename in every header (SIMAv4)
 - [OK] [NEW] Minimal chat output (SIMAv4)
-- [OK] [NEW] Cache-busting mandatory (all fetches) (WISD-06)
+- [OK] [NEW] Cache-busting mandatory (all fetches, auto-generated) (WISD-06, DEC-24)
 
 **Now proceed with user's question!**
 
@@ -712,16 +716,30 @@ With this file loaded:
 
 **END OF SESSION-START FILE**
 
-**Version:** 3.2.0 (Cache-busting integrated)  
+**Version:** 3.3.0 (DEC-24 implementation)  
 **Updated:** 2025-11-02  
-**Lines:** 460 (within SIMAv4 limit after WISD-06 integration)  
+**Lines:** 460 (within SIMAv4 limit after DEC-24 integration)  
 **Load time:** 30-45 seconds  
-**ROI:** Saves 4-6 minutes per session + prevents code-in-chat + ensures fresh files  
-**Critical Fix:** Enforces cache-busting (WISD-06) + artifact usage + SIMAv4 standards
+**ROI:** Saves 4-6 minutes per session + prevents code-in-chat + ensures fresh files + zero user setup  
+**Critical Enhancement:** Auto-generates cache ID (DEC-24) + enforces cache-busting (WISD-06) + artifact usage + SIMAv4 standards
 
 ---
 
 ## VERSION HISTORY
+
+**v3.3.0 (2025-11-02):**
+- MODIFIED: Cache-busting requirement section (DEC-24 implementation)
+- CHANGED: Cache ID now auto-generated by Claude (random 10-digit)
+- ADDED: Backward compatibility for user-provided Cache IDs
+- UPDATED: Activation patterns (show auto-generated vs user-provided)
+- UPDATED: RED FLAGS table (added DEC-24)
+- UPDATED: TOP 20 REF-IDs (added DEC-24)
+- UPDATED: Workflow tips (auto-generation integrated)
+- UPDATED: Session workflow (auto-generation first step)
+- UPDATED: Verification checklist (auto-generation check)
+- REMOVED: User instructions for generating Cache IDs
+- IMPROVED: User experience (zero setup required)
+- RELATED: DEC-24 (Auto-Generate Cache ID), WISD-06
 
 **v3.2.0 (2025-11-02):**
 - ADDED: Cache-busting requirement section (mandatory for all fetches)
