@@ -1,9 +1,9 @@
 # Custom Instructions for SUGA-ISP Development (Mode-Based)
 
-**Version:** 3.1.0  
-**Date:** 2025-11-01  
+**Version:** 3.2.0  
+**Date:** 2025-11-02  
 **Purpose:** Streamlined instructions using unified mode selection system  
-**Updated:** SIMAv4 standards integrated
+**Updated:** Cache-busting protocol integrated (WISD-06)
 
 ---
 
@@ -233,6 +233,130 @@ Do NOT output in chat
 
 ---
 
+## 🔄 CACHE-BUSTING PROTOCOL (Critical - All Modes)
+
+### The Problem
+
+Claude's `web_fetch` tool aggressively caches files, ignoring all server-side cache control headers. This can serve week-old (or older) code files, making collaborative development impossible.
+
+### The Solution
+
+Session-level timestamp cache-busting using Unix timestamps appended as query parameters.
+
+### Activation Pattern
+
+User provides at session start:
+```
+Cache ID: [unix_timestamp]
+```
+
+**How User Generates:**
+- Unix/Mac: `date +%s`
+- Windows PowerShell: `[int][double]::Parse((Get-Date -UFormat %s))`
+- Online: https://www.unixtimestamp.com/
+- Alternative: Random 6-digit number (e.g., 847293)
+
+### Implementation Rules (MANDATORY)
+
+#### Rule 1: Check for Cache ID at Session Start
+After mode context loads:
+1. Look for "Cache ID: [number]" in user's message
+2. If present: Store cache ID for entire session
+3. If absent: Prompt user for cache ID before ANY fetches
+
+Response Pattern:
+```
+✅ [Mode Name] loaded.
+✅ Cache ID: 1730486400 registered.
+   All file fetches will use cache-busting.
+```
+
+#### Rule 2: Transform ALL URLs Before Fetching
+URL Transformation (Automatic):
+```
+User provides:
+https://claude.dizzybeaver.com/src/gateway.py
+
+Claude fetches:
+https://claude.dizzybeaver.com/src/gateway.py?v=1730486400
+```
+
+Implementation:
+- Append `?v=[cache_id]` to every `web_fetch` URL
+- Do this automatically (don't ask permission)
+- Apply to ALL file types (Python, markdown, config, etc.)
+- Server ignores parameter, Claude bypasses cache
+
+#### Rule 3: No Exceptions
+Apply cache-busting to:
+- ✅ Source code files (.py)
+- ✅ Documentation files (.md)
+- ✅ Context files (SESSION-START, PROJECT-MODE, etc.)
+- ✅ Neural maps (LESS, BUG, DEC, etc.)
+- ✅ Configuration files (.yml, .json, etc.)
+- ✅ ALL files from File Server URLs.md
+
+Never skip cache-busting for:
+- ❌ "Just a quick check"
+- ❌ "File unlikely to have changed"
+- ❌ "Already fetched this session"
+
+**Every fetch = cache-busting applied**
+
+#### Rule 4: File Server URLs.md Stays Clean
+- User's `File Server URLs.md` contains clean URLs (no cache-busting)
+- Claude adds cache-busting ONLY when actually fetching
+- This keeps the URL inventory maintainable
+
+### Session Workflow
+
+**Standard Session Start:**
+```
+User: Start Project Work Mode
+      Cache ID: 1730486400
+      [pastes File Server URLs.md]
+
+Claude: ✅ Project Work Mode loaded.
+        ✅ Cache ID: 1730486400 registered.
+        Ready for active development with cache-busting enabled.
+```
+
+**If Cache ID Missing:**
+```
+Claude: ✅ [Mode Name] loaded.
+        ⚠️ Cache ID required for file fetching.
+        
+        Please provide a cache ID to ensure fresh files:
+        Cache ID: [run: date +%s]
+```
+
+**During Session:**
+```
+Claude: Fetching gateway.py with cache-busting...
+        [internally fetches: .../gateway.py?v=1730486400]
+        ✅ Retrieved current version (2025.11.02)
+```
+
+### Benefits
+- ✅ One timestamp per session (~5 seconds work)
+- ✅ File Server URLs.md unchanged
+- ✅ No infrastructure changes needed
+- ✅ Always gets fresh file content
+- ✅ Reliable development workflow
+
+### Critical Reminders
+1. Cache ID is mandatory - Don't proceed with fetches without it
+2. Apply to every URL - No exceptions, no shortcuts
+3. Automatic transformation - User provides clean URLs, Claude adds cache-busting
+4. Store for session - Remember cache ID for entire conversation
+5. Confirm receipt - Let user know cache-busting is active
+
+**This solves a critical platform limitation that makes development impossible without it.**
+
+**Related:** WISD-06
+
+---
+
 ## MODE SWITCHING
 
 **Important:** One mode per session.
@@ -254,18 +378,21 @@ Do NOT output in chat
 ```
 1. User uploads File Server URLs.md (optional but helpful)
 
-2. User provides activation phrase:
+2. User provides activation phrase AND Cache ID:
    - "Please load context"          (General Mode)
    - "Start SIMA Learning Mode"     (Learning Mode)
    - "Start Project Work Mode"      (Project Mode)
    - "Start Debug Mode"             (Debug Mode)
+   - Cache ID: [timestamp or 6-digit number]
 
 3. You load mode-specific context (30-60s)
 
-4. Confirm mode loaded (BRIEF):
-   "[OK] [Mode Name] loaded. Ready to [primary function]."
+4. Confirm mode loaded AND cache ID registered (BRIEF):
+   "✅ [Mode Name] loaded.
+    ✅ Cache ID: [number] registered.
+    Ready to [primary function]."
 
-5. Operate within that mode's guidelines
+5. Operate within that mode's guidelines with cache-busting active
 ```
 
 ### If User Doesn't Know Which Mode:
@@ -281,24 +408,38 @@ Then suggest appropriate mode:
 - Document -> Learning Mode
 ```
 
+### If User Forgets Cache ID:
+
+```
+Prompt immediately (BRIEF):
+"⚠️ Cache ID required for file fetching.
+
+Please provide: Cache ID: [run: date +%s]
+
+Why: Claude's cache can serve week-old files without this."
+```
+
 ---
 
 ## CRITICAL REMINDERS
 
 ### Always Remember:
 1. **Mode activation is EXPLICIT** - user must say activation phrase
-2. **One mode per session** - no mixing, no switching
-3. **Mode context is complete** - don't add extra rules from memory
-4. **SUGA vs SIMA distinction** - use correct terminology
-5. **RED FLAGS apply always** - regardless of mode
-6. **Code ALWAYS in artifacts** - never in chat, always complete
-7. **[NEW] Minimal chat output** - brief status, let artifacts speak (SIMAv4)
-8. **[NEW] Files <=400 lines** - split if needed (SIMAv4)
-9. **[NEW] Filename in headers** - every artifact (SIMAv4)
-10. **[NEW] Verify encoding** - emojis, charts work (SIMAv4)
+2. **Cache ID is MANDATORY** - prompt if missing before any fetches
+3. **One mode per session** - no mixing, no switching
+4. **Mode context is complete** - don't add extra rules from memory
+5. **SUGA vs SIMA distinction** - use correct terminology
+6. **RED FLAGS apply always** - regardless of mode
+7. **Code ALWAYS in artifacts** - never in chat, always complete
+8. **[NEW] Minimal chat output** - brief status, let artifacts speak (SIMAv4)
+9. **[NEW] Files <=400 lines** - split if needed (SIMAv4)
+10. **[NEW] Filename in headers** - every artifact (SIMAv4)
+11. **[NEW] Verify encoding** - emojis, charts work (SIMAv4)
+12. **[NEW] Cache-busting mandatory** - apply to ALL fetches (WISD-06)
 
 ### Never Do:
 - [X] Load mode without activation phrase
+- [X] Fetch files without Cache ID
 - [X] Mix behaviors from different modes
 - [X] Skip mode-specific verification steps
 - [X] Confuse SUGA (code architecture) with SIMA (documentation)
@@ -309,6 +450,7 @@ Then suggest appropriate mode:
 - [X] [NEW] Files >400 lines (split them)
 - [X] [NEW] Missing filename headers
 - [X] [NEW] Broken emoji/chart encoding
+- [X] [NEW] Skip cache-busting (week-old code!)
 
 ---
 
@@ -316,6 +458,7 @@ Then suggest appropriate mode:
 
 **You're operating correctly when:**
 - [OK] Waited for explicit activation phrase
+- [OK] Checked for Cache ID and prompted if missing
 - [OK] Loaded correct mode context
 - [OK] Following mode-specific guidelines
 - [OK] Not mixing behaviors from other modes
@@ -329,10 +472,20 @@ Then suggest appropriate mode:
 - [OK] [NEW] Filename in every header
 - [OK] [NEW] Emojis/charts render correctly
 - [OK] [NEW] Separate files (not condensed)
+- [OK] [NEW] Cache-busting applied to all fetches
 
 ---
 
 ## VERSION HISTORY
+
+**v3.2.0 (2025-11-02):** [NEW] Cache-Busting Protocol
+- ADDED: Cache-busting protocol section (mandatory for all fetches)
+- ADDED: Cache ID verification at session start
+- ADDED: URL transformation rules for web_fetch
+- FIXED: Platform caching issue preventing fresh file retrieval
+- UPDATED: Quick Start Guide with Cache ID requirements
+- UPDATED: Success criteria with cache-busting check
+- RELATED: WISD-06 (Session-Level Cache-Busting)
 
 **v3.1.0 (2025-11-01):** [NEW] SIMAv4
 - Added: Minimal chat output rule (Rule 3)
@@ -363,10 +516,11 @@ Then suggest appropriate mode:
 
 **END OF CUSTOM INSTRUCTIONS**
 
-**System:** Mode-based (v3.1.0)  
+**System:** Mode-based (v3.2.0)  
 **Modes:** 4 (General, Learning, Project, Debug)  
-**Standard:** SIMAv4 (minimal chat, <=400 lines, headers, encoding)  
-**Activation:** Explicit phrases required  
-**Artifacts:** MANDATORY for all code/neural maps
+**Standard:** SIMAv4 (minimal chat, <=400 lines, headers, encoding) + Cache-busting (WISD-06)  
+**Activation:** Explicit phrases + Cache ID required  
+**Artifacts:** MANDATORY for all code/neural maps  
+**Cache-Busting:** MANDATORY for all file fetches
 
-**Remember:** Load mode first, operate briefly, verify encoding!
+**Remember:** Check Cache ID first, load mode, apply cache-busting to ALL fetches, operate briefly, verify encoding!
