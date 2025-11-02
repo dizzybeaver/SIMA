@@ -2,9 +2,9 @@
 
 **Category:** Generic Lessons  
 **Type:** Index  
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Created:** 2025-10-30  
-**Updated:** 2025-10-30
+**Updated:** 2025-11-02
 
 ---
 
@@ -12,7 +12,7 @@
 
 High-level insights synthesized from multiple lessons, bugs, and experiences. These represent patterns and principles that emerged from the collective body of knowledge. Unlike individual lessons which document specific incidents, wisdom items capture universal principles that apply broadly across projects.
 
-**Total Wisdom Items:** 5  
+**Total Wisdom Items:** 6  
 **Location:** `/sima/entries/wisdom/`  
 **Scope:** Generic (applicable to any project)
 
@@ -70,12 +70,23 @@ High-level insights synthesized from multiple lessons, bugs, and experiences. Th
 
 ---
 
+### WISD-06: Session-Level Cache-Busting for AI Tool Constraints
+**File:** `WISD-06.md`  
+**Priority:** Critical  
+**Summary:** When platform tools have immutable aggressive caching, implement session-level cache-busting via unique identifiers in requests  
+**Key Principle:** Work around uncontrollable platform constraints with minimal-cost session identifiers  
+**Synthesizes:** Multiple debugging sessions with stale AI tool caches  
+**Application:** AI assistants with web_fetch, CDNs, enterprise proxies, collaborative tools
+
+---
+
 ## Cross-Cutting Themes
 
 ### Theme 1: Prevention Through Design
 **Appears in:**
 - WISD-01: Architecture prevents problems
 - WISD-03: Small costs early
+- WISD-06: Session-level cache-busting (design around constraints)
 
 **Core Insight:** Build prevention into structure, not rules.
 
@@ -83,6 +94,7 @@ High-level insights synthesized from multiple lessons, bugs, and experiences. Th
 **Appears in:**
 - WISD-02: Measure don't guess
 - WISD-03: Small costs early (ROI calculations)
+- WISD-06: Session-level cache-busting (measured platform behavior)
 
 **Core Insight:** Decisions backed by data beat intuition.
 
@@ -92,6 +104,12 @@ High-level insights synthesized from multiple lessons, bugs, and experiences. Th
 - WISD-05: Document everything
 
 **Core Insight:** Design for human understanding and memory limits.
+
+### Theme 4: Platform Constraints
+**Appears in:**
+- WISD-06: Session-level cache-busting (work with immutable constraints)
+
+**Core Insight:** When platform behavior is immutable, design around it rather than fighting it.
 
 ---
 
@@ -114,17 +132,21 @@ High-level insights synthesized from multiple lessons, bugs, and experiences. Th
 5. **Is decision documented?** (WISD-05)
    → Will we remember why in 6 months?
 
+6. **Is platform constraint immutable?** (WISD-06)
+   → Design workaround vs fighting platform?
+
 ---
 
-## Summary: The Five Wisdoms
+## Summary: The Six Wisdoms
 
-**Together they create:** Robust, maintainable, understandable systems.
+**Together they create:** Robust, maintainable, understandable systems that work with platform realities.
 
 1. **Architecture Prevents Problems** - Design away entire bug categories
 2. **Measure Don't Guess** - Data beats intuition
 3. **Small Costs Early** - Prevention >>> Cure
 4. **Consistency Over Cleverness** - Uniform patterns reduce cognitive load
 5. **Document Everything** - Memory fades, docs persist
+6. **Session-Level Cache-Busting** - Work around immutable platform constraints
 
 ---
 
@@ -147,6 +169,11 @@ High-level insights synthesized from multiple lessons, bugs, and experiences. Th
 - Apply principles when refactoring
 - Evaluate changes against wisdom
 - Document new insights
+
+**For AI Tool Users:**
+- Apply WISD-06 when experiencing stale content issues
+- Implement session-level cache-busting at session start
+- Verify platform cache constraints before troubleshooting
 
 ---
 
@@ -189,11 +216,14 @@ High-level insights synthesized from multiple lessons, bugs, and experiences. Th
 - Insight is non-obvious
 - Guidance is actionable
 
+**Recent Addition:**
+- WISD-06 (2025-11-02): Session-level cache-busting for AI tool constraints
+
 ---
 
 ## Keywords
 
-wisdom, insights, patterns, principles, synthesis, meta-lessons, universal-principles
+wisdom, insights, patterns, principles, synthesis, meta-lessons, universal-principles, platform-constraints, cache-busting, tool-limitations
 
 ---
 
@@ -201,7 +231,7 @@ wisdom, insights, patterns, principles, synthesis, meta-lessons, universal-princ
 
 **Synthesizes From:** All LESS-## files, BUG-## files, DEC-## files  
 **Referenced By:** All architectural decisions  
-**Applied In:** All development work
+**Applied In:** All development work, AI assistant usage
 
 ---
 
