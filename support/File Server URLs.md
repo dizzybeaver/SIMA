@@ -1,9 +1,9 @@
 # SUGA-ISP Lambda - File Server URLs
 
-**Updated:** 2025-11-01  
+**Updated:** 2025-11-02  
 **Purpose:** URL inventory for web_fetch access  
-**Version:** SIMAv4.2  
-**Total Files:** 398 files
+**Version:** SIMAv4.3  
+**Total Files:** 399 files
 
 **⚠️ KEEP THIS FILE MINIMAL:** URLs only, no descriptions or statistics
 
@@ -130,9 +130,10 @@ https://claude.dizzybeaver.com/sima/context/SIMA-LEARNING-SESSION-START-Quick-Co
 
 ---
 
-## 📂 DOCS FILES (/sima/docs - 8 files)
+## 📂 DOCS FILES (/sima/docs - 9 files)
 
 ```
+https://claude.dizzybeaver.com/sima/docs/Cache-Busting-User-Quick-Reference.md
 https://claude.dizzybeaver.com/sima/docs/SIMAv4-Developer-Guide.md
 https://claude.dizzybeaver.com/sima/docs/SIMAv4-Directory-Structure.md
 https://claude.dizzybeaver.com/sima/docs/SIMAv4-Migration-Guide.md
@@ -734,4 +735,5 @@ https://claude.dizzybeaver.com/sima/To_Be_Added/PROJECT-MODE-Context-ADDENDUM-LE
 
 **END OF FILE**
 
-**Total Files:** 398 (93 /src + 305 /sima)
+**Total Files:** 399 (93 /src + 306 /sima)  
+**New in SIMAv4.3:** Cache-Busting-User-Quick-Reference.md (WISD-06)
