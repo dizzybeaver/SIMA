@@ -1,8 +1,8 @@
 # Custom Instructions for SUGA-ISP Development.md
-**Version:** 3.4.0  
+**Version:** 3.4.1  
 **Date:** 2025-11-02  
 **Purpose:** Streamlined instructions using unified mode selection system  
-**Updated:** fileserver.php implementation (replaces DEC-24 auto-generation)
+**Updated:** SIMAv4 path corrections
 
 ---
 
@@ -58,7 +58,7 @@ These apply regardless of mode:
 
 **SIMA** = The neural maps documentation system  
 - Gateway -> Category -> Topic -> Individual
-- Use when discussing: NM01-, NM04-, documentation structure
+- Use when discussing: /sima/entries/ structure, REF-IDs, documentation
 
 **Never confuse these terms.** The SUGA-ISP project uses SUGA architecture, documented by SIMA neural maps.
 
@@ -427,6 +427,11 @@ Then suggest appropriate mode:
 
 ## VERSION HISTORY
 
+**v3.4.1 (2025-11-02):**
+- UPDATED: SIMA terminology section (SIMAv4 path reference)
+- CHANGED: "NM01-, NM04-" reference to "/sima/entries/ structure"
+- Consistency update for SIMAv4 directory structure
+
 **v3.4.0 (2025-11-02):** [NEW] fileserver.php Implementation
 - REPLACED: DEC-24 auto-generation with fileserver.php dynamic generation
 - CHANGED: Session workflow to fetch fileserver.php first
@@ -480,7 +485,7 @@ Then suggest appropriate mode:
 
 **END OF CUSTOM INSTRUCTIONS**
 
-**System:** Mode-based (v3.4.0)  
+**System:** Mode-based (v3.4.1)  
 **Modes:** 4 (General, Learning, Project, Debug)  
 **Standard:** SIMAv4 (minimal chat, <=400 lines, headers, encoding) + fileserver.php (fresh files)  
 **Activation:** Explicit phrases + fileserver.php auto-fetch  
