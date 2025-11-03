@@ -1,10 +1,10 @@
 # SESSION-START-Quick-Context.md
 
-**Version:** 3.4.0  
+**Version:** 3.4.1  
 **Date:** 2025-11-02  
 **Purpose:** Critical context for every SUGA-ISP development session  
 **Load time:** 30-45 seconds (ONE TIME per session)  
-**Updated:** fileserver.php implementation (replaces DEC-24 auto-generation)
+**Updated:** SIMAv4 path corrections
 
 ---
 
@@ -45,7 +45,7 @@ https://claude.dizzybeaver.com/fileserver.php
 **Claude can now fetch any file:**
 ```
 Example from fileserver.php output:
-https://claude.dizzybeaver.com/sima/entries/decisions/operational/WISD-06.md?v=6144453293
+https://claude.dizzybeaver.com/sima/entries/lessons/wisdom/WISD-06.md?v=6144453293
 ```
 
 **Result:** Fresh file content, bypasses Anthropic's cache
@@ -138,7 +138,7 @@ result = gateway.interface_action_object(args)
 **Answer:** Use Workflow-01-AddFeature.md - implements all 3 layers
 
 ### 8. "Where do I find design decisions?"
-**Answer:** NM04/ directory - all DEC-## files organized by topic
+**Answer:** /sima/entries/decisions/ directory - all DEC-## files organized by category
 
 ### 9. "What are sentinels and why sanitize?"
 **Answer:** _CacheMiss, _NotFound - must sanitize at router (BUG-01, DEC-05)
@@ -260,7 +260,7 @@ Do NOT continue typing code in chat
 | User Query Pattern | Route To | Time |
 |-------------------|----------|------|
 | "Can I [X]?" | Workflow-05-CanIQuestions.md | 15s |
-| "Why no [X]?" | NM04/Decisions or NM05/AntiPatterns | 20s |
+| "Why no [X]?" | /sima/entries/decisions/ or /sima/entries/anti-patterns/ | 20s |
 | "Add feature [X]" | Workflow-01-AddFeature.md | 30s |
 | "Error: [X]" | Workflow-02-ReportError.md | 30s |
 | "Modify [X]" | Workflow-03-ModifyCode.md | 30s |
@@ -273,102 +273,73 @@ Do NOT continue typing code in chat
 
 | Keyword | File | REF-IDs |
 |---------|------|---------|
-| threading, locks | NM04/NM04-Decisions-Technical_DEC-04.md | DEC-04, AP-08 |
-| import, circular | NM02/NM02-Dependencies-ImportRules_RULE-01.md | RULE-01, AP-01 |
-| sentinel, _CacheMiss | NM06/NM06-Bugs-Critical_BUG-01.md | BUG-01, DEC-05 |
-| cache, caching | NM01/NM01-Architecture-InterfacesCore_INT-01.md | INT-01 |
-| cold start, performance | NM01/NM01-ARCH-07-LMMS.md | ARCH-07, LESS-02 |
-| SSM, Parameter Store | NM04/NM04-Decisions-Operational_DEC-21.md | DEC-21 |
+| threading, locks | /sima/entries/decisions/architecture/DEC-04.md | DEC-04, AP-08 |
+| import, circular | /sima/entries/gateways/GATE-03.md | RULE-01, AP-01 |
+| sentinel, _CacheMiss | /sima/entries/lessons/bugs/BUG-01.md | BUG-01, DEC-05 |
+| cache, caching | /sima/entries/interfaces/INT-01_CACHE-Interface-Pattern.md | INT-01 |
+| cold start, performance | /sima/entries/core/ARCH-LMMS_Lambda-Memory-Management.md | ARCH-07, LESS-02 |
+| SSM, Parameter Store | /sima/entries/decisions/operational/DEC-21.md | DEC-21 |
 
 ---
 
 ## FILE STRUCTURE (Where Everything Lives)
 
-### SIMA v3 Neural Maps (Atomized)
+### SIMAv4 Neural Maps (Current Structure)
 
 ```
-/nmap/
-|-- NM00/ (Gateway Layer)
-|   |-- NM00-Quick_Index.md
-|   |-- NM00A-Master_Index.md
-|   +-- NM00B-ZAPH*.md (4 files - hot path)
-|
-|-- NM01/ (Architecture - 21 files)
-|   |-- NM01-Architecture_Index.md
-|   |-- InterfacesCore_INT-01.md to INT-06.md
-|   +-- InterfacesAdvanced_INT-07.md to INT-12.md
-|
-|-- NM02/ (Dependencies - 18 files)
-|   |-- NM02-Dependencies_Index.md
-|   |-- ImportRules_RULE-01.md to RULE-04.md
-|   +-- Layers_DEP-01.md to DEP-05.md
-|
-|-- NM03/ (Operations - 5 files)
-|   |-- NM03-Operations_Index.md
-|   +-- Flows, Pathways, ErrorHandling, Tracing
-|
-|-- NM04/ (Decisions - 23 files)
-|   |-- NM04-Decisions_Index.md
-|   |-- Architecture_DEC-01.md to DEC-05.md
-|   |-- Technical_DEC-12.md to DEC-19.md
-|   +-- Operational_DEC-20.md to DEC-24.md
-|
-|-- NM05/ (Anti-Patterns - 41 files)
-|   |-- NM05-AntiPatterns_Index.md
-|   +-- AP-01.md to AP-28.md (by category)
-|
-|-- NM06/ (Lessons - 40 files)
-|   |-- NM06-Lessons_Index.md
-|   |-- LESS-01.md to LESS-21.md
-|   |-- BUG-01.md to BUG-04.md
-|   +-- WISD-01.md to WISD-06.md
-|
-+-- NM07/ (Decision Logic - 26 files)
-    |-- NM07-DecisionLogic_Index.md
-    |-- DT-01.md to DT-13.md
-    +-- FW-01.md, FW-02.md, META-01.md
+/sima/entries/
+├── core/                    (ARCH patterns - SUGA, LMMS, ZAPH, DD)
+├── gateways/                (GATE patterns - Gateway rules)
+├── interfaces/              (INT patterns - Interface definitions)
+├── decisions/
+│   ├── architecture/        (DEC-01 to DEC-05)
+│   ├── technical/           (DEC-12 to DEC-19)
+│   └── operational/         (DEC-20 to DEC-24)
+├── anti-patterns/
+│   ├── import/              (AP-01 to AP-05)
+│   ├── concurrency/         (AP-08, AP-11, AP-13)
+│   ├── error-handling/      (AP-14 to AP-16)
+│   ├── security/            (AP-17 to AP-19)
+│   └── [other categories]/
+├── lessons/
+│   ├── core-architecture/   (LESS-01 to LESS-08)
+│   ├── performance/         (LESS-02, LESS-17, etc.)
+│   ├── operations/          (LESS-09, LESS-10, LESS-15, etc.)
+│   ├── bugs/                (BUG-01 to BUG-04)
+│   └── wisdom/              (WISD-01 to WISD-06)
+└── platforms/
+    └── aws/                 (AWS-specific patterns)
 ```
 
-### Tool Files (Atomized)
+### Tool Files
 
 ```
-/nmap/
-|-- ANTI-PATTERNS-CHECKLIST.md (Hub)
-|   |-- AP-Checklist-Critical.md (4 critical)
-|   |-- AP-Checklist-ByCategory.md (all 28)
-|   +-- AP-Checklist-Scenarios.md (8 scenarios)
-|
-|-- REF-ID-DIRECTORY.md (Hub)
-|   |-- REF-ID-Directory-ARCH-INT.md
-|   |-- REF-ID-Directory-AP-BUG.md
-|   |-- REF-ID-Directory-DEC.md
-|   |-- REF-ID-Directory-LESS-WISD.md
-|   +-- REF-ID-Directory-Others.md
-|
-+-- WORKFLOWS-PLAYBOOK.md (Hub)
-    |-- Workflow-01-AddFeature.md
-    |-- Workflow-02-ReportError.md
-    |-- Workflow-03-ModifyCode.md
-    |-- Workflow-04-WhyQuestions.md
-    |-- Workflow-05-CanIQuestions.md
-    |-- Workflow-06-Optimize.md
-    |-- Workflow-07-ImportIssues.md
-    |-- Workflow-08-ColdStart.md
-    |-- Workflow-09-DesignQuestions.md
-    |-- Workflow-10-ArchitectureOverview.md
-    +-- Workflow-11-FetchFiles.md
+/sima/support/
+├── tools/
+│   ├── TOOL-01-REF-ID-Directory.md
+│   ├── TOOL-02-Quick-Answer-Index.md
+│   ├── TOOL-03-Anti-Pattern-Checklist.md
+│   └── TOOL-04-Verification-Protocol.md
+├── workflows/
+│   ├── Workflow-01-Add-Feature.md
+│   ├── Workflow-02-Debug-Issue.md
+│   └── [other workflows]
+└── quick-reference/
+    ├── QRC-01-Interfaces-Overview.md
+    ├── QRC-02-Gateway-Patterns.md
+    └── QRC-03-Common-Patterns.md
 ```
 
 ### Python Source Files
 
 ```
 /src/
-|-- gateway.py, gateway_core.py, gateway_wrappers.py
-|-- interface_*.py (12 interfaces)
-|-- *_core.py (12 core implementations)
-|-- lambda_function.py (entry point)
-|-- fast_path.py (cold start optimization)
-+-- home_assistant/*.py (17 HA files)
+├── gateway.py, gateway_core.py, gateway_wrappers.py
+├── interface_*.py (12 interfaces)
+├── *_core.py (12 core implementations)
+├── lambda_function.py (entry point)
+├── fast_path.py (cold start optimization)
+└── home_assistant/*.py (17 HA files)
 ```
 
 ---
@@ -414,37 +385,37 @@ Do NOT continue typing code in chat
 **Most frequently referenced (ZAPH Tier 1):**
 
 ### Architecture & Rules
-1. **ARCH-01**: Gateway trinity (3-layer pattern) - NM01/
-2. **RULE-01**: Cross-interface via gateway only - NM02/
-3. **DEC-01**: SIMA pattern choice - NM04/
+1. **ARCH-01**: Gateway trinity (3-layer pattern) - /sima/entries/core/
+2. **RULE-01**: Cross-interface via gateway only - /sima/entries/gateways/
+3. **DEC-01**: SIMA pattern choice - /sima/entries/decisions/architecture/
 
 ### Critical Decisions
-4. **DEC-04**: No threading locks - NM04/Decisions-Technical_DEC-04.md
-5. **DEC-05**: Sentinel sanitization - NM04/Decisions-Technical_DEC-05.md
-6. **DEC-07**: Dependencies < 128MB - NM04/
-7. **DEC-08**: Flat file structure - NM04/
-8. **DEC-21**: SSM token-only - NM04/Decisions-Operational_DEC-21.md
+4. **DEC-04**: No threading locks - /sima/entries/decisions/architecture/DEC-04.md
+5. **DEC-05**: Sentinel sanitization - /sima/entries/decisions/architecture/DEC-05.md
+6. **DEC-07**: Dependencies < 128MB - /sima/entries/decisions/technical/
+7. **DEC-08**: Flat file structure - /sima/entries/decisions/technical/
+8. **DEC-21**: SSM token-only - /sima/entries/decisions/operational/DEC-21.md
 
 ### Anti-Patterns
-9. **AP-01**: Direct cross-interface imports - NM05/AntiPatterns-Import_AP-01.md
-10. **AP-08**: Threading primitives - NM05/AntiPatterns-Concurrency_AP-08.md
-11. **AP-14**: Bare except clauses - NM05/AntiPatterns-ErrorHandling_AP-14.md
-12. **AP-19**: Sentinel objects crossing boundaries - NM05/AntiPatterns-Security_AP-19.md
-13. **AP-27**: Skipping verification - NM05/AntiPatterns-Process_AP-27.md
+9. **AP-01**: Direct cross-interface imports - /sima/entries/anti-patterns/import/AP-01.md
+10. **AP-08**: Threading primitives - /sima/entries/anti-patterns/concurrency/AP-08.md
+11. **AP-14**: Bare except clauses - /sima/entries/anti-patterns/error-handling/AP-14.md
+12. **AP-19**: Sentinel objects crossing boundaries - /sima/entries/anti-patterns/security/AP-19.md
+13. **AP-27**: Skipping verification - /sima/entries/anti-patterns/process/AP-27.md
 
 ### Bugs & Lessons
-14. **BUG-01**: Sentinel leak (535ms cost) - NM06/Bugs-Critical_BUG-01.md
-15. **BUG-02**: _CacheMiss validation - NM06/Bugs-Critical_BUG-02.md
-16. **LESS-01**: Read complete files first - NM06/Lessons-CoreArchitecture_LESS-01.md
-17. **LESS-02**: Measure don't guess - NM06/Lessons-Performance_LESS-02.md
-18. **LESS-15**: 5-step verification protocol - NM06/Lessons-Operations_LESS-15.md
+14. **BUG-01**: Sentinel leak (535ms cost) - /sima/entries/lessons/bugs/BUG-01.md
+15. **BUG-02**: _CacheMiss validation - /sima/entries/lessons/bugs/BUG-02.md
+16. **LESS-01**: Read complete files first - /sima/entries/lessons/core-architecture/LESS-01.md
+17. **LESS-02**: Measure don't guess - /sima/entries/lessons/performance/LESS-02.md
+18. **LESS-15**: 5-step verification protocol - /sima/entries/lessons/operations/LESS-15.md
 
 ### Interfaces & Flows
-19. **INT-01**: CACHE interface - NM01/Architecture-InterfacesCore_INT-01.md
-20. **PATH-01**: Cold start pathway - NM03/Operations-Pathways.md
+19. **INT-01**: CACHE interface - /sima/entries/interfaces/INT-01_CACHE-Interface-Pattern.md
+20. **PATH-01**: Cold start pathway - /sima/entries/core/
 
 ### [NEW] Wisdom
-21. **WISD-06**: Cache-busting platform limitation - NM06/Lessons-Wisdom_WISD-06.md
+21. **WISD-06**: Cache-busting platform limitation - /sima/entries/lessons/wisdom/WISD-06.md
 
 ---
 
@@ -479,7 +450,7 @@ Do NOT continue typing code in chat
 - Time: 10-30s
 
 ### When Using ZAPH (Hot Path)
-**-> NM00B-ZAPH.md**
+**-> /sima/entries/core/ARCH-ZAPH**
 - Tier 1: Critical (20 items) - Always cached
 - Tier 2: High (30 items) - Frequently used
 - Tier 3: Moderate (40+ items) - Monitored
@@ -498,7 +469,7 @@ Do NOT continue typing code in chat
 6. [NEW] Use fileserver.php for fresh files
 
 ### Reporting Errors (Workflow-02)
-1. Check known bugs (NM06/Bugs)
+1. Check known bugs (/sima/entries/lessons/bugs/)
 2. Match error pattern
 3. Apply documented fix
 4. If new, trace and document
@@ -563,7 +534,7 @@ Do NOT continue typing code in chat
    -> Route to specific Workflow-##.md (10s)
    |
 7. Use routing map
-   -> Find relevant NM##/ file (10s)
+   -> Find relevant file (10s)
    -> [NEW] Fetch via fileserver.php URLs (fresh content)
    |
 8. Read complete section
@@ -709,7 +680,7 @@ With this file loaded:
 
 **END OF SESSION-START FILE**
 
-**Version:** 3.4.0 (fileserver.php implementation)  
+**Version:** 3.4.1 (SIMAv4 path corrections)  
 **Updated:** 2025-11-02  
 **Lines:** 459 (within SIMAv4 limit)  
 **Load time:** 30-45 seconds  
@@ -719,6 +690,16 @@ With this file loaded:
 ---
 
 ## VERSION HISTORY
+
+**v3.4.1 (2025-11-02):**
+- UPDATED: All NM##/ references to /sima/entries/ structure (SIMAv4)
+- UPDATED: Instant answer #8 (decisions directory path)
+- UPDATED: Keyword mapping table (all file paths)
+- UPDATED: FILE STRUCTURE section (SIMAv4 directory tree)
+- UPDATED: TOP 20 REF-IDs (all file paths)
+- UPDATED: Query routing (path references)
+- UPDATED: Workflow tips (path references)
+- Consistency update for SIMAv4 directory structure
 
 **v3.4.0 (2025-11-02):**
 - REPLACED: DEC-24 auto-generation with fileserver.php dynamic generation
