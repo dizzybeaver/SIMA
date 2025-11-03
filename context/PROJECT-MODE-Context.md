@@ -1,24 +1,29 @@
-# PROJECT-MODE-Context.md
+# SIMA-LEARNING-SESSION-START-Quick-Context.md
 
-**Version:** 1.4.0  
+**Version:** 2.4.0  
 **Date:** 2025-11-02  
-**Purpose:** Active development and code implementation context  
-**Activation:** "Start Project Work Mode"  
-**Load time:** 30-45 seconds (ONE TIME per project session)  
-**Updated:** fileserver.php implementation (replaces DEC-24 auto-generation)
+**Purpose:** Knowledge extraction and learning mode  
+**Activation:** "Start SIMA Learning Mode"  
+**Load time:** 45-60 seconds (ONE TIME per learning session)  
+**Updated:** fileserver.php implementation + SIMAv4 path corrections
 
 ---
 
-## WHAT THIS MODE IS
+## WHAT THIS FILE IS
 
-This is **Project Work Mode** - optimized for active development tasks:
-- Implementing new features
-- Modifying existing code
-- Creating artifacts
-- Building components
-- Extending functionality
+This is your **knowledge extraction bootstrap file**. Read it ONCE when entering SIMA Learning Mode to activate:
+- Pattern recognition for 10+ knowledge types
+- Extraction workflows with **genericization** and **duplicate checks**
+- Quality standards emphasizing **brevity**
+- REF-ID assignment rules
+- SIMAv4 routing logic
+- Post-extraction protocols
+- **SIMAv4 compliance** (minimal chat, ≤400 lines, headers, encoding)
+- **File retrieval system** (fileserver.php, WISD-06)
 
-**Not for:** Q&A (use General Mode), Debugging (use Debug Mode), or Knowledge extraction (use Learning Mode)
+**Purpose:** Transform raw material into structured, **generic, unique, concise** neural map entries.
+
+**Time investment:** 60 seconds now enables systematic knowledge capture all session.
 
 ---
 
@@ -42,699 +47,941 @@ https://claude.dizzybeaver.com/fileserver.php
 **Claude can now fetch any file:**
 ```
 Example from fileserver.php output:
-https://claude.dizzybeaver.com/src/gateway.py?v=8228685071
+https://claude.dizzybeaver.com/sima/entries/lessons/wisdom/WISD-06.md?v=6144453293
 ```
 
 **Result:** Fresh file content, bypasses Anthropic's cache
 
-**CRITICAL for Project Mode:**
-Week-old source code = broken implementations!
-This mode MUST have fresh files for accurate development.
+### Why This Works
+
+**Platform Limitation:**
+Anthropic's web_fetch caches files for weeks, ignoring all server headers.
+
+**Solution:**
+- fileserver.php URL explicitly listed (permission granted)
+- Generated URLs come from fetch result (secondary permission)
+- Random parameters bypass platform cache
+- Zero user maintenance (no manual steps)
+
+**Note for Learning Mode:**
+Learning mode creates and updates neural map files. fileserver.php ensures we read fresh neural maps when checking for duplicates, preventing duplicate work on cached entries.
 
 **Related:** WISD-06 (Cache-Busting Platform Limitation)
 
 ---
 
-## CRITICAL: ARTIFACT-ONLY OUTPUT - SIMAv4
+## ARTIFACT USAGE (Learning Mode) - SIMAv4
 
-**MANDATORY:** This mode outputs code. Follow these rules WITHOUT EXCEPTION:
+**When creating neural map entries:**
 
-### Rule 1: NEVER Output Code in Chat
+### Output Format
 ```
-STOP if you catch yourself typing code in chat
-[X] NEVER EVER output code in chat
-[X] NEVER output snippets in chat
-[X] NEVER output fragments in chat
-[OK] ALWAYS create complete file artifacts
-[OK] EVERY code response = artifact
-[OK] NO EXCEPTIONS
-```
-
-### Rule 2: Complete Files ONLY (Never Fragments)
-```
-[OK] Include ALL existing code (from top to bottom)
-[OK] Include your modifications (marked with comments)
-[OK] Include imports, docstrings, everything
-[OK] Make it immediately deployable
+[OK] Neural map files -> Artifacts (markdown)
+[OK] Multiple entries -> Multiple artifacts (separate files)
+[OK] Index updates -> Artifacts
+[OK] Cross-references -> Include in artifacts
 [OK] Filename in header (SIMAv4)
-[X] NEVER partial code
-[X] NEVER "add this to line X"
-[X] NEVER "insert this between..."
-[X] NEVER excerpts or snippets
+[OK] File ≤400 lines (SIMAv4)
+[X] Don't output neural maps in chat
+[X] Don't condense multiple topics in one file
 ```
 
-### Rule 3: Minimal Chat Output (SIMAv4)
+### Quality Standards (SIMAv4)
 ```
-[OK] Brief status: "Creating artifact..."
-[OK] Summary after artifact (2-3 sentences max)
-[OK] Let artifact speak for itself
-[X] Long explanations in chat
-[X] Verbose commentary
-[X] Narrative descriptions
-```
-
-### Rule 4: File Size (SIMAv4)
-```
-[OK] Source code: No limit (deployable files)
-[OK] Neural maps: <=400 lines (split if needed)
-[OK] Summaries: <=100 lines
-[OK] Plans: <=50 lines
-```
-
-### Rule 5: Mark All Changes
-```python
-# CORRECT way to mark changes:
-
-# ADDED: New cache warming function for cold start optimization
-def warm_cache():
-    """Pre-load frequently accessed data into cache."""
-    # Implementation...
-
-# MODIFIED: Enhanced error handling and validation
-def existing_function(data):
-    """Process data with improved error handling."""
-    # ADDED: Input validation
-    if not validate_data(data):
-        raise ValueError("Invalid data format")
-    
-    # Original logic continues...
-```
-
-### Pre-Output Checklist (MANDATORY)
-**Before creating EVERY artifact:**
-```
-[ ] Did I fetch the current complete file? (via fileserver.php URLs!)
-[ ] Did I read the ENTIRE file?
-[ ] Am I including ALL existing code?
-[ ] Did I mark my changes with comments?
-[ ] Is this a complete file (not fragment)?
-[ ] Can user deploy this immediately?
-[ ] Am I creating an artifact (not typing in chat)?
-[ ] Is filename in header? (SIMAv4)
-[ ] Is chat output minimal? (SIMAv4)
-[ ] Used fileserver.php URL? (fresh file) (WISD-06)
-```
-
-### Self-Correction Trigger
-**If you catch yourself about to type code in chat:**
-```
-STOP typing immediately
-Delete any code you started typing in chat
-[OK] Create artifact instead
-[OK] Fetch complete file first (via fileserver.php URLs!)
-[OK] Include ALL existing code
-[OK] Mark your changes
-[OK] Make it deployable
-[OK] Keep chat brief
-```
-
-**This is the #1 rule in Project Mode. Violation wastes user's time.**
-
----
-
-## CRITICAL PROJECT RULES
-
-### Rule 1: Always Fetch Current Files (LESS-01 + WISD-06)
-**MANDATORY:** Before ANY code modification:
-```
-1. Use fileserver.php URLs (from session start fetch)
-2. Fetch COMPLETE current file
-3. Read ENTIRE file (don't skim)
-4. Understand full context
-5. THEN and ONLY THEN modify
-```
-
-**Why:** Assumptions about code state cause 90% of errors. Cached files from weeks ago cause broken implementations.
-
-### Rule 2: Implement All 3 SUGA Layers
-**MANDATORY:** Every feature needs:
-```
-1. Gateway Layer (gateway_wrappers.py)
-   +-> Public function, lazy import to interface
-   
-2. Interface Layer (interface_*.py)  
-   +-> Routing function, lazy import to core
-   
-3. Core Layer (*_core.py)
-   +-> Implementation logic
-```
-
-**Why:** Skipping layers violates SUGA pattern (DEC-01).
-
-### Rule 3: Use LESS-15 Verification (Always)
-**MANDATORY:** Before suggesting ANY code:
-```
-[ ] Read complete current file (via fileserver.php URLs!)
-[ ] Verified SUGA pattern (all 3 layers)
-[ ] Checked anti-patterns (AP-Checklist-Critical)
-[ ] Verified dependencies (no circular imports)
-[ ] Cited sources (REF-IDs)
-```
-
-**Why:** Prevents 90% of common mistakes.
-
-### Rule 4: Output Complete Files as Artifacts
-**MANDATORY:** When modifying code:
-```
-[OK] Create artifact with COMPLETE file
-[OK] Include ALL existing code + modifications
-[OK] Mark changes with comments
-[OK] Filename in header (SIMAv4)
-[OK] Brief chat summary (SIMAv4)
-[X] Never output partial snippets
-[X] Never say "add this to line X"
-```
-
-**Why:** User needs complete, working code to deploy.
-
-### Rule 5: Respect Constraints
-**MANDATORY:** Check against these limits:
-```
-Memory: 128MB total (DEC-07)
-Cold Start: < 3 seconds target (ARCH-07)
-Dependencies: Built-in AWS Lambda modules only
-Threading: None (Lambda is single-threaded) (DEC-04)
-Structure: Flat files except home_assistant/ (DEC-08)
-```
-
----
-
-## SUGA IMPLEMENTATION TEMPLATES
-
-### Template 1: Add Gateway Function
-
-**File:** gateway_wrappers.py
-
-```python
-def new_action_object(param1, param2, **kwargs):
-    """
-    [Brief description of what this does]
-    
-    Args:
-        param1: [Description]
-        param2: [Description]
-        **kwargs: Additional options
-        
-    Returns:
-        [Return type and description]
-        
-    REF: INT-##
-    """
-    import interface_[category]
-    return interface_[category].action_object(param1, param2, **kwargs)
-```
-
-### Template 2: Add Interface Function
-
-**File:** interface_[category].py
-
-```python
-def action_object(param1, param2, **kwargs):
-    """
-    [Brief description - interface layer routing]
-    
-    Routes to: [category]_core.action_object_impl
-    """
-    import [category]_core
-    return [category]_core.action_object_impl(param1, param2, **kwargs)
-```
-
-### Template 3: Add Core Implementation
-
-**File:** [category]_core.py
-
-```python
-def action_object_impl(param1, param2, **kwargs):
-    """
-    [Detailed description of implementation]
-    
-    Args:
-        param1: [Description with type]
-        param2: [Description with type]
-        **kwargs: Additional options
-        
-    Returns:
-        [Return type]: [Description]
-        
-    Raises:
-        [Exception]: [When and why]
-        
-    Example:
-        result = action_object_impl(val1, val2)
-        
-    REF: INT-##, DEC-##
-    """
-    # Implementation here
-    
-    try:
-        # Main logic
-        result = process(param1, param2)
-        return result
-        
-    except SpecificError as e:
-        # Never bare except (AP-14)
-        import interface_logging
-        interface_logging.log_error(f"Error in action: {e}")
-        raise
-```
-
----
-
-## COMMON PROJECT WORKFLOWS
-
-### Workflow: Add New Feature
-
-**Step 1: Understand Requirements**
-```
-1. What does feature need to do?
-2. Which interface does it belong to? (INT-01 to INT-12)
-3. What are inputs/outputs?
-4. Any constraints? (memory, performance, dependencies)
-```
-
-**Step 2: Check Existing Implementation (via fileserver.php!)**
-```
-1. Use fileserver.php URLs (from session start)
-2. Fetch gateway_wrappers.py
-3. Fetch interface_[category].py
-4. Fetch [category]_core.py
-5. Understand current structure
-```
-
-**Step 3: Implement All 3 Layers**
-```
-1. Add gateway function (use template 1)
-2. Add interface function (use template 2)
-3. Add core implementation (use template 3)
-4. Ensure lazy imports at each layer
-```
-
-**Step 4: Verify Implementation**
-```
-[ ] LESS-15 checklist complete
-[ ] No anti-patterns (checked AP-Checklist-Critical)
-[ ] No circular imports
-[ ] Complete files output as artifacts
-[ ] REF-IDs cited
-[ ] Used fileserver.php URLs (fresh files) (WISD-06)
-```
-
-**Step 5: Create Artifacts (SIMAv4)**
-```
-Brief chat: "Creating 3 artifacts for new feature..."
-
-1. Artifact 1: gateway_wrappers.py (COMPLETE file, filename in header)
-2. Artifact 2: interface_[category].py (COMPLETE file, filename in header)
-3. Artifact 3: [category]_core.py (COMPLETE file, filename in header)
-4. Mark changes with comments: # ADDED: [feature]
-
-Brief chat: "Feature implemented across all 3 SUGA layers. Ready to deploy."
-```
-
----
-
-### Workflow: Modify Existing Function
-
-**Step 1: Fetch Current Version (via fileserver.php!)**
-```
-MANDATORY: Use fileserver.php URLs (from session start)
-+-> Get COMPLETE current file
-+-> Read ENTIRE file
-+-> Never assume you know current state
-```
-
-**Step 2: Locate Function in All Layers**
-```
-Find in:
-1. gateway_wrappers.py
-2. interface_[category].py
-3. [category]_core.py
-```
-
-**Step 3: Understand Current Implementation**
-```
-1. Read complete function
-2. Understand parameters
-3. Trace dependencies
-4. Note any special handling
-```
-
-**Step 4: Plan Modifications**
-```
-1. What needs to change?
-2. Which layers affected?
-3. Breaking changes?
-4. Backward compatibility needed?
-```
-
-**Step 5: Implement Changes**
-```
-1. Modify all affected layers
-2. Update docstrings
-3. Add/update tests if present
-4. Maintain SUGA pattern
-```
-
-**Step 6: Output Complete Files (SIMAv4)**
-```
-Brief chat: "Modifying [X] files..."
-
-Create artifacts with:
-[OK] COMPLETE file content (from line 1 to end)
-[OK] All existing code
-[OK] Your modifications
-[OK] Comments marking changes
+[OK] Complete entry (all sections)
+[OK] Proper REF-ID format
+[OK] 4-8 keywords
+[OK] 3-7 related topics
+[OK] Brief (≤400 lines per file)
+[OK] Generic (no project-specifics)
+[OK] Unique (not duplicate)
 [OK] Filename in header
-[X] NEVER fragments
-[X] NEVER partial files
+[OK] Separate files (never condense)
+```
 
-Brief chat: "Modifications complete. Files ready to deploy."
+### Chat Output (SIMAv4)
+```
+[OK] Brief status: "Extracting knowledge..."
+[OK] "Creating [X] neural map artifacts..."
+[OK] Brief summary (2-3 sentences)
+[X] Long extraction narratives
+[X] Verbose commentary
+[X] Detailed explanations in chat
+```
+
+**Default: Output neural map entries as complete markdown artifacts with minimal chat**
+
+---
+
+## THREE CRITICAL ENHANCEMENTS
+
+### Enhancement 1: Genericize by Default
+
+**Rule:** Strip project-specific details unless directly relevant to current project.
+
+**Process:**
+1. Extract the **universal principle** from the specific instance
+2. Remove references to specific tools/frameworks/languages (unless core to lesson)
+3. Focus on **transferable patterns** and **timeless insights**
+4. Keep only context needed to understand the principle
+
+**Examples:**
+
+[X] **Too Specific:**
+> "In SUGA-ISP Lambda, we found that threading locks caused deadlock because AWS Lambda runs single-threaded."
+
+[OK] **Properly Generic:**
+> "Threading primitives fail in single-threaded execution environments. Verify runtime model before choosing concurrency approach."
+
+[X] **Too Specific:**
+> "We use gateway.py to prevent circular imports in our Python Lambda project."
+
+[OK] **Properly Generic:**
+> "Gateway pattern (single entry point) prevents circular imports in modular systems. Apply to any language/platform with tight coupling risk."
+
+### Enhancement 2: Duplicate Detection
+
+**Rule:** Always verify uniqueness before creating new entries.
+
+**Check Process:**
+```
+BEFORE creating any new entry:
+
+1. Search existing entries for same concept
+   - Same REF-ID prefix (LESS, AP, DEC, etc.)
+   - Related keywords
+   - Similar patterns
+   - [NEW] Use fileserver.php URLs when checking
+
+2. If similar entry exists:
+   -> DON'T create duplicate
+   -> Update existing entry instead
+   -> Cross-reference related items
+
+3. If truly new:
+   -> Proceed with creation
+   -> Note why it's distinct from existing
+```
+
+**Duplicate Detection Queries:**
+- "Is there already a lesson about [topic]?"
+- "Do we have an anti-pattern covering [pattern]?"
+- "Is this decision already documented?"
+- "Does BUG-## cover this root cause?"
+
+**If Duplicate Found:**
+- **Update** existing entry with new insights
+- **Enhance** examples with new cases
+- **Strengthen** cross-references
+- **Don't create** new duplicate entry
+
+### Enhancement 3: Extreme Brevity
+
+**Rule:** Minimize tokens. Every word must earn its place.
+
+**Standards:**
+- Summaries: 2-3 sentences MAX
+- Examples: 1-2 lines code + 1 line explanation
+- Descriptions: Direct, no filler words
+- Cross-refs: REF-IDs only, no explanatory text
+- Files: ≤400 lines (SIMAv4)
+
+**Before:**
+> "After conducting extensive debugging sessions and analyzing the performance characteristics of our system, we eventually discovered through careful investigation that the root cause of the slowdown was related to how we were handling cache misses, which were occurring more frequently than expected due to..."
+
+**After:**
+> "Cache miss handling caused 535ms penalty. Root: _CacheMiss objects leaked across boundaries."
+
+**Brevity Checklist:**
+- [OK] Remove: "we found that", "it turned out", "after investigation"
+- [OK] Use: Direct statements, active voice, concrete facts
+- [OK] Cut: Background story, discovery process, emotions
+- [OK] Keep: Root cause, impact, fix, prevention
+
+---
+
+## EXTRACTION SIGNAL PATTERNS
+
+### What to Look For
+
+**Signal 1: "Aha!" Moments**
+- "Oh, I see now..."
+- "That explains why..."
+- "So that's how it works..."
+- "The real issue was..."
+
+**Signal 2: Pain Points Resolved**
+- "After 3 hours, we found..."
+- "The problem was actually..."
+- "We kept failing until..."
+- "The breakthrough came when..."
+
+**Signal 3: Design Decisions Made**
+- "We chose X over Y because..."
+- "After considering options, we..."
+- "The tradeoff was..."
+- "We decided against X due to..."
+
+**Signal 4: Patterns Discovered**
+- "This keeps happening..."
+- "Every time we X, Y occurs..."
+- "The pattern is..."
+- "We noticed that..."
+
+**Signal 5: Mistakes Made**
+- "We shouldn't have..."
+- "That was a mistake because..."
+- "Don't ever..."
+- "If we had known..."
+
+**Signal 6: Wisdom Synthesized**
+- "The key insight is..."
+- "What really matters is..."
+- "The fundamental principle..."
+- "Everything comes down to..."
+
+**Signal 7: Process Improvements**
+- "Next time we'll..."
+- "A better approach would be..."
+- "The systematic way is..."
+- "We should always..."
+
+---
+
+## ENHANCED EXTRACTION WORKFLOWS
+
+### Universal Extraction Template (SIMAv4 + fileserver.php)
+
+**Use this for ALL knowledge types:**
+
+```
+STEP 1: Identify Signal
+- What triggered this knowledge?
+- What type is it? (LESS, AP, DEC, BUG, etc.)
+
+STEP 2: Check for Duplicates (with fileserver.php URLs)
+- Search existing entries: "[keyword] [type]"
+- Use fileserver.php URLs to fetch relevant entries
+- Similar concept already documented?
+- If YES -> Update existing, don't create new
+- If NO -> Proceed to Step 3
+
+STEP 3: Genericize
+- Strip project-specific details
+- Extract universal principle
+- Remove tool/framework names (unless core)
+- Focus on transferable pattern
+
+STEP 4: Extract Core Content (BRIEF)
+- Root cause/principle (1 sentence)
+- Context (1 sentence IF needed)
+- Impact (quantified if possible)
+- Application (1 sentence)
+- Example (2-3 lines MAX)
+
+STEP 5: Assign REF-ID
+- Use next sequential number
+- Never reuse IDs
+
+STEP 6: Create Entry (as artifact) (SIMAv4)
+- Follow brevity standards
+- 4-8 keywords
+- 3-7 related topics
+- Minimal cross-ref text
+- Filename in header
+- File ≤400 lines
+- Output as markdown artifact
+- Brief chat: "Creating [TYPE-##] artifact..."
 ```
 
 ---
 
-## PROJECT MODE RED FLAGS
+## WORKFLOW 1: Extract LESSONS (LESS-##)
 
-**Instant Rejection - Stop Immediately:**
+**Enhanced Process (SIMAv4 + fileserver.php):**
 
-| Red Flag | REF-ID | What to Do Instead |
-|----------|--------|-------------------|
-| Bare except | AP-14 | Use specific exceptions |
-| Direct core import | AP-01 | Always via gateway |
-| Threading locks | AP-08 | Use atomic operations |
-| Sentinel leakage | AP-19 | Sanitize at router |
-| Skipping file fetch | LESS-01 | ALWAYS fetch first (fileserver.php) |
-| Partial code output | AP-27 | Complete files only |
-| Module-level imports | ARCH-07 | Use lazy imports |
-| New subdirectories | AP-05 | Keep flat (except home_assistant/) |
-| [NEW] Code in chat | SIMAv4 | Artifact only |
-| [NEW] Fragment output | SIMAv4 | Complete file only |
-| [NEW] Verbose chat | SIMAv4 | Brief status only |
-| [NEW] Missing filename | SIMAv4 | Header required |
-| [NEW] Skip fileserver.php | WISD-06 | Week-old code! |
+```
+1. Identify learning moment
 
----
+2. CHECK DUPLICATES (with fileserver.php URLs)
+   Search: "project_knowledge_search: [topic] lesson"
+   Use fileserver.php URLs if needed
+   If similar exists -> Update that entry instead
 
-## 12 INTERFACE QUICK REFERENCE
+3. GENERICIZE
+   Remove: Project names, specific tools, languages
+   Keep: Universal principle, pattern, anti-pattern avoided
+   Transform: "In Lambda..." -> "In serverless environments..."
+   Transform: "Using Python..." -> "In dynamic languages..."
 
-### INT-01: CACHE
-**File:** interface_cache.py -> cache_core.py  
-**Functions:** cache_get, cache_set, cache_delete, cache_clear  
-**Use for:** Caching data, managing cache lifecycle
+4. Extract (BRIEF):
+   - Context: 1 sentence
+   - Problem: What failed/succeeded
+   - Discovery: Core insight (generic)
+   - Principle: Universal rule
+   - Application: When to apply
 
-### INT-02: LOGGING
-**File:** interface_logging.py -> logging_core.py  
-**Functions:** log_info, log_error, log_debug, log_warning  
-**Use for:** All logging operations
+5. Assign LESS-## (next available)
 
-### INT-03: SECURITY
-**File:** interface_security.py -> security_core.py  
-**Functions:** encrypt, decrypt, hash, validate_token  
-**Use for:** Security operations, encryption, validation
+6. Create file as artifact (SIMAv4):
+   Brief chat: "Creating LESS-## artifact..."
+   - File: /sima/entries/lessons/[category]/LESS-##.md
+   - Filename in header
+   - Format: Markdown
+   - ≤400 lines
+   - Output: Complete artifact
+   Brief chat: "LESS-## created. [1-sentence summary]"
+```
 
-### INT-04: METRICS
-**File:** interface_metrics.py -> metrics_core.py  
-**Functions:** track_time, increment, gauge, histogram  
-**Use for:** Performance tracking, counters, timing
-
-### INT-05: CONFIG
-**File:** interface_config.py -> config_core.py  
-**Functions:** config_get, config_set, get_parameter  
-**Use for:** Configuration management, SSM parameters
-
-### INT-06: VALIDATION
-**File:** interface_utility.py -> utility_core.py  
-**Functions:** validate_input, sanitize, check_required  
-**Use for:** Input validation, sanitization
-
-### INT-07: PERSISTENCE
-**File:** (Future) interface_persistence.py  
-**Functions:** save, load, delete, list  
-**Use for:** Data storage, file operations
-
-### INT-08: COMMUNICATION
-**File:** interface_http.py, interface_websocket.py  
-**Functions:** http_get, http_post, websocket_connect  
-**Use for:** HTTP/WebSocket communication
-
-### INT-09: TRANSFORMATION
-**File:** interface_utility.py -> utility_core.py  
-**Functions:** transform_data, parse_json, format_response  
-**Use for:** Data transformation, parsing
-
-### INT-10: SCHEDULING
-**File:** (Future) interface_scheduling.py  
-**Functions:** schedule_task, defer, cancel  
-**Use for:** Task scheduling, deferred execution
-
-### INT-11: MONITORING
-**File:** interface_debug.py -> debug_core.py  
-**Functions:** health_check, get_status, diagnostics  
-**Use for:** Health monitoring, diagnostics
-
-### INT-12: ERROR_HANDLING
-**File:** interface_utility.py -> utility_core.py  
-**Functions:** handle_error, format_error_response  
-**Use for:** Error management, error responses
+**Quality Check:**
+- [OK] Generic (no unnecessary project-specifics)
+- [OK] Unique (not duplicate - checked with fileserver.php URLs)
+- [OK] Brief (≤400 lines)
+- [OK] Clear application context
+- [OK] [NEW] Filename in header (SIMAv4)
+- [OK] [NEW] Output as artifact
+- [OK] [NEW] Minimal chat
 
 ---
 
-## PROJECT MODE BEST PRACTICES
+## WORKFLOW 2: Extract ANTI-PATTERNS (AP-##)
 
-### Do's
+**Enhanced Process (SIMAv4 + fileserver.php):**
 
-**[OK] DO: Fetch files first (via fileserver.php!)**
-- ALWAYS use fileserver.php URLs (from session start)
-- Read COMPLETE current file
-- Never assume code state
-- Fresh files every session
+```
+1. Identify anti-pattern
 
-**[OK] DO: Implement all layers**
-- Gateway -> Interface -> Core
-- Lazy imports at each layer
-- Follow templates exactly
+2. CHECK DUPLICATES (with fileserver.php URLs)
+   Search: "project_knowledge_search: [pattern] anti-pattern"
+   Use fileserver.php URLs if needed
+   Check: Is this already AP-## somewhere?
 
-**[OK] DO: Output complete files**
-- Full file content in artifacts
-- Mark changes with comments
-- Deployable code only
-- Filename in header (SIMAv4)
+3. GENERICIZE
+   Pattern: Generic description (no project names)
+   Why: Universal reason it's wrong
+   Impact: Generic consequences
+   Alternative: Generic solution
 
-**[OK] DO: Verify with LESS-15**
-- Complete 5-step checklist
-- Check anti-patterns
-- Cite REF-IDs
+4. Extract (BRIEF):
+   - Pattern: What NOT to do (generic)
+   - Why: Root cause (generic)
+   - Impact: Quantified if possible
+   - Alternative: RIGHT way (generic)
+   - Example: 2-3 lines MAX
+
+5. Assign AP-## (next available)
+
+6. Create file as artifact (SIMAv4):
+   Brief chat: "Creating AP-## artifact..."
+   - File: /sima/entries/anti-patterns/[category]/AP-##.md
+   - Filename in header
+   - Format: Markdown
+   - ≤400 lines
+   - Output: Complete artifact
+   Brief chat: "AP-## created. [1-sentence summary]"
+```
+
+**Genericization Examples:**
+
+[X] Before: "Using threading locks in AWS Lambda"
+[OK] After: "Using threading primitives in single-threaded runtimes"
+
+[X] Before: "Direct imports from cache_core.py"
+[OK] After: "Cross-layer imports bypassing gateway pattern"
+
+---
+
+## WORKFLOW 3: Extract WISDOM (WISD-##)
+
+**Enhanced Process (SIMAv4 + fileserver.php):**
+
+```
+1. Identify wisdom moment (profound insight)
+
+2. CHECK DUPLICATES (with fileserver.php URLs)
+   Search: "project_knowledge_search: [concept] wisdom"
+   Use fileserver.php URLs if needed
+   Wisdom should be genuinely NEW insight
+
+3. GENERICIZE (Critical for wisdom!)
+   Remove: ALL project specifics
+   Extract: Pure principle
+   Elevate: From instance to universal
+   Generalize: Broadly applicable truth
+
+4. Extract (EXTREMELY BRIEF):
+   - Insight: The profound truth (1-2 sentences)
+   - Origin: How realized (1 sentence)
+   - Implications: What changes (1 sentence)
+   - Applications: Where applies (1 sentence)
+
+5. Assign WISD-## (next available)
+
+6. Create file as artifact (SIMAv4):
+   Brief chat: "Creating WISD-## artifact..."
+   - File: /sima/entries/lessons/wisdom/WISD-##.md
+   - Filename in header
+   - Format: Markdown
+   - ≤400 lines
+   - Output: Complete artifact
+   Brief chat: "WISD-## created. [1-sentence summary]"
+```
+
+**Wisdom Genericization:**
+
+[X] Too specific: "SUGA pattern solves Lambda circular imports"
+[OK] Generic: "Gateway patterns eliminate circular dependencies in modular systems"
+
+[X] Too specific: "Reading Python files before modifying prevents errors"
+[OK] Generic: "Understand complete state before mutation reduces error rate exponentially"
+
+---
+
+## WORKFLOW 4: Extract BUGS (BUG-##)
+
+**Enhanced Process (SIMAv4 + fileserver.php):**
+
+```
+1. Identify bug
+
+2. CHECK DUPLICATES (with fileserver.php URLs)
+   Search: "project_knowledge_search: [symptom] bug"
+   Use fileserver.php URLs if needed
+   Same root cause already documented?
+
+3. GENERICIZE
+   Symptom: Generic description
+   Root Cause: Generic underlying issue
+   Fix: Generic solution approach
+   Prevention: Generic strategy
+
+4. Extract (BRIEF):
+   - Symptom: What appeared broken (generic)
+   - Root Cause: Actual issue (generic)
+   - Impact: Quantified (time, performance, etc.)
+   - Fix: Solution (generic)
+   - Prevention: How to avoid (generic)
+
+5. Assign BUG-## (next available)
+
+6. Create file as artifact (SIMAv4):
+   Brief chat: "Creating BUG-## artifact..."
+   - File: /sima/entries/lessons/bugs/BUG-##.md
+   - Filename in header
+   - Format: Markdown
+   - ≤400 lines
+   - Output: Complete artifact
+   Brief chat: "BUG-## created. [1-sentence summary]"
+```
+
+**Example Genericization:**
+
+[X] Specific: "Sentinel object _CacheMiss from cache_core leaked into JSON response"
+[OK] Generic: "Implementation sentinel objects leaked across serialization boundary"
+
+---
+
+## WORKFLOW 5: Extract DECISIONS (DEC-##)
+
+**Enhanced Process (SIMAv4 + fileserver.php):**
+
+```
+1. Identify decision point
+
+2. CHECK DUPLICATES (with fileserver.php URLs)
+   Search: "project_knowledge_search: [topic] decision"
+   Use fileserver.php URLs if needed
+   Same decision already documented?
+
+3. GENERICIZE
+   Decision: Generic choice (pattern, not tool)
+   Context: Generic trigger
+   Alternatives: Generic options
+   Rationale: Generic reasoning
+   Constraints: Generic limitations
+
+4. Extract (BRIEF):
+   - Decision: What chosen (generic)
+   - Context: What prompted (generic)
+   - Alternatives: Options considered (generic)
+   - Rationale: Why chosen (generic, 1-2 sentences)
+   - Outcome: Result (quantified)
+
+5. Assign DEC-## (next available)
+
+6. Create file as artifact (SIMAv4):
+   Brief chat: "Creating DEC-## artifact..."
+   - File: /sima/entries/decisions/[category]/DEC-##.md
+   - Filename in header
+   - Format: Markdown
+   - ≤400 lines
+   - Output: Complete artifact
+   Brief chat: "DEC-## created. [1-sentence summary]"
+```
+
+**Genericization Example:**
+
+[X] Too specific: "Use AWS Lambda instead of EC2 for serverless functions"
+[OK] Generic: "Choose stateless execution model over stateful servers for event-driven workloads"
+
+---
+
+## ENHANCED QUALITY STANDARDS
+
+### Updated Quality Criteria (SIMAv4 + fileserver.php)
+
+**1. Actionable** (unchanged)
+- [OK] Can be applied immediately
+- [OK] Clear action steps
+- [OK] Specific enough to use
+
+**2. Generic**
+- [OK] No unnecessary project-specifics
+- [OK] Transferable across contexts
+- [OK] Universal principles extracted
+- [X] Project names, tool names (unless core)
+
+**3. Unique (with fileserver.php)**
+- [OK] Not duplicate of existing entry
+- [OK] Adds new insight/perspective
+- [OK] Distinct from related entries
+- [OK] [NEW] Checked with fresh file content (fileserver.php URLs)
+- [X] Rehashing documented knowledge
+
+**4. Brief (SIMAv4 Enhanced)**
+- [OK] ≤400 lines total per file
+- [OK] Summaries: 2-3 sentences
+- [OK] Examples: 2-3 lines
+- [OK] Separate files (never condense)
+- [X] Long narratives, filler words
+- [X] Multiple topics in one file
+
+**5. Complete** (modified)
+- [OK] Key info present (but brief!)
+- [OK] Related topics linked (REF-IDs only)
+- [OK] Minimal examples included
+- [OK] [NEW] Output as artifact (SIMAv4)
+- [OK] [NEW] Filename in header (SIMAv4)
+
+**6. Verifiable** (unchanged)
+- [OK] Testable/validatable
+- [OK] Measurable impact
+
+---
+
+## ENHANCED POST-EXTRACTION PROTOCOL
+
+### After Creating Each Entry (SIMAv4 + fileserver.php)
+
+**Step 1: Duplicate Verification (with fileserver.php)**
+- [OK] Searched before creating
+- [OK] [NEW] Used fileserver.php URLs when checking
+- [OK] Confirmed uniqueness
+- [OK] Not rehashing existing entry
+- [OK] If similar found, updated that instead
+
+**Step 2: Genericization Check**
+- [OK] Project-specific details removed
+- [OK] Universal principle extracted
+- [OK] Tool names removed (unless core)
+- [OK] Transferable across contexts
+
+**Step 3: Brevity Check (SIMAv4)**
+- [OK] Total lines ≤400 per file
+- [OK] Summary ≤3 sentences
+- [OK] Examples ≤3 lines each
+- [OK] No filler words
+- [OK] Separate files (not condensed)
+
+**Step 4: File Creation (SIMAv4)**
+- [OK] Correct /sima/entries/ directory
+- [OK] Named correctly
+- [OK] Template followed
+- [OK] All sections completed
+- [OK] **Filename in header**
+- [OK] **Output as markdown artifact**
+- [OK] **Brief chat output**
+
+**Step 5: Content Quality**
+- [OK] Passes ALL 6 quality criteria
+- [OK] Keywords present (4-8)
+- [OK] Related topics linked (REF-IDs only)
+- [OK] REF-ID correct
+
+**Step 6: Index Updates (SIMAv4)**
+- [OK] Added to Topic Index (as separate artifact)
+- [OK] Added to Category Index (as separate artifact)
+- [OK] Cross-references updated (as separate artifacts)
+- [OK] Brief chat for each update
+
+---
+
+## EXTRACTION EXAMPLES (Enhanced with fileserver.php)
+
+### Example 1: LESSON Extraction (SIMAv4 + fileserver.php)
+
+**Raw Material:**
+```
+"After 3 hours debugging our Lambda function, we finally
+found that the sentinel _CacheMiss object was causing
+JSON serialization failures in the API Gateway response."
+```
+
+**OLD Way:**
+```
+LESS-##: Always sanitize sentinels before JSON serialization
+Context: In SUGA-ISP Lambda, _CacheMiss sentinels...
+```
+
+**NEW Way (SIMAv4 + fileserver.php):**
+```
+Brief chat: "Extracting lesson... Checking for duplicates with fileserver.php URLs..."
+
+1. Check duplicates (with fileserver.php):
+   Search: "sentinel serialization lesson"
+   Fetch relevant entries via fileserver.php URLs
+   -> Found none, proceed
+
+2. Genericize:
+   - Remove: "Lambda", "_CacheMiss", "API Gateway"
+   - Extract: Sentinel leakage across serialization boundaries
+
+3. Create (BRIEF) as artifact:
+
+# LESS-##.md
+**Version:** 1.0.0
+**Date:** 2025-11-02
+**Purpose:** Sanitize implementation sentinels at boundaries
+
+LESS-##: Sanitize implementation sentinels at boundaries
+Generic Context: Internal sentinels fail serialization
+Impact: 535ms penalty, JSON failures
+Prevention: Sanitize at boundary layer before serialization
+Example: `if value is SENTINEL: return None  # boundary layer`
+
+[Output as markdown artifact]
+
+Brief chat: "LESS-## created. Covers sentinel sanitization at boundaries."
+```
+
+**Saved:** ~60% token reduction, fully generic, no duplicates, SIMAv4 compliant, fresh content verified
+
+---
+
+## LEARNING MODE BEST PRACTICES (SIMAv4 + fileserver.php)
+
+### Enhanced Do's
+
+**[OK] DO: Check duplicates FIRST (with fileserver.php)**
+- Search before every extraction
+- Use fileserver.php URLs to ensure fresh content
+- Update existing vs create new
+- Strengthen connections over proliferation
+
+**[OK] DO: Genericize aggressively**
+- Strip all project-specifics
+- Extract universal principles
+- Make broadly applicable
+
+**[OK] DO: Be ruthlessly brief**
+- Every word must earn its place
+- 2-3 sentence summaries
+- 2-3 line examples
+- No filler, no stories
+- ≤400 lines per file
+
+**[OK] DO: Extract immediately**
+- Capture while fresh
+- Don't wait until "later"
+
+**[OK] DO: Cross-reference heavily**
+- Link related items
+- Build knowledge graph
+- Enable discovery
+
+**[OK] DO: Output as artifacts (SIMAv4)**
+- Neural map files -> markdown artifacts
+- Index updates -> separate artifacts
+- Complete entries only
+- Filename in header
+- Separate files (never condense)
 
 **[OK] DO: Keep chat brief (SIMAv4)**
 - Status updates only
-- 2-3 sentence summaries
+- "Creating [X] artifact..."
+- Brief summaries (2-3 sentences)
+- No long narratives
+
+**[OK] DO: Use fileserver.php URLs (WISD-06)**
+- Apply to all file fetches
+- Ensures fresh content when checking duplicates
+- Prevents working with outdated entries
+
+### Enhanced Don'ts
+
+**[X] DON'T: Create duplicates**
+- Always search first (with fileserver.php URLs)
+- Update existing entries
+- Prevent proliferation
+
+**[X] DON'T: Keep project-specifics**
+- Strip unnecessary details
+- Extract universal patterns
+- Make transferable
+
+**[X] DON'T: Write long summaries**
+- No background stories
+- No discovery narratives
+- Direct facts only
+
+**[X] DON'T: Extract everything**
+- Focus on valuable, NEW knowledge
+- Skip obvious or duplicate
+
+**[X] DON'T: Be vague**
+- Concrete > abstract
+- Quantified > qualified
+- Actionable > aspirational
+
+**[X] DON'T: Output neural maps in chat (SIMAv4)**
+- Always use artifacts
+- Complete entry format
+- Proper markdown structure
+
+**[X] DON'T: Condense files (SIMAv4)**
+- Separate topics = separate files
+- Never combine multiple topics
+- Keep files focused
+
+**[X] DON'T: Be verbose in chat (SIMAv4)**
+- Brief status only
+- No long explanations
 - Let artifacts speak
 
-### Don'ts
-
-**[X] DON'T: Skip file fetch**
-- Never assume current state
-- Always get latest version (via fileserver.php)
-- Read complete file
+**[X] DON'T: Exceed 400 lines (SIMAv4)**
+- Neural maps: ≤400 lines
+- Split if needed
+- Keep files focused
 
 **[X] DON'T: Skip fileserver.php (WISD-06)**
-- Always use URLs from session start fetch
-- Week-old code = broken implementations
-- No exceptions
-
-**[X] DON'T: Output snippets**
-- No "add this to line X"
-- No partial code
-- Complete files only
-
-**[X] DON'T: Skip layers**
-- All 3 layers required
-- No shortcuts
-- SUGA pattern mandatory
-
-**[X] DON'T: Ignore constraints**
-- Check 128MB limit
-- Verify cold start impact
-- Respect dependency rules
-
-**[X] DON'T: Output code in chat (SIMAv4)**
-- Artifacts only
-- Complete files only
-- No exceptions
-
-**[X] DON'T: Be verbose (SIMAv4)**
-- Brief status only
-- No narratives
-- Minimal chat
+- Always use fileserver.php URLs
+- Prevents duplicate work on cached entries
+- Ensures accurate duplicate detection
 
 ---
 
-## PROJECT MODE SUCCESS METRICS
+## SUCCESS METRICS (SIMAv4 + fileserver.php)
 
-**Quality Indicators:**
-- [OK] Zero compilation/import errors
-- [OK] Zero anti-pattern violations
-- [OK] All 3 SUGA layers present
-- [OK] Complete files output (not fragments)
-- [OK] LESS-15 checklist complete
-- [OK] [NEW] Zero code in chat (all artifacts) (SIMAv4)
-- [OK] [NEW] Zero fragment artifacts (all complete) (SIMAv4)
-- [OK] [NEW] Filename in every header (SIMAv4)
-- [OK] [NEW] Chat output minimal (SIMAv4)
-- [OK] [NEW] fileserver.php URLs used (fresh files) (WISD-06)
+### New Metrics
 
-**Time Expectations:**
-- Simple feature: 10-15 minutes
-- Moderate feature: 20-30 minutes
-- Complex feature: 45-60 minutes
-- Multiple files: 60-90 minutes
+**Metric 1: Uniqueness Rate (with fileserver.php)**
+- Target: 100% unique entries (no duplicates)
+- Measure: Duplicate searches performed / entries created
+- Goal: 1:1 ratio (search before every creation)
+- [NEW] Verification: fileserver.php URLs applied to all duplicate checks
 
-**Outputs per Session:**
-- Features: 1-3 complete implementations
-- Modifications: 3-5 file updates
-- Artifacts: 3-9 complete files (NEVER fragments)
-- Documentation: Updated REF-IDs
+**Metric 2: Genericization Score**
+- Target: <2 project-specific terms per entry
+- Measure: Project references / total words
+- Goal: <5% project-specific content
+
+**Metric 3: Brevity Score (SIMAv4)**
+- Target: ≤400 lines per file (strict limit)
+- Measure: Total lines / file
+- Goal: All files within limit
+
+**Metric 4: Knowledge Capture Rate**
+- Target: 3-5 new entries per session
+- Excellent: 10+ from rich material
+
+**Metric 5: Reuse Frequency**
+- Target: 20+ references/month to entries
+
+**Metric 6: Artifact Usage Rate (SIMAv4)**
+- Target: 100% neural maps as artifacts
+- Measure: Artifacts created / entries created
+- Goal: 1:1 ratio (every entry as artifact)
+
+**Metric 7: Chat Brevity (SIMAv4)**
+- Target: ≤5 sentences chat per entry
+- Measure: Chat words / entry
+- Goal: Minimal chat overhead
+
+**Metric 8: File Separation (SIMAv4)**
+- Target: 1 topic per file (0% condensed)
+- Measure: Topics / files
+- Goal: 1:1 ratio (separate files always)
+
+**Metric 9: fileserver.php Compliance (WISD-06)**
+- Target: 100% fileserver.php URLs applied
+- Measure: fileserver.php fetches / total fetches
+- Goal: 1:1 ratio (every fetch via fileserver.php)
 
 ---
 
-## GETTING STARTED
+## GETTING STARTED (SIMAv4 + fileserver.php)
 
-### First Project Session
+### First Learning Session
 
-**Step 1: Activate Mode**
+**Step 1: Activate Learning Mode (Simplified)**
 ```
 [Upload File Server URLs.md containing fileserver.php URL]
-Say: "Start Project Work Mode"
-Wait for context load (30-45s)
-Claude fetches fileserver.php automatically (69ms)
+Say: "Start SIMA Learning Mode"
+Claude fetches fileserver.php automatically (69ms, 412 URLs)
+Claude loads this enhanced context file
 ```
 
-**Step 2: Describe Task (Brief)**
+**Step 2: Provide Source Material**
 ```
-What to include:
-- Feature name
-- Which interface (INT-01 to INT-12)
-- Inputs/outputs
-- Any constraints
-- Files to modify
+- Paste conversation log
+- Upload document
+- Describe discussion
+- Share notes
 ```
 
-**Step 3: Claude Fetches Files (via fileserver.php!)**
+**Step 3: Enhanced Guided Extraction (SIMAv4 + fileserver.php)**
 ```
-Brief chat: "Fetching files (fresh content via fileserver.php)..."
+Brief chat: "Extracting knowledge with fileserver.php URLs..."
 Claude will:
-1. Use fileserver.php URLs from session start
-2. Fetch current versions
-3. Read complete files
-4. Understand current state
-Brief chat: "Files loaded. Implementing..."
+1. Identify extraction signals
+2. Search for duplicates FIRST (with fileserver.php URLs)
+3. Genericize content
+4. Create brief entries (≤400 lines)
+5. Propose knowledge items
+6. Apply workflows
+7. Create neural map entries as markdown artifacts
+8. Update indexes as separate artifacts
+9. Keep chat minimal throughout
+Brief chat: "[X] artifacts created. [1-sentence summary]"
 ```
 
-**Step 4: Claude Implements**
+**Step 4: Review Results**
 ```
-Brief chat: "Creating artifacts..."
-Claude will:
-1. Implement all 3 SUGA layers
-2. Follow templates
-3. Check anti-patterns
-4. Verify with LESS-15
-5. Output complete files as artifacts
-Brief chat: "Complete. [X] artifacts ready."
-```
-
-**Step 5: Review and Deploy**
-```
-You:
-1. Review artifact code
-2. Test locally (if possible)
-3. Deploy to Lambda
-4. Verify functionality
+Claude provides:
+- New entries created (as artifacts)
+- Duplicates prevented (updated instead)
+- Genericization applied
+- Token savings achieved
+- REF-IDs assigned
+- Indexes updated (as separate artifacts)
+- Brief summary only
+- Fresh files guaranteed (fileserver.php)
 ```
 
 ---
 
 ## ACTIVATION CHECKLIST
 
-### Ready for Project Mode When:
+### Ready for Learning Mode When:
 
-- [OK] This file loaded (30-45s)
-- [OK] [NEW] fileserver.php fetched (automatic at session start)
-- [OK] SUGA 3-layer pattern understood
-- [OK] LESS-15 verification memorized
-- [OK] Templates available
-- [OK] RED FLAGS clear
-- [OK] 12 interfaces known
-- [OK] Task clearly defined
-- [OK] [NEW] Artifact rules memorized (SIMAv4)
+- [OK] This file loaded (45-60s)
+- [OK] fileserver.php fetched (automatic, 69ms, 412 URLs)
+- [OK] Extraction signals memorized
+- [OK] Duplicate detection protocol understood (with fileserver.php)
+- [OK] Genericization rules internalized
+- [OK] Brevity standards clear (≤400 lines)
+- [OK] Workflow patterns understood
+- [OK] REF-ID counts current
+- [OK] Source material identified
+- [OK] [NEW] Artifact output format understood (SIMAv4)
 - [OK] [NEW] Chat brevity understood (SIMAv4)
-- [OK] [NEW] fileserver.php URLs available (fresh files) (WISD-06)
+- [OK] [NEW] File separation understood (SIMAv4)
+- [OK] [NEW] fileserver.php URLs active (WISD-06)
 
 ### What Happens Next:
 
 ```
-1. User describes task
-2. Claude fetches current files via fileserver.php URLs (brief chat)
-3. Claude implements all 3 layers (brief chat)
-4. Claude verifies with LESS-15
-5. Claude outputs complete artifacts (brief chat)
-6. User reviews and deploys
+1. User uploads File Server URLs.md (fileserver.php URL)
+2. User says "Start SIMA Learning Mode"
+3. Claude fetches fileserver.php (69ms, 412 URLs)
+4. Claude confirms activation (brief)
+5. User provides source material
+6. Claude extracts systematically:
+   - Checks duplicates before creating (with fileserver.php URLs)
+   - Genericizes all content
+   - Minimizes token usage (≤400 lines/file)
+   - Outputs as artifacts (markdown)
+   - Keeps chat minimal
+7. New knowledge added to neural maps
+8. Brief session summary
 ```
 
 ---
 
-## REMEMBER
+## REMEMBER (Core Principles)
 
-**Project Mode Purpose:**  
-Build features -> Complete code -> Deployable artifacts -> Production ready
+**Learning Mode Purpose:**
+Transform experience -> **Generic, Unique, Brief** knowledge -> Institutional memory
 
-**Critical Rules:**
-1. **fileserver.php fetched** (automatic at session start)
-2. **Fetch first** (LESS-01 + use fileserver.php URLs!)
-3. **All 3 layers** (SUGA pattern)
-4. **Complete files** (artifacts, never chat, never fragments)
-5. **Verify always** (LESS-15)
-6. **[NEW] Brief chat** (status only, SIMAv4)
+**Six Critical Rules (SIMAv4 + fileserver.php):**
+1. **Upload File Server URLs.md** - fileserver.php fetched automatically
+2. **Check duplicates** - Update existing, don't create duplicates (with fileserver.php)
+3. **Genericize** - Strip project-specifics, extract universal principles
+4. **Be brief** - Minimize tokens (≤400 lines), maximize assimilation capacity
+5. **[NEW] Output as artifacts** - Neural map files as markdown artifacts (SIMAv4)
+6. **[NEW] Keep chat minimal** - Brief status only (SIMAv4)
 
-**Success = Working code ready to deploy, fresh files via fileserver.php, no cache issues**
+**Success = Knowledge compounds without duplication or bloat, properly formatted, separate files, with fresh content from fileserver.php**
 
 ---
 
-**END OF PROJECT MODE CONTEXT**
+**END OF SIMA LEARNING MODE CONTEXT**
 
-**Version:** 1.4.0 (fileserver.php implementation)  
-**Lines:** 448 (within SIMAv4 limit)  
-**Load Time:** 30-45 seconds  
-**Purpose:** Active development and implementation  
-**Output:** Complete, verified, deployable code in artifacts with fresh content (fileserver.php)  
-**[NEW] Enhancement:** fileserver.php automatic fetch (69ms, 412 URLs, zero maintenance)
+**Version:** 2.4.0 (fileserver.php implementation + SIMAv4 paths)  
+**Lines:** 870 (context file, no line limit)  
+**Load Time:** 45-60 seconds  
+**Enhancements:**
+- Duplicate detection mandatory (with fileserver.php URLs)
+- Genericization by default
+- Extreme brevity standards (≤400 lines)
+- Artifact output for neural map files (SIMAv4)
+- Minimal chat output (SIMAv4)
+- File separation (no condensing) (SIMAv4)
+- Filename in headers (SIMAv4)
+- File retrieval via fileserver.php (WISD-06)
+**ROI:** Captures 3-5 unique, generic, brief entries per session as proper artifacts with fresh content via fileserver.php  
+**Value:** Permanent, transferable, efficient institutional memory in proper format with accurate duplicate detection using fresh files
+
+---
+
+**To activate:**
+```
+[Upload File Server URLs.md]
+"Start SIMA Learning Mode"
+```
 
 ---
 
 ## VERSION HISTORY
 
-**v1.4.0 (2025-11-02):**
+**v2.4.0 (2025-11-02):**
 - REPLACED: DEC-24 auto-generation with fileserver.php dynamic generation
-- CHANGED: File fetch workflow to use fileserver.php URLs
-- REMOVED: All references to manual Cache ID generation
-- REMOVED: Claude auto-generates Cache ID logic
-- ADDED: fileserver.php workflow integration
-- UPDATED: Rule 1 (fetch via fileserver.php URLs)
-- UPDATED: Workflows (use fileserver.php URLs throughout)
-- UPDATED: Pre-output checklist (fileserver.php verification)
-- UPDATED: RED FLAGS table (added skip fileserver.php)
-- UPDATED: Best practices (fileserver.php integration)
+- CHANGED: All NM##/ references updated to /sima/entries/ structure (SIMAv4)
+- REMOVED: All references to manual/auto Cache ID generation
+- UPDATED: All workflow examples (fileserver.php URLs)
+- UPDATED: Duplicate detection protocols (fileserver.php integration)
+- UPDATED: Extraction workflows (fileserver.php throughout)
+- UPDATED: Quality criteria (fileserver.php verification)
 - UPDATED: Success metrics (fileserver.php compliance)
 - UPDATED: Activation checklist (fileserver.php automatic)
-- UPDATED: Getting Started (simplified)
+- UPDATED: Getting Started (simplified, fileserver.php)
+- UPDATED: File paths (NM##/ → /sima/entries/[category]/)
+- UPDATED: Example filenames (SIMAv4 structure)
+- UPDATED: Post-extraction protocol (SIMAv4 paths)
+- IMPROVED: User experience (zero setup required)
 - RELATED: WISD-06 (Cache-Busting Platform Limitation)
 
-**v1.3.0 (2025-11-02):** [DEPRECATED]
+**v2.3.0 (2025-11-02):** [DEPRECATED]
 - DEC-24 auto-generation approach had platform limitations
 - Manual Cache ID with query parameters caused permission errors
+- Used SIMAv3 directory structure (NM##/)
+- Superseded by fileserver.php dynamic generation + SIMAv4 paths
 
-**v1.2.0 (2025-11-02):** [DEPRECATED]
-- Attempted cache-busting with manual approach
-- Platform limitation discovered
+**v2.2.0 (2025-11-02):** [DEPRECATED]
+- Cache-busting requirement section (manual approach)
+- Cache ID verification at session start
+- Superseded by fileserver.php approach
 
-**v1.1.0 (2025-11-01):** 
-- SIMAv4 standards integrated (artifact rules, minimal chat, headers, encoding)
+**v2.1.0 (2025-11-01):** [DEPRECATED]
+- SIMAv4 standards integrated
+- Superseded by fileserver.php approach
