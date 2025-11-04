@@ -1,8 +1,9 @@
 <?php
 // fileserver.php
-// Version: 2.0.0
-// Date: 2025-11-02
+// Version: 2.1.0
+// Date: 2025-11-04
 // Purpose: Generate File Server URLs.md with cache-busting parameters (FAST - uses filesystem)
+// MODIFIED: Added subdirectory grouping for /src files (similar to /sima)
 
 // =============================================================================
 // CONFIGURATION
@@ -148,8 +149,23 @@ function generateOutput(string $domain, array $files, string $documentRoot): str
     // Group files by base directory
     $grouped = [];
     foreach ($urlFiles as $urlPath) {
+        // MODIFIED: Added subdirectory grouping for /src files
         if (str_starts_with($urlPath, '/src/')) {
-            $grouped['src'][] = $urlPath;
+            // Further group by first subdirectory
+            $parts = explode('/', trim($urlPath, '/'));
+            if (count($parts) >= 2) {
+                // Check if there's a subdirectory (parts[1] is subdirectory name)
+                if (count($parts) > 2) {
+                    // File is in a subdirectory like /src/home_assistant/file.py
+                    $subdir = $parts[1];
+                    $grouped['src'][$subdir][] = $urlPath;
+                } else {
+                    // File is at root level like /src/file.py
+                    $grouped['src']['root'][] = $urlPath;
+                }
+            } else {
+                $grouped['src']['root'][] = $urlPath;
+            }
         } elseif (str_starts_with($urlPath, '/sima/')) {
             // Further group by first subdirectory
             $parts = explode('/', trim($urlPath, '/'));
@@ -164,17 +180,32 @@ function generateOutput(string $domain, array $files, string $documentRoot): str
         }
     }
     
-    // Output /src files
+    // MODIFIED: Output /src files grouped by subdirectory
     if (!empty($grouped['src'])) {
-        $output .= "## 📂 PYTHON SOURCE FILES (/src - " . count($grouped['src']) . " files)\n\n";
-        $output .= "```\n";
-        foreach ($grouped['src'] as $urlPath) {
-            $cacheBust = generateCacheBust();
-            // URL encode the path (spaces become %20)
-            $encodedPath = implode('/', array_map('rawurlencode', explode('/', $urlPath)));
-            $output .= "https://{$domain}{$encodedPath}?v={$cacheBust}\n";
+        ksort($grouped['src']);
+        
+        // Count total files
+        $totalSrcFiles = 0;
+        foreach ($grouped['src'] as $dirFiles) {
+            $totalSrcFiles += count($dirFiles);
         }
-        $output .= "```\n\n";
+        
+        $output .= "## 📂 PYTHON SOURCE FILES (/src - {$totalSrcFiles} files)\n\n";
+        
+        foreach ($grouped['src'] as $subdir => $dirFiles) {
+            $dirTitle = strtoupper(str_replace(['-', '_'], ' ', $subdir));
+            $dirPath = ($subdir === 'root') ? '/src (root)' : "/src/{$subdir}";
+            $output .= "### {$dirTitle} ({$dirPath} - " . count($dirFiles) . " files)\n\n";
+            $output .= "```\n";
+            foreach ($dirFiles as $urlPath) {
+                $cacheBust = generateCacheBust();
+                // URL encode the path (spaces become %20)
+                $encodedPath = implode('/', array_map('rawurlencode', explode('/', $urlPath)));
+                $output .= "https://{$domain}{$encodedPath}?v={$cacheBust}\n";
+            }
+            $output .= "```\n\n";
+        }
+        
         $output .= "---\n\n";
     }
     
