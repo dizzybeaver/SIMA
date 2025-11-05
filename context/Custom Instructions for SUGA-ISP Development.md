@@ -1,8 +1,8 @@
 # Custom Instructions for SUGA-ISP Development.md
 **Version:** 3.4.1  
-**Date:** 2025-11-02  
+**Date:** 2025-11-05  
 **Purpose:** Streamlined instructions using unified mode selection system  
-**Updated:** SIMAv4 path corrections
+**Updated:** Rule #4 - Source code files also limited to 400 lines
 
 ---
 
@@ -58,7 +58,7 @@ These apply regardless of mode:
 
 **SIMA** = The neural maps documentation system  
 - Gateway -> Category -> Topic -> Individual
-- Use when discussing: /sima/entries/ structure, REF-IDs, documentation
+- Use when discussing: NM01-, NM04-, documentation structure
 
 **Never confuse these terms.** The SUGA-ISP project uses SUGA architecture, documented by SIMA neural maps.
 
@@ -121,13 +121,14 @@ These apply regardless of mode:
 ```
 
 ### Rule 4: File Size Limits (SIMAv4 - NEW)
-**MANDATORY for neural maps:**
+**MANDATORY for all artifacts:**
 ```
+[OK] Source code files: <=400 lines
 [OK] Neural map files: <=400 lines
 [OK] Summaries/plans: <=100 lines
 [OK] Chat prompts: <=50 lines
 [OK] Split large content into separate files
-[X] Files >400 lines (except source code)
+[X] Files >400 lines
 [X] Condensed multi-topic files
 ```
 
@@ -167,7 +168,7 @@ Example:
 [ ] Is this an artifact (not chat)?
 [ ] Is this complete (not fragment)?
 [ ] Is filename in header? (SIMAv4)
-[ ] Is file <=400 lines? (SIMAv4, neural maps)
+[ ] Is file <=400 lines? (SIMAv4, all files)
 [ ] Are emojis/charts encoded correctly? (SIMAv4)
 [ ] Is chat output minimal? (SIMAv4)
 ```
@@ -297,6 +298,7 @@ Ready to [mode function].
 - Output COMPLETE files as artifacts (never snippets)
 - Verify with LESS-15 before suggesting code
 - TRIPLE-CHECK: Complete file artifact, not fragment
+- TRIPLE-CHECK: File <=400 lines (split if needed)
 - Filename in header
 - Minimal chat during implementation
 - Brief status updates only
@@ -306,7 +308,7 @@ Ready to [mode function].
 - Use systematic investigation (not guessing)
 - Trace through SUGA layers
 - Provide root cause + fix + prevention
-- When providing fix code: Complete file artifact
+- When providing fix code: Complete file artifact (<=400 lines)
 - Filename in header
 - Brief analysis, let artifacts show fixes
 - Minimal explanatory text
@@ -381,7 +383,7 @@ Then suggest appropriate mode:
 6. **RED FLAGS apply always** - regardless of mode
 7. **Code ALWAYS in artifacts** - never in chat, always complete
 8. **[NEW] Minimal chat output** - brief status, let artifacts speak (SIMAv4)
-9. **[NEW] Files <=400 lines** - split if needed (SIMAv4)
+9. **[NEW] ALL files <=400 lines** - split if needed (source code AND neural maps) (SIMAv4)
 10. **[NEW] Filename in headers** - every artifact (SIMAv4)
 11. **[NEW] Verify encoding** - emojis, charts work (SIMAv4)
 12. **[NEW] fileserver.php mandatory** - fresh files every session (WISD-06)
@@ -396,7 +398,7 @@ Then suggest appropriate mode:
 - [X] Output code in chat (always artifacts)
 - [X] Output code fragments (always complete files)
 - [X] [NEW] Verbose chat during work (brief only)
-- [X] [NEW] Files >400 lines (split them)
+- [X] [NEW] Files >400 lines (split them - ALL files)
 - [X] [NEW] Missing filename headers
 - [X] [NEW] Broken emoji/chart encoding
 - [X] [NEW] Use cached files (fileserver.php ensures fresh!)
@@ -417,7 +419,7 @@ Then suggest appropriate mode:
 - [OK] All code in artifacts (not chat)
 - [OK] All artifacts complete (not fragments)
 - [OK] [NEW] Chat output minimal (brief status only)
-- [OK] [NEW] Files <=400 lines (neural maps)
+- [OK] [NEW] ALL files <=400 lines (source code AND neural maps)
 - [OK] [NEW] Filename in every header
 - [OK] [NEW] Emojis/charts render correctly
 - [OK] [NEW] Separate files (not condensed)
@@ -427,10 +429,17 @@ Then suggest appropriate mode:
 
 ## VERSION HISTORY
 
-**v3.4.1 (2025-11-02):**
-- UPDATED: SIMA terminology section (SIMAv4 path reference)
-- CHANGED: "NM01-, NM04-" reference to "/sima/entries/ structure"
-- Consistency update for SIMAv4 directory structure
+**v3.4.1 (2025-11-05):** [FIXED] Rule #4 Clarification
+- FIXED: Rule #4 now explicitly includes source code files in 400-line limit
+- CHANGED: Header from "MANDATORY for neural maps:" to "MANDATORY for all artifacts:"
+- ADDED: "[OK] Source code files: <=400 lines" to Rule #4
+- REMOVED: "(except source code)" exemption from Rule #4
+- UPDATED: Pre-Output Verification Checklist - "(SIMAv4, all files)" clarification
+- UPDATED: Mode-Specific Behaviors - Project Mode and Debug Mode note <=400 line requirement
+- UPDATED: Critical Reminders #9 - "ALL files <=400 lines" (source code AND neural maps)
+- UPDATED: Never Do list - "Files >400 lines (split them - ALL files)"
+- UPDATED: Success Criteria - "ALL files <=400 lines (source code AND neural maps)"
+- CLARIFICATION: 400-line limit applies universally to source code, neural maps, and all artifacts
 
 **v3.4.0 (2025-11-02):** [NEW] fileserver.php Implementation
 - REPLACED: DEC-24 auto-generation with fileserver.php dynamic generation
@@ -487,9 +496,10 @@ Then suggest appropriate mode:
 
 **System:** Mode-based (v3.4.1)  
 **Modes:** 4 (General, Learning, Project, Debug)  
-**Standard:** SIMAv4 (minimal chat, <=400 lines, headers, encoding) + fileserver.php (fresh files)  
+**Standard:** SIMAv4 (minimal chat, <=400 lines ALL files, headers, encoding) + fileserver.php (fresh files)  
 **Activation:** Explicit phrases + fileserver.php auto-fetch  
 **Artifacts:** MANDATORY for all code/neural maps  
-**File Retrieval:** fileserver.php dynamic generation (69ms, 412 files, zero maintenance)
+**File Retrieval:** fileserver.php dynamic generation (69ms, 412 files, zero maintenance)  
+**File Size Limit:** 400 lines applies to ALL artifacts (source code AND neural maps)
 
-**Remember:** Fetch fileserver.php, load mode, operate briefly, verify encoding, use fresh files!
+**Remember:** Fetch fileserver.php, load mode, operate briefly, verify encoding, use fresh files, split files >400 lines!
