@@ -33,6 +33,14 @@ This is **Project Work Mode** - optimized for active development tasks:
 https://claude.dizzybeaver.com/fileserver.php
 ```
 
+**Step 1: Fetch fileserver.php (EXACT URL)**
+```
+1. Read URL from File Server URLs.md
+2. Verify URL includes ?v= parameter
+3. Fetch using EXACT URL from file
+4. Never modify or strip parameters
+```
+
 **Claude automatically:**
 1. Fetches fileserver.php at session start
 2. Receives ~412 URLs with cache-busting (?v=random-10-digits)
