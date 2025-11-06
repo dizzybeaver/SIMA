@@ -28,7 +28,7 @@ Dropping the parameter defeats the entire cache-busting system!
 ## FILE SERVER ENDPOINT
 
 ```
-https://claude.dizzybeaver.com/fileserver.php?v=0017
+https://claude.dizzybeaver.com/fileserver.php?v=0020
 ```
 
 ---
