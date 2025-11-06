@@ -208,6 +208,16 @@ fileserver.php dynamically generates File Server URLs.md with random 10-digit ca
 https://claude.dizzybeaver.com/fileserver.php
 ```
 
+### CRITICAL: Exact URL Usage
+
+When fetching fileserver.php:
+1. Read the URL from File Server URLs.md
+2. Use it EXACTLY as written (including ?v= parameter)
+3. Never strip or modify the URL
+4. The ?v= parameter is what bypasses the cache!
+
+⚠️ Common mistake: Fetching fileserver.php without ?v= parameter
+
 **Claude automatically:**
 1. Fetches fileserver.php at session start
 2. Receives ~412 URLs with cache-busting (?v=random-10-digits)
