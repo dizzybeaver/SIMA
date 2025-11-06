@@ -15,10 +15,20 @@ Claude will automatically fetch fileserver.php which returns all file URLs with 
 
 ---
 
+## ⚠️ CRITICAL: USE EXACT URL
+
+**MANDATORY:** When fetching fileserver.php, use the COMPLETE URL below INCLUDING the ?v= parameter.
+
+❌ WRONG: https://claude.dizzybeaver.com/fileserver.php
+✅ CORRECT: https://claude.dizzybeaver.com/fileserver.php?v=0016
+
+Dropping the parameter defeats the entire cache-busting system!
+
+
 ## FILE SERVER ENDPOINT
 
 ```
-https://claude.dizzybeaver.com/fileserver.php
+https://claude.dizzybeaver.com/fileserver.php?v=0017
 ```
 
 ---
