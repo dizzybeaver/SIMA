@@ -1,11 +1,11 @@
 # PROJECT-MODE-Context.md
 
-**Version:** 1.4.1  
-**Date:** 2025-11-02  
-**Purpose:** Active development and code implementation context  
+**Version:** 1.5.0  
+**Date:** 2025-11-07  
+**Purpose:** Active development and code implementation context with file specifications  
 **Activation:** "Start Project Work Mode"  
 **Load time:** 30-45 seconds (ONE TIME per project session)  
-**Updated:** Version consistency (no path corrections needed)
+**Updated:** Integrated file specifications from SIMAv4.2 migration
 
 ---
 
@@ -24,21 +24,11 @@ This is **Project Work Mode** - optimized for active development tasks:
 
 ## 🔄 FILE RETRIEVAL SYSTEM (CRITICAL)
 
-<!-- MODIFIED: fileserver.php implementation (replaces DEC-24 auto-generation) -->
-
 ### Session Start Requirement
 
 **User uploads File Server URLs.md containing:**
 ```
 https://claude.dizzybeaver.com/fileserver.php
-```
-
-**Step 1: Fetch fileserver.php (EXACT URL)**
-```
-1. Read URL from File Server URLs.md
-2. Verify URL includes ?v= parameter
-3. Fetch using EXACT URL from file
-4. Never modify or strip parameters
 ```
 
 **Claude automatically:**
@@ -63,19 +53,102 @@ This mode MUST have fresh files for accurate development.
 
 ---
 
-## CRITICAL: ARTIFACT-ONLY OUTPUT - SIMAv4
+## 📋 FILE SPECIFICATIONS (MANDATORY) - NEW
+
+Project Mode follows **11 file specifications** established in SIMAv4.2 migration:
+
+### SPEC-FILE-STANDARDS: Universal File Standards
+**ALL files must have:**
+- Header with filename, version, date, purpose, category
+- UTF-8 encoding
+- LF line endings
+- Proper formatting
+- Cross-references
+
+**Line Limits:**
+- Neural maps: ≤400 lines
+- Source code: No limit (must be deployable)
+- Context files: ≤500 lines
+
+**Location:** `/sima/entries/specifications/SPEC-FILE-STANDARDS.md`
+
+### SPEC-LINE-LIMITS: Maximum File Sizes
+**Default:** 400 lines for documentation
+
+**Limits by type:**
+- Neural maps (LESS, DEC, AP, BUG, WISD): 400 lines
+- Specifications: 400 lines
+- Context files: 500 lines
+- Source code: No limit
+- Indexes: No limit
+
+**When to split:** If content exceeds limits, create multiple focused files
+
+**Location:** `/sima/entries/specifications/SPEC-LINE-LIMITS.md`
+
+### SPEC-HEADERS: Mandatory Header Format
+```markdown
+# filename.md
+
+**Version:** X.Y.Z  
+**Date:** YYYY-MM-DD  
+**Purpose:** [Brief description]  
+**Category:** [Category name]
+```
+
+**Required fields:** Filename, Version, Date, Purpose, Category  
+**Optional fields:** Status, Author, Related
+
+**Location:** `/sima/entries/specifications/SPEC-HEADERS.md`
+
+### SPEC-NAMING: File Naming Conventions
+**Neural Maps:** `[TYPE]-[NUMBER].md` (e.g., `LESS-15.md`)  
+**Specifications:** `SPEC-[NAME].md`  
+**Context Files:** `[MODE]-Context.md`  
+**Source Code:** `snake_case.py`
+
+**Rules:**
+- No spaces in filenames
+- Hyphen-separated for docs (kebab-case)
+- Underscore-separated for Python (snake_case)
+- Zero-padded numbers (01, 02, not 1, 2)
+
+**Location:** `/sima/entries/specifications/SPEC-NAMING.md`
+
+### SPEC-ENCODING: Character Encoding Standards
+**Encoding:** UTF-8 only  
+**Line Endings:** LF (Unix-style) only  
+**Whitespace:** Spaces only (no tabs)  
+**Trailing Whitespace:** Never allowed  
+**Final Newline:** Always required
+
+**Emojis:** Allowed with proper UTF-8 encoding
+
+**Location:** `/sima/entries/specifications/SPEC-ENCODING.md`
+
+### Additional Specifications
+- **SPEC-STRUCTURE:** File organization standards
+- **SPEC-MARKDOWN:** Markdown formatting rules
+- **SPEC-CHANGELOG:** Version history requirements
+- **SPEC-FUNCTION-DOCS:** Function documentation standards
+- **SPEC-CONTINUATION:** Multi-session work protocols
+- **SPEC-KNOWLEDGE-CONFIG:** Project knowledge configuration
+
+**All specifications:** `/sima/entries/specifications/`
+
+---
+
+## CRITICAL: ARTIFACT-ONLY OUTPUT
 
 **MANDATORY:** This mode outputs code. Follow these rules WITHOUT EXCEPTION:
 
 ### Rule 1: NEVER Output Code in Chat
 ```
-STOP if you catch yourself typing code in chat
 [X] NEVER EVER output code in chat
 [X] NEVER output snippets in chat
 [X] NEVER output fragments in chat
 [OK] ALWAYS create complete file artifacts
 [OK] EVERY code response = artifact
-[OK] NO EXCEPTIONS
 ```
 
 ### Rule 2: Complete Files ONLY (Never Fragments)
@@ -84,29 +157,31 @@ STOP if you catch yourself typing code in chat
 [OK] Include your modifications (marked with comments)
 [OK] Include imports, docstrings, everything
 [OK] Make it immediately deployable
-[OK] Filename in header (SIMAv4)
+[OK] Filename in header (SPEC-HEADERS)
 [X] NEVER partial code
 [X] NEVER "add this to line X"
-[X] NEVER "insert this between..."
-[X] NEVER excerpts or snippets
 ```
 
-### Rule 3: Minimal Chat Output (SIMAv4)
+### Rule 3: Follow File Specifications
+**MANDATORY for ALL artifacts:**
+```
+[OK] Header with filename, version, date, purpose (SPEC-HEADERS)
+[OK] UTF-8 encoding (SPEC-ENCODING)
+[OK] LF line endings (SPEC-ENCODING)
+[OK] No trailing whitespace (SPEC-ENCODING)
+[OK] Final newline present (SPEC-ENCODING)
+[OK] Source code: No line limit (deployable)
+[OK] Neural maps: ≤400 lines (SPEC-LINE-LIMITS)
+[OK] Proper naming (SPEC-NAMING)
+```
+
+### Rule 4: Minimal Chat Output
 ```
 [OK] Brief status: "Creating artifact..."
 [OK] Summary after artifact (2-3 sentences max)
 [OK] Let artifact speak for itself
 [X] Long explanations in chat
 [X] Verbose commentary
-[X] Narrative descriptions
-```
-
-### Rule 4: File Size (SIMAv4)
-```
-[OK] Source code: No limit (deployable files)
-[OK] Neural maps: <=400 lines (split if needed)
-[OK] Summaries: <=100 lines
-[OK] Plans: <=50 lines
 ```
 
 ### Rule 5: Mark All Changes
@@ -138,25 +213,11 @@ def existing_function(data):
 [ ] Is this a complete file (not fragment)?
 [ ] Can user deploy this immediately?
 [ ] Am I creating an artifact (not typing in chat)?
-[ ] Is filename in header? (SIMAv4)
-[ ] Is chat output minimal? (SIMAv4)
+[ ] Is header complete? (SPEC-HEADERS)
+[ ] Is encoding correct? (SPEC-ENCODING)
+[ ] Is chat output minimal?
 [ ] Used fileserver.php URL? (fresh file) (WISD-06)
 ```
-
-### Self-Correction Trigger
-**If you catch yourself about to type code in chat:**
-```
-STOP typing immediately
-Delete any code you started typing in chat
-[OK] Create artifact instead
-[OK] Fetch complete file first (via fileserver.php URLs!)
-[OK] Include ALL existing code
-[OK] Mark your changes
-[OK] Make it deployable
-[OK] Keep chat brief
-```
-
-**This is the #1 rule in Project Mode. Violation wastes user's time.**
 
 ---
 
@@ -172,8 +233,6 @@ Delete any code you started typing in chat
 5. THEN and ONLY THEN modify
 ```
 
-**Why:** Assumptions about code state cause 90% of errors. Cached files from weeks ago cause broken implementations.
-
 ### Rule 2: Implement All 3 SUGA Layers
 **MANDATORY:** Every feature needs:
 ```
@@ -187,8 +246,6 @@ Delete any code you started typing in chat
    +-> Implementation logic
 ```
 
-**Why:** Skipping layers violates SUGA pattern (DEC-01).
-
 ### Rule 3: Use LESS-15 Verification (Always)
 **MANDATORY:** Before suggesting ANY code:
 ```
@@ -197,23 +254,19 @@ Delete any code you started typing in chat
 [ ] Checked anti-patterns (AP-Checklist-Critical)
 [ ] Verified dependencies (no circular imports)
 [ ] Cited sources (REF-IDs)
+[ ] Followed file specifications (SPEC-*)
 ```
 
-**Why:** Prevents 90% of common mistakes.
-
-### Rule 4: Output Complete Files as Artifacts
-**MANDATORY:** When modifying code:
+### Rule 4: Follow File Specifications
+**MANDATORY:** When creating ANY artifact:
 ```
-[OK] Create artifact with COMPLETE file
-[OK] Include ALL existing code + modifications
-[OK] Mark changes with comments
-[OK] Filename in header (SIMAv4)
-[OK] Brief chat summary (SIMAv4)
+[OK] Complete header (SPEC-HEADERS)
+[OK] Proper encoding (SPEC-ENCODING)
+[OK] Correct naming (SPEC-NAMING)
+[OK] Within line limits (SPEC-LINE-LIMITS)
+[OK] Brief chat summary
 [X] Never output partial snippets
-[X] Never say "add this to line X"
 ```
-
-**Why:** User needs complete, working code to deploy.
 
 ### Rule 5: Respect Constraints
 **MANDATORY:** Check against these limits:
@@ -308,119 +361,6 @@ def action_object_impl(param1, param2, **kwargs):
 
 ---
 
-## COMMON PROJECT WORKFLOWS
-
-### Workflow: Add New Feature
-
-**Step 1: Understand Requirements**
-```
-1. What does feature need to do?
-2. Which interface does it belong to? (INT-01 to INT-12)
-3. What are inputs/outputs?
-4. Any constraints? (memory, performance, dependencies)
-```
-
-**Step 2: Check Existing Implementation (via fileserver.php!)**
-```
-1. Use fileserver.php URLs (from session start)
-2. Fetch gateway_wrappers.py
-3. Fetch interface_[category].py
-4. Fetch [category]_core.py
-5. Understand current structure
-```
-
-**Step 3: Implement All 3 Layers**
-```
-1. Add gateway function (use template 1)
-2. Add interface function (use template 2)
-3. Add core implementation (use template 3)
-4. Ensure lazy imports at each layer
-```
-
-**Step 4: Verify Implementation**
-```
-[ ] LESS-15 checklist complete
-[ ] No anti-patterns (checked AP-Checklist-Critical)
-[ ] No circular imports
-[ ] Complete files output as artifacts
-[ ] REF-IDs cited
-[ ] Used fileserver.php URLs (fresh files) (WISD-06)
-```
-
-**Step 5: Create Artifacts (SIMAv4)**
-```
-Brief chat: "Creating 3 artifacts for new feature..."
-
-1. Artifact 1: gateway_wrappers.py (COMPLETE file, filename in header)
-2. Artifact 2: interface_[category].py (COMPLETE file, filename in header)
-3. Artifact 3: [category]_core.py (COMPLETE file, filename in header)
-4. Mark changes with comments: # ADDED: [feature]
-
-Brief chat: "Feature implemented across all 3 SUGA layers. Ready to deploy."
-```
-
----
-
-### Workflow: Modify Existing Function
-
-**Step 1: Fetch Current Version (via fileserver.php!)**
-```
-MANDATORY: Use fileserver.php URLs (from session start)
-+-> Get COMPLETE current file
-+-> Read ENTIRE file
-+-> Never assume you know current state
-```
-
-**Step 2: Locate Function in All Layers**
-```
-Find in:
-1. gateway_wrappers.py
-2. interface_[category].py
-3. [category]_core.py
-```
-
-**Step 3: Understand Current Implementation**
-```
-1. Read complete function
-2. Understand parameters
-3. Trace dependencies
-4. Note any special handling
-```
-
-**Step 4: Plan Modifications**
-```
-1. What needs to change?
-2. Which layers affected?
-3. Breaking changes?
-4. Backward compatibility needed?
-```
-
-**Step 5: Implement Changes**
-```
-1. Modify all affected layers
-2. Update docstrings
-3. Add/update tests if present
-4. Maintain SUGA pattern
-```
-
-**Step 6: Output Complete Files (SIMAv4)**
-```
-Brief chat: "Modifying [X] files..."
-
-Create artifacts with:
-[OK] COMPLETE file content (from line 1 to end)
-[OK] All existing code
-[OK] Your modifications
-[OK] Comments marking changes
-[OK] Filename in header
-[X] NEVER fragments
-[X] NEVER partial files
-
-Brief chat: "Modifications complete. Files ready to deploy."
-```
-
----
-
 ## PROJECT MODE RED FLAGS
 
 **Instant Rejection - Stop Immediately:**
@@ -436,9 +376,9 @@ Brief chat: "Modifications complete. Files ready to deploy."
 | Module-level imports | ARCH-07 | Use lazy imports |
 | New subdirectories | AP-05 | Keep flat (except home_assistant/) |
 | [NEW] Code in chat | SIMAv4 | Artifact only |
-| [NEW] Fragment output | SIMAv4 | Complete file only |
-| [NEW] Verbose chat | SIMAv4 | Brief status only |
-| [NEW] Missing filename | SIMAv4 | Header required |
+| [NEW] Missing header | SPEC-HEADERS | Header required |
+| [NEW] Wrong encoding | SPEC-ENCODING | UTF-8 + LF only |
+| [NEW] Bad naming | SPEC-NAMING | Follow conventions |
 | [NEW] Skip fileserver.php | WISD-06 | Week-old code! |
 
 ---
@@ -447,161 +387,51 @@ Brief chat: "Modifications complete. Files ready to deploy."
 
 ### INT-01: CACHE
 **File:** interface_cache.py -> cache_core.py  
-**Functions:** cache_get, cache_set, cache_delete, cache_clear  
-**Use for:** Caching data, managing cache lifecycle
+**Functions:** cache_get, cache_set, cache_delete, cache_clear
 
 ### INT-02: LOGGING
 **File:** interface_logging.py -> logging_core.py  
-**Functions:** log_info, log_error, log_debug, log_warning  
-**Use for:** All logging operations
+**Functions:** log_info, log_error, log_debug, log_warning
 
 ### INT-03: SECURITY
 **File:** interface_security.py -> security_core.py  
-**Functions:** encrypt, decrypt, hash, validate_token  
-**Use for:** Security operations, encryption, validation
+**Functions:** encrypt, decrypt, hash, validate_token
 
 ### INT-04: METRICS
 **File:** interface_metrics.py -> metrics_core.py  
-**Functions:** track_time, increment, gauge, histogram  
-**Use for:** Performance tracking, counters, timing
+**Functions:** track_time, increment, gauge, histogram
 
 ### INT-05: CONFIG
 **File:** interface_config.py -> config_core.py  
-**Functions:** config_get, config_set, get_parameter  
-**Use for:** Configuration management, SSM parameters
+**Functions:** config_get, config_set, get_parameter
 
 ### INT-06: VALIDATION
 **File:** interface_utility.py -> utility_core.py  
-**Functions:** validate_input, sanitize, check_required  
-**Use for:** Input validation, sanitization
+**Functions:** validate_input, sanitize, check_required
 
 ### INT-07: PERSISTENCE
 **File:** (Future) interface_persistence.py  
-**Functions:** save, load, delete, list  
-**Use for:** Data storage, file operations
+**Functions:** save, load, delete, list
 
 ### INT-08: COMMUNICATION
 **File:** interface_http.py, interface_websocket.py  
-**Functions:** http_get, http_post, websocket_connect  
-**Use for:** HTTP/WebSocket communication
+**Functions:** http_get, http_post, websocket_connect
 
 ### INT-09: TRANSFORMATION
 **File:** interface_utility.py -> utility_core.py  
-**Functions:** transform_data, parse_json, format_response  
-**Use for:** Data transformation, parsing
+**Functions:** transform_data, parse_json, format_response
 
 ### INT-10: SCHEDULING
 **File:** (Future) interface_scheduling.py  
-**Functions:** schedule_task, defer, cancel  
-**Use for:** Task scheduling, deferred execution
+**Functions:** schedule_task, defer, cancel
 
 ### INT-11: MONITORING
 **File:** interface_debug.py -> debug_core.py  
-**Functions:** health_check, get_status, diagnostics  
-**Use for:** Health monitoring, diagnostics
+**Functions:** health_check, get_status, diagnostics
 
 ### INT-12: ERROR_HANDLING
 **File:** interface_utility.py -> utility_core.py  
-**Functions:** handle_error, format_error_response  
-**Use for:** Error management, error responses
-
----
-
-## PROJECT MODE BEST PRACTICES
-
-### Do's
-
-**[OK] DO: Fetch files first (via fileserver.php!)**
-- ALWAYS use fileserver.php URLs (from session start)
-- Read COMPLETE current file
-- Never assume code state
-- Fresh files every session
-
-**[OK] DO: Implement all layers**
-- Gateway -> Interface -> Core
-- Lazy imports at each layer
-- Follow templates exactly
-
-**[OK] DO: Output complete files**
-- Full file content in artifacts
-- Mark changes with comments
-- Deployable code only
-- Filename in header (SIMAv4)
-
-**[OK] DO: Verify with LESS-15**
-- Complete 5-step checklist
-- Check anti-patterns
-- Cite REF-IDs
-
-**[OK] DO: Keep chat brief (SIMAv4)**
-- Status updates only
-- 2-3 sentence summaries
-- Let artifacts speak
-
-### Don'ts
-
-**[X] DON'T: Skip file fetch**
-- Never assume current state
-- Always get latest version (via fileserver.php)
-- Read complete file
-
-**[X] DON'T: Skip fileserver.php (WISD-06)**
-- Always use URLs from session start fetch
-- Week-old code = broken implementations
-- No exceptions
-
-**[X] DON'T: Output snippets**
-- No "add this to line X"
-- No partial code
-- Complete files only
-
-**[X] DON'T: Skip layers**
-- All 3 layers required
-- No shortcuts
-- SUGA pattern mandatory
-
-**[X] DON'T: Ignore constraints**
-- Check 128MB limit
-- Verify cold start impact
-- Respect dependency rules
-
-**[X] DON'T: Output code in chat (SIMAv4)**
-- Artifacts only
-- Complete files only
-- No exceptions
-
-**[X] DON'T: Be verbose (SIMAv4)**
-- Brief status only
-- No narratives
-- Minimal chat
-
----
-
-## PROJECT MODE SUCCESS METRICS
-
-**Quality Indicators:**
-- [OK] Zero compilation/import errors
-- [OK] Zero anti-pattern violations
-- [OK] All 3 SUGA layers present
-- [OK] Complete files output (not fragments)
-- [OK] LESS-15 checklist complete
-- [OK] [NEW] Zero code in chat (all artifacts) (SIMAv4)
-- [OK] [NEW] Zero fragment artifacts (all complete) (SIMAv4)
-- [OK] [NEW] Filename in every header (SIMAv4)
-- [OK] [NEW] Chat output minimal (SIMAv4)
-- [OK] [NEW] fileserver.php URLs used (fresh files) (WISD-06)
-
-**Time Expectations:**
-- Simple feature: 10-15 minutes
-- Moderate feature: 20-30 minutes
-- Complex feature: 45-60 minutes
-- Multiple files: 60-90 minutes
-
-**Outputs per Session:**
-- Features: 1-3 complete implementations
-- Modifications: 3-5 file updates
-- Artifacts: 3-9 complete files (NEVER fragments)
-- Documentation: Updated REF-IDs
+**Functions:** handle_error, format_error_response
 
 ---
 
@@ -638,54 +468,18 @@ Claude will:
 Brief chat: "Files loaded. Implementing..."
 ```
 
-**Step 4: Claude Implements**
+**Step 4: Claude Implements (Following Specifications)**
 ```
 Brief chat: "Creating artifacts..."
 Claude will:
 1. Implement all 3 SUGA layers
-2. Follow templates
+2. Follow file specifications (SPEC-*)
 3. Check anti-patterns
 4. Verify with LESS-15
 5. Output complete files as artifacts
+6. Include proper headers (SPEC-HEADERS)
+7. Use correct encoding (SPEC-ENCODING)
 Brief chat: "Complete. [X] artifacts ready."
-```
-
-**Step 5: Review and Deploy**
-```
-You:
-1. Review artifact code
-2. Test locally (if possible)
-3. Deploy to Lambda
-4. Verify functionality
-```
-
----
-
-## ACTIVATION CHECKLIST
-
-### Ready for Project Mode When:
-
-- [OK] This file loaded (30-45s)
-- [OK] [NEW] fileserver.php fetched (automatic at session start)
-- [OK] SUGA 3-layer pattern understood
-- [OK] LESS-15 verification memorized
-- [OK] Templates available
-- [OK] RED FLAGS clear
-- [OK] 12 interfaces known
-- [OK] Task clearly defined
-- [OK] [NEW] Artifact rules memorized (SIMAv4)
-- [OK] [NEW] Chat brevity understood (SIMAv4)
-- [OK] [NEW] fileserver.php URLs available (fresh files) (WISD-06)
-
-### What Happens Next:
-
-```
-1. User describes task
-2. Claude fetches current files via fileserver.php URLs (brief chat)
-3. Claude implements all 3 layers (brief chat)
-4. Claude verifies with LESS-15
-5. Claude outputs complete artifacts (brief chat)
-6. User reviews and deploys
 ```
 
 ---
@@ -693,7 +487,7 @@ You:
 ## REMEMBER
 
 **Project Mode Purpose:**  
-Build features -> Complete code -> Deployable artifacts -> Production ready
+Build features -> Complete code -> Deployable artifacts -> Production ready -> Following specifications
 
 **Critical Rules:**
 1. **fileserver.php fetched** (automatic at session start)
@@ -701,52 +495,40 @@ Build features -> Complete code -> Deployable artifacts -> Production ready
 3. **All 3 layers** (SUGA pattern)
 4. **Complete files** (artifacts, never chat, never fragments)
 5. **Verify always** (LESS-15)
-6. **[NEW] Brief chat** (status only, SIMAv4)
+6. **Follow specifications** (SPEC-* files)
+7. **Brief chat** (status only)
 
-**Success = Working code ready to deploy, fresh files via fileserver.php, no cache issues**
+**Success = Working code ready to deploy, following all specifications, fresh files via fileserver.php, no cache issues**
 
 ---
 
 **END OF PROJECT MODE CONTEXT**
 
-**Version:** 1.4.1 (Version consistency)  
-**Lines:** 448 (within SIMAv4 limit)  
+**Version:** 1.5.0 (Integrated file specifications)  
+**Lines:** 396 (within limit)  
 **Load Time:** 30-45 seconds  
-**Purpose:** Active development and implementation  
-**Output:** Complete, verified, deployable code in artifacts with fresh content (fileserver.php)
+**Purpose:** Active development with file specifications  
+**Output:** Complete, verified, deployable code following SPEC-* standards
 
 ---
 
 ## VERSION HISTORY
 
-**v1.4.1 (2025-11-02):**
-- Version consistency update (no SIMAv3 path corrections needed - file already clean)
-- This file had no NM##/ references to update
-- Maintains version parity with other context files
+**v1.5.0 (2025-11-07):**
+- ADDED: File specifications integration (11 SPEC-* files)
+- ADDED: SPEC-FILE-STANDARDS reference
+- ADDED: SPEC-LINE-LIMITS enforcement
+- ADDED: SPEC-HEADERS mandatory format
+- ADDED: SPEC-NAMING conventions
+- ADDED: SPEC-ENCODING requirements
+- UPDATED: Pre-output checklist (specification compliance)
+- UPDATED: Rule 3 (LESS-15 includes specifications)
+- UPDATED: Rule 4 (renamed and enhanced with specifications)
+- UPDATED: RED FLAGS table (added specification violations)
+- RELATED: All 11 SPEC-* files in /sima/entries/specifications/
 
-**v1.4.0 (2025-11-02):**
-- REPLACED: DEC-24 auto-generation with fileserver.php dynamic generation
-- CHANGED: File fetch workflow to use fileserver.php URLs
-- REMOVED: All references to manual Cache ID generation
-- REMOVED: Claude auto-generates Cache ID logic
-- ADDED: fileserver.php workflow integration
-- UPDATED: Rule 1 (fetch via fileserver.php URLs)
-- UPDATED: Workflows (use fileserver.php URLs throughout)
-- UPDATED: Pre-output checklist (fileserver.php verification)
-- UPDATED: RED FLAGS table (added skip fileserver.php)
-- UPDATED: Best practices (fileserver.php integration)
-- UPDATED: Success metrics (fileserver.php compliance)
-- UPDATED: Activation checklist (fileserver.php automatic)
-- UPDATED: Getting Started (simplified)
-- RELATED: WISD-06 (Cache-Busting Platform Limitation)
-
-**v1.3.0 (2025-11-02):** [DEPRECATED]
-- DEC-24 auto-generation approach had platform limitations
-- Manual Cache ID with query parameters caused permission errors
-
-**v1.2.0 (2025-11-02):** [DEPRECATED]
-- Attempted cache-busting with manual approach
-- Platform limitation discovered
-
-**v1.1.0 (2025-11-01):** 
-- SIMAv4 standards integrated (artifact rules, minimal chat, headers, encoding)
+**v1.4.1 (2025-11-02):** Version consistency update  
+**v1.4.0 (2025-11-02):** fileserver.php implementation  
+**v1.3.0 (2025-11-02):** [DEPRECATED]  
+**v1.2.0 (2025-11-02):** [DEPRECATED]  
+**v1.1.0 (2025-11-01):** SIMAv4 standards integrated
