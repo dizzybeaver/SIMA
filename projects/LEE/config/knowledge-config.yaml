@@ -1,0 +1,238 @@
+# knowledge-config.yaml
+
+# LEE Project Knowledge Configuration
+# Location: /sima/projects/lee/config/knowledge-config.yaml
+# Purpose: Define which knowledge domains are relevant for LEE project
+
+project:
+  name: "lee"
+  description: "Home automation Lambda using SUGA architecture"
+  version: "v2025.11.06.1"
+
+knowledge:
+  # Generic knowledge (universal patterns) - ALWAYS ENABLED
+  generic:
+    enabled: true
+  
+  # Platform-specific knowledge
+  platforms:
+    aws:
+      enabled: true
+      services:
+        lambda: true              # AWS Lambda serverless functions
+        api-gateway: true         # API Gateway integration
+        dynamodb: true            # DynamoDB for state (if used)
+        s3: false                 # Not using S3
+        ssm: true                 # Parameter Store for secrets
+        cloudwatch: true          # Logging and monitoring
+    azure:
+      enabled: false              # Not using Azure
+    gcp:
+      enabled: false              # Not using GCP
+    generic-server:
+      enabled: false              # Not a standard server
+  
+  # Language-specific knowledge
+  languages:
+    python:
+      enabled: true
+      architectures:
+        suga: true                # SUGA gateway architecture
+        lmms: true                # Lazy module management
+        zaph: true                # Zone access priority
+        dd: true                  # Dependency disciplines
+    javascript:
+      enabled: false              # Not using JavaScript
+    java:
+      enabled: false              # Not using Java
+  
+  # Feature capabilities
+  features:
+    multi-threading:
+      enabled: false
+      note: "Lambda is single-threaded"
+    async-patterns:
+      enabled: true
+      note: "Python asyncio supported"
+    caching:
+      enabled: true
+      implementation: "In-memory (Lambda execution context)"
+    database:
+      enabled: true
+      type: "Home Assistant API"
+    websockets:
+      enabled: true
+      note: "Home Assistant WebSocket connection"
+    http-client:
+      enabled: true
+      note: "REST API calls to Home Assistant"
+
+# Project context
+context:
+  # Platform constraints
+  constraints:
+    - "AWS Lambda single-threaded execution"
+    - "128MB memory limit (AWS free tier)"
+    - "15-minute maximum execution time"
+    - "Cold start optimization required (< 3 seconds target)"
+    - "Stateless execution (no persistent local storage)"
+    - "Event-driven architecture only"
+  
+  # Project capabilities
+  capabilities:
+    - "AWS Lambda serverless execution"
+    - "AWS API Gateway integration"
+    - "Home Assistant WebSocket connection"
+    - "Home Assistant REST API integration"
+    - "Alexa Smart Home integration"
+    - "Voice Assistant integration"
+    - "Device state caching"
+    - "Automatic scaling"
+    - "Pay-per-use pricing"
+
+# File access control
+file_access:
+  # Include these knowledge domains
+  include_paths:
+    - "/sima/entries/**"                                    # Universal patterns
+    - "/sima/platforms/aws/**"                              # AWS knowledge
+    - "/sima/languages/python/**"                           # Python patterns
+    - "/sima/languages/python/architectures/suga/**"        # SUGA architecture
+    - "/sima/languages/python/architectures/lmms/**"        # LMMS patterns
+    - "/sima/languages/python/architectures/zaph/**"        # ZAPH patterns
+    - "/sima/languages/python/architectures/dd/**"          # DD patterns
+    - "/sima/projects/lee/**"                               # LEE-specific
+  
+  # Exclude these knowledge domains
+  exclude_paths:
+    - "/sima/platforms/azure/**"                            # Not using Azure
+    - "/sima/platforms/gcp/**"                              # Not using GCP
+    - "/sima/platforms/generic-server/**"                   # Not a server
+    - "/sima/languages/javascript/**"                       # Not using JS
+    - "/sima/languages/java/**"                             # Not using Java
+  
+  # Exclude specific REF-IDs (none currently)
+  exclude_ref_ids: []
+
+# RED FLAGS (enforced for this project)
+red_flags:
+  threading:
+    prohibited: true
+    reason: "Lambda is single-threaded"
+    ref_ids:
+      - "DEC-04"
+      - "AP-08"
+  
+  direct_imports:
+    prohibited: true
+    reason: "SUGA architecture requires gateway"
+    ref_ids:
+      - "RULE-01"
+      - "AP-01"
+  
+  heavy_dependencies:
+    threshold: "128MB"
+    reason: "AWS free tier memory limit"
+    ref_ids:
+      - "DEC-07"
+  
+  subdirectories:
+    prohibited: true
+    exceptions:
+      - "home_assistant/"
+    reason: "Flat structure proven simpler"
+    ref_ids:
+      - "DEC-08"
+      - "AP-05"
+
+# Tool configuration
+tools:
+  fileserver:
+    cache_busting: true
+    url: "https://claude.dizzybeaver.com/fileserver.php"
+  
+  verification:
+    protocol: "LESS-15"
+    required: true
+  
+  testing:
+    framework: "pytest"
+    coverage_minimum: 80
+
+# Versioning strategy
+versioning:
+  format: "vYYYY.MM.DD.R"
+  examples:
+    - "v2025.11.06.1"  # First release on Nov 6, 2025
+    - "v2025.11.06.2"  # Second release same day
+    - "v2025.11.07.1"  # First release next day
+  purpose: "Quickly identify stale cached content by date"
+
+# Documentation requirements
+documentation:
+  markdown_guidelines:
+    max_lines: 400                  # Per file limit
+    brevity: "essential"
+    code_examples: "minimal"        # 2-3 lines only
+    verbose: false                  # No long explanations
+  
+  changelog:
+    max_entries: 4                  # In file header
+    max_line_length: 80             # Per entry
+    format: "single-line"
+  
+  function_docs:
+    helper_functions: "minimal"     # Single-line docstring
+    internal_functions: "moderate"  # Args + Returns
+    gateway_functions: "complete"   # Full documentation
+
+# Integration points
+integrations:
+  home_assistant:
+    api_version: "REST API + WebSocket"
+    auth: "Long-lived access token (SSM)"
+    connection: "WebSocket (primary)"
+    fallback: "REST API"
+  
+  alexa:
+    integration: "Smart Home Skill API"
+    discovery: "Dynamic device discovery"
+  
+  voice_assistant:
+    integration: "Voice command processing"
+
+# Performance targets
+performance:
+  cold_start:
+    target: "< 3 seconds"
+    optimization: "LMMS + ZAPH"
+  
+  response_time:
+    target: "< 500ms"
+    p99: "< 1 second"
+  
+  memory:
+    limit: "128MB"
+    typical: "80-100MB"
+  
+  cache_hit_rate:
+    target: "> 80%"
+
+# Deployment
+deployment:
+  platform: "AWS Lambda"
+  trigger: "API Gateway"
+  runtime: "Python 3.11"
+  handler: "lambda_function.lambda_handler"
+  timeout: 30                       # seconds
+  memory: 128                       # MB
+
+# Monitoring
+monitoring:
+  logs: "CloudWatch Logs"
+  metrics: "CloudWatch Metrics"
+  tracing: "Not enabled (cost)"
+  alarms:
+    - "Error rate > 5%"
+    - "Duration > 5 seconds"
+    - "Throttles > 0"
