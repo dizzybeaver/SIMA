@@ -2,7 +2,8 @@
 
 **Purpose:** Transition from Session 4 to Session 5  
 **Date:** 2025-11-07  
-**Current Status:** SUGA Architecture Complete
+**Current Status:** SUGA Architecture Complete  
+**Update:** DD split into DD-1 and DD-2
 
 ---
 
@@ -75,11 +76,62 @@ Total: 31 files
 **⏳ Remaining:**
 - LMMS architecture (~15-20 files)
 - ZAPH architecture (~10-15 files)
-- DD architecture (~10-15 files)
+- DD-1 architecture (~8-12 files) **← NEW**
+- DD-2 architecture (~10-15 files) **← UPDATED**
+- CR-1 architecture (~8-12 files) **← NEW**
 - Platform migration (AWS Lambda) (~20-30 files)
 - LEE project specifics (~15-20 files)
 
-**Estimated Remaining:** 70-100 files across 2-3 sessions
+**Estimated Remaining:** 86-124 files across 3-4 sessions
+
+---
+
+## CRITICAL DISCOVERY: DD SPLIT
+
+### Issue Identified
+
+**Original Plan:** Single DD architecture  
+**Reality:** Two separate DD patterns exist
+
+**DD-1: Dictionary Dispatch (Performance)**
+- Type: Performance optimization pattern
+- Purpose: Fast function routing using dictionaries
+- Origin: LEE project interface implementation
+- Used In: interface_*.py files in LEE/src
+- Trade-off: Memory for speed (O(1) lookup)
+
+**DD-2: Dependency Disciplines (Architecture)**
+- Type: Architecture pattern
+- Purpose: Managing layer dependencies
+- Origin: SIMA migration architecture patterns
+- Used In: All SUGA-based projects
+- Rule: Higher layers depend on lower layers only
+
+**CR-1: Cache Registry (Consolidation)**
+- Type: Consolidation pattern
+- Purpose: Central function registry and API consolidation
+- Origin: LEE project gateway implementation
+- Used In: gateway.py and all wrapper files
+- Pattern: `_INTERFACE_ROUTERS` registry + consolidated exports
+
+### Impact on Migration
+
+**Directory Structure Updated:**
+```
+/sima/languages/python/architectures/
+├── suga/      ✅ Complete
+├── lmms/      ⏳ Next
+├── zaph/      ⏳ Next
+├── dd-1/      ⏳ NEW - Dictionary Dispatch
+├── dd-2/      ⏳ UPDATED - Dependency Disciplines
+└── cr-1/      ⏳ NEW - Cache Registry
+```
+
+**Files Updated:**
+1. Knowledge-Migration-Plan.4.2.2.md ✅
+2. SIMAv4.2-Complete-Directory-Structure.md ✅
+3. Session-4-Transition.md (this file) ✅
+4. Session-5-Start.md ✅
 
 ---
 
@@ -122,6 +174,8 @@ Create in `/sima/languages/python/architectures/lmms/`:
 - lmms-index-main.md
 - lmms-category-indexes.md (batch)
 
+---
+
 ### Priority 2: ZAPH Architecture (10-15 files)
 
 **Zone Access Priority Hierarchy**
@@ -148,31 +202,87 @@ Create in `/sima/languages/python/architectures/zaph/`:
 - zaph-index-main.md
 - zaph-category-indexes.md (batch)
 
-### Priority 3: DD Architecture (10-15 files)
+---
 
-**Dependency Disciplines**
+### Priority 3: DD-1 Architecture (8-12 files) **← NEW**
 
-Create in `/sima/languages/python/architectures/dd/`:
+**Dictionary Dispatch (Performance Pattern)**
+
+Create in `/sima/languages/python/architectures/dd-1/`:
 
 **Core Files (3):**
-- DD-01-Core-Concept.md
-- DD-02-Layer-Rules.md
-- DD-03-Flow-Direction.md
+- DD1-01-Core-Concept.md
+- DD1-02-Function-Routing.md
+- DD1-03-Performance-Trade-offs.md
 
-**Decision Files (2-3):**
-- DD-DEC-01-Higher-Lower-Flow.md
-- DD-DEC-02-No-Circular.md
-- DD-DEC-03-Dependency-Limits.md (optional)
+**Decision Files (2):**
+- DD1-DEC-01-Dict-Over-If-Else.md
+- DD1-DEC-02-Memory-Speed-Trade-off.md
 
-**Lesson Files (3-4):**
-- DD-LESS-01-Dependencies-Cost.md
-- DD-LESS-02-Layer-Violations.md
-- DD-LESS-03-Refactoring-Dependencies.md
-- DD-LESS-04-Testing-Dependencies.md (optional)
+**Lesson Files (2-4):**
+- DD1-LESS-01-Dispatch-Performance.md
+- DD1-LESS-02-LEE-Interface-Pattern.md
+- DD1-LESS-03-When-To-Use.md (optional)
+- DD1-LESS-04-Optimization-Limits.md (optional)
 
 **Index Files (1-2):**
-- dd-index-main.md
-- dd-category-indexes.md (batch)
+- dd-1-index-main.md
+- dd-1-category-indexes.md (optional)
+
+---
+
+### Priority 4: DD-2 Architecture (10-15 files) **← UPDATED**
+
+**Dependency Disciplines (Architecture Pattern)**
+
+Create in `/sima/languages/python/architectures/dd-2/`:
+
+**Core Files (3):**
+- DD2-01-Core-Concept.md
+- DD2-02-Layer-Rules.md
+- DD2-03-Flow-Direction.md
+
+**Decision Files (2-3):**
+- DD2-DEC-01-Higher-Lower-Flow.md
+- DD2-DEC-02-No-Circular.md
+- DD2-DEC-03-Dependency-Limits.md (optional)
+
+**Lesson Files (3-4):**
+- DD2-LESS-01-Dependencies-Cost.md
+- DD2-LESS-02-Layer-Violations.md
+- DD2-LESS-03-Refactoring-Dependencies.md
+- DD2-LESS-04-Testing-Dependencies.md (optional)
+
+**Index Files (1-2):**
+- dd-2-index-main.md
+- dd-2-category-indexes.md (batch)
+
+---
+
+### Priority 5: CR-1 Architecture (8-12 files) **← NEW**
+
+**Cache Registry (Consolidation Pattern)**
+
+Create in `/sima/languages/python/architectures/cr-1/`:
+
+**Core Files (3):**
+- CR1-01-Registry-Concept.md
+- CR1-02-Wrapper-Pattern.md
+- CR1-03-Consolidation-Strategy.md
+
+**Decision Files (2):**
+- CR1-DEC-01-Central-Registry.md
+- CR1-DEC-02-Export-Consolidation.md
+
+**Lesson Files (2-4):**
+- CR1-LESS-01-Fast-Path-Optimization.md
+- CR1-LESS-02-Discovery-Improvements.md
+- CR1-LESS-03-Maintenance-Benefits.md (optional)
+- CR1-LESS-04-LEE-Implementation.md (optional)
+
+**Index Files (1-2):**
+- cr-1-index-main.md
+- cr-1-category-indexes.md (optional)
 
 ---
 
@@ -184,27 +294,33 @@ All new architecture files go to:
 ├── suga/ (COMPLETE ✅)
 ├── lmms/ (Session 5 - Priority 1)
 ├── zaph/ (Session 5 - Priority 2)
-└── dd/   (Session 5 - Priority 3)
+├── dd-1/ (Session 5 - Priority 3) ← NEW
+├── dd-2/ (Session 5 - Priority 4) ← UPDATED
+└── cr-1/ (Session 5 - Priority 5) ← NEW
 ```
 
 ---
 
-## SESSION 5 GOALS
+## SESSION 5 GOALS (UPDATED)
 
-**Primary:** Complete all 3 remaining Python architectures (LMMS, ZAPH, DD)
+**Primary:** Complete all 5 remaining Python architectures (LMMS, ZAPH, DD-1, DD-2, CR-1)
 
 **Estimated Files:**
 - LMMS: 15-20 files
 - ZAPH: 10-15 files
-- DD: 10-15 files
-- Total: 35-50 files
+- DD-1: 8-12 files **← NEW**
+- DD-2: 10-15 files **← UPDATED**
+- CR-1: 8-12 files **← NEW**
+- Total: 51-74 files
 
-**Estimated Time:** 90-120 minutes
+**Estimated Time:** 150-190 minutes
 
 **Deliverables:**
 - Complete LMMS architecture
 - Complete ZAPH architecture
-- Complete DD architecture
+- Complete DD-1 architecture (new)
+- Complete DD-2 architecture (updated from old DD)
+- Complete CR-1 architecture (new)
 - All architectures ready for project use
 
 ---
@@ -242,8 +358,9 @@ All new architecture files go to:
 
 **Continue pattern for Session 5:**
 - Batch similar files
-- Keep artifacts ≤400 lines
+- Keep artifacts focused
 - Maintain quality standards
+- Apply DD-1/DD-2 distinction throughout
 
 ---
 
@@ -253,11 +370,14 @@ All new architecture files go to:
 - SUGA architecture 100% complete (31 files)
 - All interfaces documented (12 total)
 - All indexes created (7 total)
+- DD split identified and corrected
 
 **What to do next:**
 - Create LMMS architecture (15-20 files)
 - Create ZAPH architecture (10-15 files)
-- Create DD architecture (10-15 files)
+- Create DD-1 architecture (8-12 files) **← NEW**
+- Create DD-2 architecture (10-15 files) **← UPDATED**
+- Create CR-1 architecture (8-12 files) **← NEW**
 - Result: All Python architectures complete
 
 **Session 5 activation:**
@@ -265,7 +385,9 @@ All new architecture files go to:
 Continue from Session 4. Complete remaining Python architectures:
 - LMMS (Lazy Module Management System)
 - ZAPH (Zone Access Priority Hierarchy)
-- DD (Dependency Disciplines)
+- DD-1 (Dictionary Dispatch - Performance)
+- DD-2 (Dependency Disciplines - Architecture)
+- CR-1 (Cache Registry - Consolidation)
 
 Work non-stop with minimal chatter. Create transition at <30k tokens.
 ```
@@ -275,19 +397,22 @@ Work non-stop with minimal chatter. Create transition at <30k tokens.
 ## UPLOAD FOR SESSION 5
 
 1. **File Server URLs.md** (fileserver.php)
-2. **Knowledge-Migration-Plan.4.2.1.md** (full plan)
-3. **Session-4-Transition.md** (this file)
-4. **Session-5-Start.md** (activation prompt)
+2. **Knowledge-Migration-Plan.4.2.2.md** (updated plan)
+3. **SIMAv4.2-Complete-Directory-Structure.md** (updated structure)
+4. **Session-4-Transition.md** (this file)
+5. **Session-5-Start.md** (activation prompt)
 
 ---
 
-## ESTIMATED TIMELINE
+## ESTIMATED TIMELINE (UPDATED)
 
 **Session 5 (next):**
 - LMMS architecture: 45-60 minutes
 - ZAPH architecture: 30-45 minutes
-- DD architecture: 30-45 minutes
-- Total: 105-150 minutes to complete all architectures
+- DD-1 architecture: 30-40 minutes **← NEW**
+- DD-2 architecture: 30-45 minutes **← UPDATED**
+- CR-1 architecture: 30-40 minutes **← NEW**
+- Total: 165-230 minutes to complete all architectures
 
 **Session 6 (after):**
 - Platform migration (AWS Lambda): 60-90 minutes
@@ -295,13 +420,43 @@ Work non-stop with minimal chatter. Create transition at <30k tokens.
 - Cleanup and verification: 30-45 minutes
 - Total: 135-195 minutes
 
-**Overall:** 2-3 more sessions to complete full migration
+**Overall:** 3-4 more sessions to complete full migration
+
+---
+
+## KEY DISTINCTIONS FOR SESSION 5
+
+### DD-1 vs DD-2 vs CR-1 (Critical)
+
+**DD-1: Dictionary Dispatch**
+- Performance optimization
+- Function routing pattern
+- Used in: LEE interface files
+- Trade-off: Memory for speed
+- Example: `DISPATCH_TABLE = {"action": handler}`
+
+**DD-2: Dependency Disciplines**
+- Architecture pattern
+- Layer dependency management
+- Used in: SUGA layer organization
+- Rule: Higher → Lower dependencies only
+- Example: Business layer depends on Data layer
+
+**CR-1: Cache Registry**
+- Consolidation pattern
+- Central function registry
+- Used in: gateway.py and wrappers
+- Benefit: Single import point for 100+ functions
+- Example: `_INTERFACE_ROUTERS = {Interface: (module, func)}`
+
+**Never confuse these three patterns!**
 
 ---
 
 **END OF SESSION 4**
 
-**Status:** 46 total artifacts, SUGA 100% complete  
-**Next:** Complete LMMS, ZAPH, DD architectures  
-**Estimated:** 105-150 minutes for Session 5  
-**Progress:** ~40% of total migration complete
+**Status:** 46 total artifacts, SUGA 100% complete, DD split corrected, CR-1 added  
+**Next:** Complete LMMS, ZAPH, DD-1, DD-2, CR-1 architectures  
+**Estimated:** 165-230 minutes for Session 5  
+**Progress:** ~30% of total migration complete  
+**Key Updates:** DD split into DD-1 and DD-2, CR-1 Cache Registry added
