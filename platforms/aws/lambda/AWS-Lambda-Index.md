@@ -1,6 +1,6 @@
 # AWS-Lambda-Index.md
 
-**Version:** 2.0.0  
+**Version:** 2.1.0  
 **Date:** 2025-11-08  
 **Purpose:** Master index for AWS Lambda platform knowledge  
 **Category:** Platform - AWS Lambda  
@@ -14,7 +14,7 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 
 **Directory:** `/sima/platforms/aws/lambda/`
 
-**Total Files:** 20 (5 core, 5 decisions, 10 lessons, 5 anti-patterns)
+**Total Files:** 26 (5 core + 5 decisions + 10 lessons + 5 anti-patterns + 1 index)
 
 ---
 
@@ -22,16 +22,16 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 
 **Core Concepts:**
 - [Core Concepts](#core-concepts) - Fundamentals and execution model
-- [Decisions](#decisions) - Platform-specific design decisions
-- [Lessons](#lessons) - Performance and optimization lessons (NEW: 10 total)
-- [Anti-Patterns](#anti-patterns) - Common mistakes to avoid
+- [Decisions](#decisions) - Platform-specific design decisions (5 total ✅)
+- [Lessons](#lessons) - Performance and optimization lessons (10 total ✅)
+- [Anti-Patterns](#anti-patterns) - Common mistakes to avoid (5 total ✅)
 
 **Key Topics:**
 - [Cold Starts](#cold-starts) - Optimization strategies
 - [Memory Management](#memory-management) - Right-sizing and constraints
-- [Security](#security) - IAM, secrets, encryption (NEW)
-- [Testing](#testing) - Lambda-specific testing patterns (NEW)
-- [Monitoring](#monitoring) - Logging and observability (NEW)
+- [Security](#security) - IAM, secrets, encryption
+- [Testing](#testing) - Lambda-specific testing patterns
+- [Monitoring](#monitoring) - Logging and observability
 
 ---
 
@@ -116,11 +116,12 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 **Storage:** Use DynamoDB, S3, RDS for persistence  
 **Exception:** Can leverage context reuse for optimization
 
-### AWS-Lambda-DEC-05: Cost Optimization
+### AWS-Lambda-DEC-05: Cost Optimization ⭐ NEW
 **Decision:** Optimize for cost-performance balance  
 **Rationale:** Charged for memory × duration  
 **Strategy:** Right-size memory, minimize duration  
-**Monitoring:** CloudWatch metrics, cost analysis
+**Monitoring:** CloudWatch metrics, cost analysis  
+**Target:** 30-50% cost reduction from baseline
 
 ---
 
@@ -156,7 +157,7 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 **Metrics:** Cost per million invocations  
 **Optimization:** Right-size memory, reduce duration
 
-### AWS-Lambda-LESS-06: Logging and Monitoring ⭐ NEW
+### AWS-Lambda-LESS-06: Logging and Monitoring
 **Lesson:** Structured logging with proper monitoring enables 85% faster debugging  
 **Discovery:** CloudWatch Insights with JSON logs reduced MTTR by 83%  
 **Patterns:** Structured JSON, CloudWatch Insights queries, custom metrics, X-Ray tracing  
@@ -169,7 +170,7 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 - X-Ray for distributed tracing
 - Proactive alarms (error rate, latency, throttles)
 
-### AWS-Lambda-LESS-07: Error Handling Patterns ⭐ NEW
+### AWS-Lambda-LESS-07: Error Handling Patterns
 **Lesson:** Different invocation types require different error handling strategies  
 **Discovery:** Proper error classification improved recovery rate from 45% to 92%  
 **Patterns:** Error classification, invocation-type-specific handling, DLQ usage, circuit breakers  
@@ -182,7 +183,7 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 - Implement exponential backoff
 - Circuit breakers for downstream services
 
-### AWS-Lambda-LESS-08: Testing Strategies ⭐ NEW
+### AWS-Lambda-LESS-08: Testing Strategies
 **Lesson:** Multi-layered testing (unit, integration, E2E) prevents 85% of production issues  
 **Discovery:** Lambda-specific testing catches issues local testing misses  
 **Patterns:** Mocking AWS services, LocalStack integration, Lambda context testing, performance testing  
@@ -193,7 +194,7 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 - 20% Integration tests (LocalStack, real AWS services)
 - 5% End-to-end tests (deployed Lambda, load testing)
 
-### AWS-Lambda-LESS-09: Security Best Practices ⭐ NEW
+### AWS-Lambda-LESS-09: Security Best Practices
 **Lesson:** Defense in depth with IAM least privilege, secrets management, and encryption prevents security incidents  
 **Discovery:** Comprehensive security controls achieved zero incidents in 18 months  
 **Patterns:** IAM least privilege, AWS Secrets Manager, KMS encryption, input validation, VPC isolation  
@@ -207,7 +208,7 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 - VPC isolation for private resources
 - Audit logging (CloudTrail, CloudWatch)
 
-### AWS-Lambda-LESS-10: Performance Tuning ⭐ NEW
+### AWS-Lambda-LESS-10: Performance Tuning
 **Lesson:** Systematic optimization reduces latency by 84% and costs by 65%  
 **Discovery:** Memory tuning, async I/O, and caching provide massive improvements  
 **Patterns:** Memory optimization, async I/O, caching strategies, code optimization, profiling  
@@ -242,17 +243,17 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 **Impact:** 200-2000ms+ cold start overhead  
 **Alternative:** Lazy loading, separate functions
 
-### AWS-Lambda-AP-04: Ignoring Timeout
-**Anti-Pattern:** Not checking remaining time  
+### AWS-Lambda-AP-04: Ignoring Timeout ⭐ NEW
+**Anti-Pattern:** Not checking remaining execution time  
 **Why Wrong:** Loses partial work on timeout  
-**Impact:** Wasted execution cost, failed operations  
-**Alternative:** context.get_remaining_time_in_millis()
+**Impact:** Wasted execution cost, failed operations, data loss  
+**Alternative:** Monitor `context.get_remaining_time_in_millis()` and return continuation tokens
 
-### AWS-Lambda-AP-05: Over-Provisioning Memory
+### AWS-Lambda-AP-05: Over-Provisioning Memory ⭐ NEW
 **Anti-Pattern:** Allocating more memory than needed  
-**Why Wrong:** Unnecessary cost  
-**Impact:** 2-10x higher cost  
-**Alternative:** Profile actual usage, right-size
+**Why Wrong:** Unnecessary cost with no performance benefit  
+**Impact:** 2-10x higher cost, wasted resources  
+**Alternative:** Profile actual usage, right-size with appropriate headroom
 
 ---
 
@@ -282,9 +283,10 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 - Core: AWS-Lambda-Core-Concepts.md (Resource limits)
 - Core: AWS-Lambda-Memory-Management.md (Memory allocation)
 - Decision: AWS-Lambda-DEC-02 (Memory Constraints)
+- Decision: AWS-Lambda-DEC-05 (Cost Optimization) ⭐ NEW
 - Lesson: AWS-Lambda-LESS-02 (Memory-Performance Trade-off)
 - Lesson: AWS-Lambda-LESS-10 (Memory optimization)
-- Anti-Pattern: AWS-Lambda-AP-05 (Over-Provisioning)
+- Anti-Pattern: AWS-Lambda-AP-05 (Over-Provisioning) ⭐ NEW
 
 **Key Strategies:**
 1. Profile actual usage (CloudWatch max memory)
@@ -292,7 +294,7 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 3. Test performance at different memory levels
 4. Balance cost vs performance
 
-### Security ⭐ NEW
+### Security
 
 **Related Files:**
 - Lesson: AWS-Lambda-LESS-09 (Security Best Practices)
@@ -306,7 +308,7 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 5. VPC isolation
 6. Audit logging
 
-### Testing ⭐ NEW
+### Testing
 
 **Related Files:**
 - Lesson: AWS-Lambda-LESS-08 (Testing Strategies)
@@ -318,7 +320,7 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 4. Performance testing
 5. Security testing
 
-### Monitoring ⭐ NEW
+### Monitoring
 
 **Related Files:**
 - Lesson: AWS-Lambda-LESS-06 (Logging and Monitoring)
@@ -331,12 +333,13 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 4. CloudWatch Alarms (proactive)
 5. X-Ray (distributed tracing)
 
-### Error Handling ⭐ NEW
+### Error Handling
 
 **Related Files:**
 - Core: AWS-Lambda-Execution-Model.md (Error handling)
-- Lesson: AWS-Lambda-LESS-03 (Timeout Management)
+- Lesson: AWS-Lambda-LESS-04 (Timeout Management)
 - Lesson: AWS-Lambda-LESS-07 (Error Handling Patterns)
+- Anti-Pattern: AWS-Lambda-AP-04 (Ignoring Timeout) ⭐ NEW
 
 **Patterns:**
 1. Error classification (retryable vs. non-retryable)
@@ -345,7 +348,7 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 4. Exponential backoff
 5. Circuit breakers
 
-### Performance ⭐ NEW
+### Performance
 
 **Related Files:**
 - Lesson: AWS-Lambda-LESS-01 (Cold Start Impact)
@@ -358,6 +361,20 @@ This index organizes all AWS Lambda platform-specific knowledge. Lambda is a ser
 3. Async I/O
 4. Caching
 5. Code efficiency
+
+### Cost Optimization ⭐ NEW
+
+**Related Files:**
+- Decision: AWS-Lambda-DEC-05 (Cost Optimization) ⭐ NEW
+- Lesson: AWS-Lambda-LESS-05 (Cost Monitoring)
+- Anti-Pattern: AWS-Lambda-AP-05 (Over-Provisioning) ⭐ NEW
+
+**Strategies:**
+1. Right-size memory (profile actual usage)
+2. Optimize code efficiency
+3. Implement caching
+4. Batch operations
+5. Monitor cost per invocation
 
 ---
 
@@ -408,7 +425,7 @@ P99 Latency:      < 1 second (user-facing)
 Cost:             < $0.20 per million invocations
 ```
 
-### Comprehensive Checklist ⭐ UPDATED
+### Comprehensive Checklist
 
 ```
 [√] Memory right-sized (profile actual usage)
@@ -423,6 +440,7 @@ Cost:             < $0.20 per million invocations
 [√] Performance optimized (async I/O, caching)
 [√] Deployment strategy (blue/green, canary)
 [√] Monitoring dashboard created
+[√] Cost monitoring active (per invocation tracking)
 ```
 
 ---
@@ -438,6 +456,17 @@ Cost:             < $0.20 per million invocations
 
 ## VERSION HISTORY
 
+**v2.1.0 (2025-11-08):**
+- ADDED: 3 new files (DEC-05, AP-04, AP-05)
+- ADDED: DEC-05 (Cost Optimization decision)
+- ADDED: AP-04 (Ignoring Timeout anti-pattern)
+- ADDED: AP-05 (Over-Provisioning Memory anti-pattern)
+- UPDATED: Total file count (26 files: 5 core + 5 decisions + 10 lessons + 5 anti-patterns + 1 index)
+- ENHANCED: Topics section (added Cost Optimization)
+- ENHANCED: Cross-references to new files
+- ENHANCED: Quick navigation includes cost optimization
+- **Status:** COMPLETE - All planned AWS Lambda documentation created
+
 **v2.0.0 (2025-11-08):**
 - ADDED: 5 new lessons (LESS-06 through LESS-10)
 - ADDED: Logging and Monitoring lesson
@@ -448,7 +477,6 @@ Cost:             < $0.20 per million invocations
 - UPDATED: Topics section (added Security, Testing, Monitoring, Error Handling, Performance)
 - UPDATED: Quick reference (comprehensive checklist)
 - ENHANCED: Cross-references to new lessons
-- **Total: 20 files (5 core, 5 decisions, 10 lessons, 5 anti-patterns)**
 
 **v1.0.0 (2025-11-08):**
 - Initial AWS Lambda platform index
@@ -461,7 +489,9 @@ Cost:             < $0.20 per million invocations
 
 **END OF FILE**
 
-**Files Indexed:** 20  
-**Topics Covered:** Cold starts, memory, security, testing, monitoring, error handling, performance  
-**Lessons:** Comprehensive (10 total)  
-**Status:** Production-ready documentation
+**Files Indexed:** 26 (COMPLETE)  
+**Topics Covered:** Cold starts, memory, security, testing, monitoring, error handling, performance, cost  
+**Lessons:** Comprehensive (10 total) ✅  
+**Decisions:** Complete (5 total) ✅  
+**Anti-Patterns:** Complete (5 total) ✅  
+**Status:** Production-ready, comprehensive AWS Lambda platform documentation
