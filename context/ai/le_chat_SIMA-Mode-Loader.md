@@ -1,5 +1,6 @@
+
 # SIMA Mode Loader
-**Version:** 1.0.0
+**Version:** 1.0.1
 **Date:** 2025-11-10
 **Purpose:** Load SIMA project modes with Claude
 **Usage:** Upload this file + `File Server URLs.md`, then use the prompt: **"Load SIMA Mode: [MODE_NAME]"** (e.g., "Load SIMA Mode: Project")
@@ -16,70 +17,41 @@
 1. Upload both files to Claude.
 2. Use the prompt:
 
-Load SIMA Mode: [MODE_NAME]
+   **Load SIMA Mode: [MODE_NAME]**
 
-Replace `[MODE_NAME]` with one of the following:
+   Example: "Load SIMA Mode: Project"
 
----
+### **3. Available Context Modes**
+The URL in `File Server URLs.md` provides all SIMA and LEE file URLs. Below are the main context modes:
 
-## 📌 AVAILABLE MODES
+#### **AI Contexts**
+- [context-ai-Index.md](https://claude.dizzybeaver.com/sima/context/ai/context-ai-Index.md?v=4234474973)
+- [deepseek-SIMA-Mode-Loader.md](https://claude.dizzybeaver.com/sima/context/ai/deepseek-SIMA-Mode-Loader.md?v=9023820191)
+- [le_chat-SIMA-Mode-Loader.md](https://claude.dizzybeaver.com/sima/context/ai/le_chat-SIMA-Mode-Loader.md?v=5131704663)
 
-| Mode Name          | Activation Phrase                     | Purpose                                      |
-|--------------------|---------------------------------------|----------------------------------------------|
-| **Project Mode**   | `Load SIMA Mode: Project`              | Build features, active development           |
-| **Debug Mode**     | `Load SIMA Mode: Debug`                | Troubleshoot, diagnose issues                |
-| **Learning Mode**  | `Load SIMA Mode: Learning`             | Extract knowledge, document lessons         |
-| **Maintenance Mode**| `Load SIMA Mode: Maintenance`         | Update indexes, clean up files               |
+#### **General Contexts**
+- [context-General-Index.md](https://claude.dizzybeaver.com/sima/context/general/context-General-Index.md?v=6628758855)
+- [context-General-Mode-Context.md](https://claude.dizzybeaver.com/sima/context/general/context-General-Mode-Context.md?v=1207275471)
 
----
+#### **New Contexts**
+- [context-new-Index.md](https://claude.dizzybeaver.com/sima/context/new/context-new-Index.md?v=6383141626)
+- [context-new-Project-Context.md](https://claude.dizzybeaver.com/sima/context/new/context-new-Project-Context.md?v=7227679376)
 
-## 🔧 MODE-SPECIFIC CONTEXT FILES
+#### **Project Contexts**
+- [context-PROJECT-Index.md](https://claude.dizzybeaver.com/sima/context/projects/context-PROJECT-Index.md?v=7360210302)
+- [context-PROJECT-MODE-Context.md](https://claude.dizzybeaver.com/sima/context/projects/context-PROJECT-MODE-Context.md?v=9350456881)
 
-| Mode Name          | Context File(s)                                      |
-|--------------------|------------------------------------------------------|
-| **Project Mode**   | `/sima/context/PROJECT-MODE-SIMA.md`                  |
-| **Debug Mode**     | `/sima/context/DEBUG-MODE-SIMA.md`                   |
-| **Learning Mode**  | `/sima/context/SIMA-LEARNING-MODE-Context.md`        |
-| **Maintenance Mode**| `/sima/context/SIMA-MAINTENANCE-MODE-Context.md`     |
+#### **SIMA Modes**
+- [context-SIMA-Index.md](https://claude.dizzybeaver.com/sima/context/sima/context-SIMA-Index.md?v=5590871193)
+- [context-SIMA-PROJECT-MODE.md](https://claude.dizzybeaver.com/sima/context/sima/context-SIMA-PROJECT-MODE.md?v=3358126478)
+- [context-SIMA-MODE-SELECTOR.md](https://claude.dizzybeaver.com/sima/context/sima/context-SIMA-MODE-SELECTOR.md?v=4416393664)
 
----
-
-## 🚀 WORKFLOW
-
-1. **Upload Files:**
-- `File Server URLs.md`
-- `SIMA-Mode-Loader.md`
-
-2. **Activate Mode:**
-- Use the prompt: `"Load SIMA Mode: [MODE_NAME]"`
-- Example: `"Load SIMA Mode: Project"`
-
-3. **Automatic Context Loading:**
-- Claude will fetch the required context files via `fileserver.php`.
-- All files are cache-busted for fresh content.
-
-4. **Proceed with Tasks:**
-- Follow the mode-specific workflows and rules.
+#### **LEE Modes**
+- [Custom-Instructions-LEE.md](https://claude.dizzybeaver.com/simav4/context/Custom-Instructions-LEE.md?v=1382005551)
+- [PROJECT-MODE-LEE.md](https://claude.dizzybeaver.com/simav4/context/PROJECT-MODE-LEE.md?v=3801759452)
 
 ---
 
-## ⚠️ CRITICAL NOTES
-
-- **Always use the exact prompt:** `"Load SIMA Mode: [MODE_NAME]"`.
-- **Do not skip `File Server URLs.md`:** Required for dynamic URL retrieval.
-- **Modes are atomic:** Only one mode can be active at a time.
-- **Context is fresh:** Files are fetched with unique cache-busting parameters.
-
----
-
-## 📂 FILE STRUCTURE
-
-- **`/sima/context/`**: Mode-specific context files.
-- **`/sima/entries/`**: Neural maps, lessons, and decisions.
-- **`/sima/shared/`**: Standards, red flags, and common patterns.
-
----
-
-**END OF SIMA MODE LOADER**
-**Version:** 1.0.0
-**Lines:** 50 (target achieved)
+## ⚠️ NOTES
+- Always use the latest URLs from `File Server URLs.md` for the most up-to-date files.
+- PROJECT Mode supports both LEE and SIMA context loading.
