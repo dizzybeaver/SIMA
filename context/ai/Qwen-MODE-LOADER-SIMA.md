@@ -19,7 +19,7 @@ Use this file with `File Server URLs (1).md` to auto-load fresh mode contexts.
 | **Custom Instructions**      | `Load SIMA Custom Instructions`                 | `/sima/docs/Custom-Instructions-SIMA.md`      |
 
 > 💡 **Usage**:  
-> 1. Upload **this file** + **`File Server URLs (1).md`** at session start.  
+> 1. Upload **this file** + **`File Server URLs.md`** at session start.  
 > 2. Say: _“Load [Mode Name] using MODE-LOADER-SIMA.md”_  
 > 3. I will fetch the correct context file via the cache-busted URL from `fileserver.php`.  
 
@@ -30,7 +30,7 @@ Use this file with `File Server URLs (1).md` to auto-load fresh mode contexts.
 - I retrieve the exact context file using its dynamic URL  
 
 ## ⚠️ Requirements
-- Always upload **both** this file **and** `File Server URLs (1).md`  
+- Always upload **both** this file **and** `File Server URLs.md`  
 - Use **exact activation commands** from the table above  
 - Do **not** modify file paths—paths must match SIMA repository structure  
 
