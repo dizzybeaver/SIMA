@@ -46,6 +46,14 @@ $DIRECTORY_CONFIGS = [
         'domain_fetch' => 'claude.dizzybeaver.com',
         'label' => 'DOCUMENTATION',
         'group_subdirs' => true
+    ],
+    [
+        'path' => __DIR__ . '/simav4',
+        'url_path' => '/simav4',
+        'domain_catalog' => 'claude.dizzybeaver.com',
+        'domain_fetch' => 'claude.dizzybeaver.com',
+        'label' => 'SIMAv4_EXISTING',
+        'group_subdirs' => true
     ]
     // Add more directories here as needed:
     // [
@@ -382,3 +390,4 @@ foreach ($allFilesData as $data) {
 
 echo "\n<!-- Generated in {$duration}ms -->\n";
 echo "<!-- Total files: {$totalFiles} -->\n";
+
