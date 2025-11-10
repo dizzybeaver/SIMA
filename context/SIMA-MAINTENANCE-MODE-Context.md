@@ -1,7 +1,7 @@
 # SIMA-MAINTENANCE-MODE-Context.md
 
 **Version:** 1.0.0  
-**Date:** 2025-11-08  
+**Date:** 2025-11-09  
 **Purpose:** Maintain and clean existing knowledge  
 **Activation:** "Start SIMA Maintenance Mode"  
 **Load time:** 20-30 seconds (ONE TIME per maintenance session)  
@@ -11,11 +11,11 @@
 
 ## WHAT THIS MODE IS
 
-**Maintenance Mode** keeps SIMA knowledge clean and current.
+**Maintenance Mode** keeps knowledge base healthy.
 
-**Purpose:** Update indexes, remove outdated, verify references.
+**Purpose:** Update indexes, remove outdated content, verify references, migrate formats.
 
-**NOT for:** Extracting new knowledge (use Learning Mode).
+**Outputs:** Updated indexes, cleanup reports, verified cross-references.
 
 ---
 
@@ -34,233 +34,293 @@
 ## MAINTENANCE TASKS
 
 ### Task 1: Update Indexes
-**Ensure all indexes are current.**
+**Ensure all indexes reflect current entries.**
 
-Actions:
-- Find entries missing from indexes
-- Add new entries to appropriate indexes
+- Generate missing indexes
+- Add new entries to existing indexes
 - Remove deleted entries
-- Sort alphabetically/numerically
-- Output updated indexes as artifacts
+- Verify categorization
+- Update cross-references
 
 ### Task 2: Check Outdated Entries
-**Identify knowledge that needs updating.**
+**Identify and deprecate obsolete knowledge.**
 
-Look for:
-- Deprecated decisions
-- Superseded lessons
-- Obsolete anti-patterns
-- Old version references
-- Changed best practices
+- Flag entries with outdated patterns
+- Mark superseded decisions
+- Identify deprecated anti-patterns
+- Find obsolete architecture docs
+- Suggest replacements
 
 ### Task 3: Verify Cross-References
-**Ensure all REF-IDs are valid.**
+**Ensure all REF-IDs valid.**
 
-Check:
-- REF-IDs point to existing entries
-- Related topics are accurate
-- Cross-reference matrix is current
-- No broken links
+- Check all REF-ID links
+- Find broken references
+- Update moved files
+- Verify related topics
+- Fix incorrect paths
 
-### Task 4: Format Migrations
-**Update entries to current standards.**
+### Task 4: Migrate Formats
+**Convert old formats to current standards.**
 
-Fix:
-- Missing headers
-- Wrong encoding
-- Exceeds 400 lines
-- Improper naming
-- Missing fields
+- Check file headers
+- Verify line limits (≤400)
+- Ensure UTF-8 encoding
+- Add missing sections
+- Update version numbers
 
-### Task 5: Remove Deprecated
-**Clean up obsolete knowledge.**
+### Task 5: Clean Structure
+**Remove redundant/duplicate content.**
 
-Process:
-- Mark entry as [DEPRECATED]
-- Note replacement entry
-- Update indexes
-- Preserve for historical reference
+- Find duplicate entries
+- Merge similar content
+- Remove empty directories
+- Archive old versions
+- Consolidate fragments
 
 ---
 
 ## MAINTENANCE WORKFLOWS
 
-### Workflow 1: Update Index
+### Workflow 1: Update All Indexes
 
+**Process:**
 ```
-1. Identify index to update
-   "Updating [category] index..."
+STEP 1: List all entry directories
+/sima/entries/lessons/
+/sima/entries/decisions/
+/sima/entries/anti-patterns/
+/sima/languages/python/architectures/*/
 
-2. Fetch current index (fileserver.php)
-   Use cache-busted URL
+STEP 2: For each directory
+- Scan for *.md files (exclude indexes)
+- Extract title, REF-ID, category
+- Sort alphabetically
 
-3. Scan category directory
-   Find all entries in category
+STEP 3: Generate/update index
+- Create index file as artifact
+- List all entries with links
+- Include brief descriptions
+- Add last updated date
 
-4. Compare with index
-   Missing entries?
-   Extra entries?
+STEP 4: Verify completeness
+- Compare entries vs index
+- Check for missing items
+- Validate all links
+- Confirm categorization
 
-5. Update index
-   Add missing entries
-   Remove deleted entries
-   Sort correctly
-
-6. Output as artifact
-   Complete updated index
-   Filename in header
-   "Index updated. Added [X], removed [Y]."
-```
-
-### Workflow 2: Deprecate Entry
-
-```
-1. Identify entry to deprecate
-   "Deprecating [TYPE-##]..."
-
-2. Fetch entry (fileserver.php)
-   Read current content
-
-3. Mark as deprecated
-   Add [DEPRECATED] to title
-   Add deprecation notice
-   Note replacement entry
-
-4. Update indexes
-   Mark in indexes
-   Add note to matrix
-
-5. Output artifacts
-   Updated entry
-   Updated indexes
-   "Entry deprecated. Replacement: [TYPE-##]."
+STEP 5: Output
+- Updated index as artifact
+- Brief summary of changes
 ```
 
-### Workflow 3: Verify References
+### Workflow 2: Verify Cross-References
 
+**Process:**
 ```
-1. Select entry to verify
-   "Verifying [TYPE-##] references..."
+STEP 1: Extract all REF-IDs
+- Scan all markdown files
+- Find "REF:", "Related:", "See also:"
+- Extract referenced IDs
 
-2. Extract REF-IDs
-   Find all Related: references
-   Find all REF: citations
+STEP 2: Check each reference
+- Use fileserver.php for fresh files
+- Verify file exists
+- Confirm REF-ID matches
+- Check path correct
 
-3. Verify each exists (fileserver.php)
-   Fetch referenced entries
-   Check they exist
+STEP 3: Report broken links
+- List each broken reference
+- Show source file
+- Show target REF-ID
+- Suggest fix
 
-4. Report broken references
-   List invalid REF-IDs
-   Suggest corrections
+STEP 4: Generate fixes
+- Create correction list
+- Update affected files as artifacts
+- Fix all instances
 
-5. Fix if requested
-   Update entry with valid REF-IDs
-   Output as artifact
+STEP 5: Verify fixes
+- Re-check all references
+- Confirm all valid
 ```
 
-### Workflow 4: Format Migration
+### Workflow 3: Check Outdated Entries
 
+**Process:**
 ```
-1. Identify non-compliant entry
-   "Migrating [TYPE-##] to current format..."
+STEP 1: Identify candidates
+- Entries >1 year old
+- Decisions marked "superseded"
+- Anti-patterns with better alternatives
+- Architecture docs with new versions
 
-2. Fetch entry (fileserver.php)
-   Read current content
+STEP 2: Evaluate each candidate
+- Still relevant?
+- Better alternative exists?
+- Should deprecate?
+- Should update?
+- Should archive?
 
-3. Fix issues
-   Add missing header
-   Fix encoding
-   Split if >400 lines
-   Correct naming
-   Add required fields
+STEP 3: Take action
+- Deprecate: Add deprecation notice
+- Update: Modify with new info
+- Archive: Move to /archives/
+- Delete: Remove if truly obsolete
 
-4. Output as artifact
-   Complete migrated entry
-   Follows all standards
-   "Migration complete."
+STEP 4: Update references
+- Find all references to deprecated
+- Update to point to replacement
+- Add migration notes
+
+STEP 5: Report changes
+- List deprecated entries
+- Show replacements
+- Document rationale
+```
+
+### Workflow 4: Migrate Old Formats
+
+**Process:**
+```
+STEP 1: Find non-compliant files
+- Missing headers
+- Exceeding 400 lines
+- Wrong encoding
+- Old structure
+
+STEP 2: For each file
+- Add missing header
+- Split if >400 lines
+- Verify UTF-8 encoding
+- Update structure
+
+STEP 3: Generate migrated files
+- Complete files as artifacts
+- Mark all changes
+- Preserve content
+- Maintain REF-IDs
+
+STEP 4: Verify migration
+- Check all standards met
+- Confirm no content loss
+- Validate references still work
+
+STEP 5: Report migration
+- List migrated files
+- Show changes made
+- Confirm compliance
+```
+
+### Workflow 5: Clean Duplicates
+
+**Process:**
+```
+STEP 1: Find potential duplicates
+- Similar titles
+- Same REF-ID category
+- Overlapping keywords
+- Related concepts
+
+STEP 2: Compare candidates
+- Read full content (fileserver.php)
+- Identify genuine duplicates
+- Determine which to keep
+- Check cross-references
+
+STEP 3: Merge content
+- Combine best parts
+- Preserve all cross-references
+- Update related topics
+- Maintain all keywords
+
+STEP 4: Remove duplicates
+- Archive duplicates
+- Update all references
+- Point to merged entry
+
+STEP 5: Report cleanup
+- List removed duplicates
+- Show merged location
+- Confirm references updated
 ```
 
 ---
 
 ## ARTIFACT RULES
 
-**MANDATORY for all maintenance outputs:**
+**MANDATORY for maintenance outputs:**
 
-### Output Format
+### Index Updates
 ```
-[OK] Updated indexes -> Artifacts
-[OK] Migrated entries -> Artifacts
-[OK] Complete files only
+[OK] Complete index files as artifacts
 [OK] Filename in header
-[X] Never partial updates
+[OK] Alphabetically sorted
+[OK] Brief descriptions
+[X] Never partial indexes
 [X] Never output in chat
 ```
 
-### Chat Output
+### Cleanup Reports
 ```
-[OK] Brief status: "Updating index..."
-[OK] Summary: "Updated [X]. Added [Y], removed [Z]."
-[X] Long explanations
+[OK] Report as artifact
+[OK] List all changes
+[OK] Show before/after
+[OK] Include rationale
+[OK] Provide next steps
+```
+
+### File Updates
+```
+[OK] Complete files as artifacts
+[OK] Mark changes (# UPDATED:)
+[OK] Preserve all content
+[OK] Maintain REF-IDs
+[X] Never fragments
 ```
 
 **Complete Standards:** `/sima/shared/Artifact-Standards.md`
 
 ---
 
-## QUALITY CHECKS
+## MAINTENANCE CHECKLIST
 
-**Before completing maintenance:**
+**Before each maintenance session:**
 
-1. âœ… All changes in artifacts
-2. âœ… Indexes updated
-3. âœ… Cross-references valid
-4. âœ… Format compliance
-5. âœ… No broken links
-6. âœ… Deprecated marked
-7. âœ… Headers complete
-8. âœ… Files ≤400 lines
-9. âœ… Chat minimal
-10. âœ… Changes documented
+1. âœ… fileserver.php fetched (fresh files)
+2. âœ… Backup plan (can revert if needed)
+3. âœ… Task identified (what to maintain?)
+4. âœ… Scope defined (which directories?)
+5. âœ… Success criteria (what's "done"?)
 
----
+**During maintenance:**
 
-## COMMON ISSUES
+6. âœ… Use fileserver.php for all reads
+7. âœ… Output complete files as artifacts
+8. âœ… Mark all changes clearly
+9. âœ… Update cross-references
+10. âœ… Keep chat minimal
 
-### Issue 1: Missing from Index
-**Entry exists but not in index.**
+**After maintenance:**
 
-Fix: Add to index, output updated index.
-
-### Issue 2: Broken REF-ID
-**Reference points to non-existent entry.**
-
-Fix: Find correct entry or remove reference.
-
-### Issue 3: Over 400 Lines
-**Entry exceeds line limit.**
-
-Fix: Split into multiple focused files.
-
-### Issue 4: Missing Header
-**Entry lacks required header fields.**
-
-Fix: Add complete header with all required fields.
-
-### Issue 5: Deprecated but Not Marked
-**Obsolete entry still active.**
-
-Fix: Mark [DEPRECATED], note replacement.
+11. âœ… All artifacts complete
+12. âœ… Changes documented
+13. âœ… References verified
+14. âœ… Indexes updated
+15. âœ… Summary provided
 
 ---
 
-## MAINTENANCE SCHEDULE
+## QUALITY STANDARDS
 
-**Recommended:**
-- Weekly: Update indexes
-- Monthly: Verify references
-- Quarterly: Check for outdated
-- Yearly: Format migrations
+**Maintenance outputs must:**
+
+1. **Preserve Content** - No loss during updates
+2. **Maintain References** - All REF-IDs stay valid
+3. **Follow Standards** - ≤400 lines, headers, etc.
+4. **Be Complete** - Full files, not fragments
+5. **Document Changes** - Clear what was modified
+6. **Verify Results** - Confirm improvements made
 
 ---
 
@@ -268,12 +328,69 @@ Fix: Mark [DEPRECATED], note replacement.
 
 **Effective maintenance when:**
 - âœ… All indexes current
-- âœ… No broken references
-- âœ… All entries compliant
-- âœ… Deprecated marked
-- âœ… Files ≤400 lines
-- âœ… Chat minimal
-- âœ… Changes tracked
+- âœ… Zero broken references
+- âœ… Outdated entries flagged
+- âœ… All files compliant
+- âœ… Duplicates merged
+- âœ… Structure clean
+- âœ… Changes documented
+
+---
+
+## RED FLAGS
+
+**Don't do these:**
+
+- âŒ Delete without archiving
+- âŒ Break existing references
+- âŒ Output partial files
+- âŒ Skip verification
+- âŒ Lose content during migration
+- âŒ Forget to update indexes
+- âŒ Skip fileserver.php (stale files)
+
+---
+
+## EXAMPLE SESSION
+
+**User:** "Update all lesson indexes"
+
+**Claude:**
+```
+Updating lesson indexes...
+
+Scanning directories (fileserver.php):
+- /sima/entries/lessons/core-architecture/
+- /sima/entries/lessons/operations/
+- /sima/entries/lessons/performance/
+- /sima/entries/lessons/optimization/
+
+Creating index artifacts...
+[4 index files as artifacts]
+
+Summary:
+- Core Architecture: 8 entries
+- Operations: 18 entries
+- Performance: 4 entries
+- Optimization: 12 entries
+Total: 42 lessons indexed
+```
+
+---
+
+## DIFFERENCE FROM LEARNING MODE
+
+**Learning Mode:**
+- Extracts NEW knowledge
+- Creates NEW entries
+- Adds to knowledge base
+
+**Maintenance Mode:**
+- Updates EXISTING knowledge
+- Maintains CURRENT entries
+- Cleans up knowledge base
+
+**Don't mix these tasks!**
 
 ---
 
@@ -282,13 +399,13 @@ Fix: Mark [DEPRECATED], note replacement.
 **Context loaded when you remember:**
 - âœ… fileserver.php fetched (automatic)
 - âœ… 5 maintenance tasks
-- âœ… 4 workflows
-- âœ… Quality checks (10 items)
-- âœ… Common issues (5 types)
-- âœ… Artifacts ONLY (never chat)
-- âœ… Brief status updates
+- âœ… 5 maintenance workflows
+- âœ… Maintenance checklist
+- âœ… Quality standards
+- âœ… All outputs as artifacts
+- âœ… Chat minimal
 
-**Now ready to maintain SIMA knowledge!**
+**Now ready to maintain knowledge base!**
 
 ---
 
@@ -297,5 +414,5 @@ Fix: Mark [DEPRECATED], note replacement.
 **Version:** 1.0.0 (New mode)  
 **Lines:** 200 (target achieved)  
 **Load time:** 20-30 seconds  
-**Purpose:** Keep SIMA knowledge clean and current  
-**Output:** Updated indexes, migrated entries, verified references
+**Purpose:** Maintain existing knowledge  
+**Output:** Updated indexes, cleanup reports, verified references
