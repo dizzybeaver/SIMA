@@ -1,454 +1,579 @@
-# File: Workflow-05-Create-NMP-Entry.md
+# Workflow-05-Create-Documentation-Entry.md
 
-**REF-ID:** WF-05  
-**Version:** 1.0.0  
+**Version:** 2.0.0  
+**Date:** 2025-11-10  
 **Category:** Support Tools  
 **Type:** Workflow Template  
-**Purpose:** Create project-specific neural map entries
+**Purpose:** Create documentation entries (generic or project-specific)  
+**Updated:** SIMAv4 hierarchy, domain separation, fileserver.php
 
 ---
 
 ## 📋 WORKFLOW OVERVIEW
 
-**Use when:** Documenting project-specific implementation patterns  
+**Use when:** Documenting patterns, lessons, decisions, or implementations  
 **Time:** 15-30 minutes  
 **Complexity:** Medium  
-**Prerequisites:** Implementation complete, pattern identified
+**Prerequisites:** Knowledge to document, pattern identified, fileserver.php fetched
 
 ---
 
 ## ✅ PRE-WORK CHECKLIST
 
 Before starting:
-- [ ] Implementation tested and working
-- [ ] Pattern is project-specific (not generic)
-- [ ] No duplicate NMP entry exists
-- [ ] Related NM## entries identified
+- [ ] fileserver.php fetched (fresh file access)
+- [ ] Knowledge validated (implementation tested/working)
+- [ ] Domain identified (generic, platform, language, or project)
+- [ ] No duplicate entry exists (search via fileserver.php URLs)
+- [ ] Related entries identified
 - [ ] Cross-references prepared
 
 ---
 
-## 🎯 PHASE 1: PLANNING (5 minutes)
+## 🎯 PHASE 1: DOMAIN CLASSIFICATION (5 minutes)
 
-### Step 1.1: Verify Project-Specificity
+### Step 1.1: Determine Correct Domain
+
+**CRITICAL:** Proper domain separation prevents knowledge contamination
+
 ```
-Ask: Is this truly project-specific?
+Ask: Where does this knowledge belong?
 
-✅ PROJECT-SPECIFIC (NMP):
-- Specific implementation details
-- Function catalogs for this project
-- Integration patterns with project systems
-- Performance characteristics in this project
-- Project-specific configurations
-
-❌ GENERIC (belongs in NM##):
-- Universal patterns
-- Architecture concepts
-- Language-agnostic principles
+✅ GENERIC (/sima/entries/):
+- Universal patterns (any language/platform)
+- Core architecture concepts
 - Transferable lessons
+- Platform-agnostic principles
+- No project/tool/language specifics
+
+✅ PLATFORM (/sima/platforms/[platform]/):
+- AWS Lambda-specific patterns
+- Cloud provider features
+- Platform constraints
+- Service integration patterns
+
+✅ LANGUAGE (/sima/languages/[language]/):
+- Python-specific patterns
+- Language features
+- Standard library usage
+- Language-specific architectures
+
+✅ PROJECT (/sima/projects/[project]/):
+- Project implementation details
+- Function catalogs for this project
+- Project-specific configurations
+- Integration patterns in this project
+- Performance characteristics in this context
 ```
 
-### Step 1.2: Check for Duplicates
+**REF:** `/sima/entries/specifications/SPEC-STRUCTURE.md`
+
+### Step 1.2: Check for Duplicates via fileserver.php
 ```
-Search existing NMP entries:
-project_knowledge_search: "[topic] NMP"
+CRITICAL: Always search before creating
 
-Check:
-- Similar implementation already documented?
-- Can existing entry be updated instead?
-- Is this truly new knowledge?
-```
+1. Use fileserver.php URLs to fetch fresh content
+2. Search existing entries:
+   project_knowledge_search: "[topic] [type]"
 
-### Step 1.3: Assign REF-ID
-```
-Format: NMP##-[PROJECT]-##
+3. Check appropriate domain directories:
+   - /sima/entries/[category]/ (generic)
+   - /sima/platforms/[platform]/ (platform)
+   - /sima/languages/[language]/ (language)
+   - /sima/projects/[project]/ (project)
 
-Examples:
-NMP01-LEE-02   → LEE project, entry 02
-NMP01-LEE-14   → LEE project, entry 14
-NMP02-SIMA-01  → SIMA project, entry 01
-
-Check next available number in NMP Quick Index.
+4. Decision:
+   - Similar entry exists? → Update that entry
+   - Truly unique? → Create new entry
 ```
 
-### Step 1.4: Identify Category
+**REF:** `/sima/entries/lessons/wisdom/WISD-06.md` (Cache-busting requirement)
+
+### Step 1.3: Assign REF-ID and Path
+
+**Generic Entries** (`/sima/entries/`):
 ```
-Common NMP categories:
-- Function Catalogs (interface usage)
-- Integration Patterns (external systems)
-- Gateway Patterns (dispatch logic)
-- Performance Patterns (optimizations)
-- Configuration Patterns (setup)
-- Resilience Patterns (error handling)
+Entry Type          | REF-ID Format | Path
+--------------------|---------------|--------------------------------
+Lesson              | LESS-##       | /entries/lessons/[category]/
+Decision            | DEC-##        | /entries/decisions/[category]/
+Anti-Pattern        | AP-##         | /entries/anti-patterns/[category]/
+Bug                 | BUG-##        | /entries/lessons/bugs/
+Wisdom              | WISD-##       | /entries/lessons/wisdom/
+Interface Pattern   | INT-##        | /entries/interfaces/
+Gateway Pattern     | GATE-##       | /entries/gateways/
+```
+
+**Platform Entries** (`/sima/platforms/`):
+```
+Format: AWS-[Service]-[Type]-##
+Example: AWS-Lambda-LESS-01
+Path: /platforms/aws/lambda/lessons/
+```
+
+**Language Entries** (`/sima/languages/`):
+```
+Format: LANG-[LANG]-##
+Example: LANG-PY-01
+Path: /languages/python/[category]/
+```
+
+**Project Entries** (`/sima/projects/`):
+```
+Format: [PROJECT]-[Type]-##
+Example: LEE-LESS-01, SIMA-DEC-01
+Path: /projects/[project]/[category]/
 ```
 
 ---
 
 ## 🔧 PHASE 2: CONTENT CREATION (15-20 minutes)
 
-### Step 2.1: Use Standard Template
+### Step 2.1: Select Correct Template
+
+**Generic Entry Template:**
 ```markdown
-# File: NMP##-[PROJECT]-##_[Title].md
+# [TYPE-##].md
 
-**REF-ID:** NMP##-[PROJECT]-##  
 **Version:** 1.0.0  
-**Category:** [Category]  
-**Type:** [Project Pattern | Function Catalog | Integration Guide]  
-**Project:** [PROJECT NAME]  
-**Purpose:** [One sentence purpose]
+**Date:** YYYY-MM-DD  
+**Purpose:** [Brief purpose]
+**Category:** [Category name]
 
----
+[TYPE-##]: [Title]
 
-## 📋 OVERVIEW
+[Content sections depend on type]
 
-**Context:** [Why this exists]  
-**Scope:** [What this covers]  
-**Related Base Patterns:** [NM## references]
-
----
-
-## 🎯 PATTERN / IMPLEMENTATION
-
-[Main content - specific implementation details]
-
-### Key Characteristics
-
-[Bullet points of key features]
-
-### Usage in Project
-
-[How this is used in the project]
-
----
-
-## 💡 CODE EXAMPLES
-
-[Concrete examples from the project]
-
----
-
-## ⚠️ CONSIDERATIONS
-
-[Project-specific gotchas, performance notes, etc.]
-
----
-
-## 🔗 RELATED RESOURCES
-
-**Base SIMA:**
-- [NM## references]
-
-**Other Project Patterns:**
-- [NMP## references]
-
-**Implementation Tiers:**
-- [ARCH/GATE/INT references]
-
----
-
-**Keywords:** [4-8 keywords]  
-**Related Topics:** [3-7 topics]
+**Keywords:** k1, k2, k3, k4 (4-8 keywords)  
+**Related:** TYPE-ID1, TYPE-ID2, TYPE-ID3 (3-7 entries)
 ```
 
-### Step 2.2: Write Clear Overview
-```
-Include:
-- What this documents
-- Why it's project-specific
-- Which base patterns it builds on
-- Scope boundaries
+**Project-Specific Template:**
+```markdown
+# [PROJECT]-[TYPE]-##.md
+
+**Version:** 1.0.0  
+**Date:** YYYY-MM-DD  
+**Purpose:** [Brief purpose]
+**Project:** [PROJECT NAME]
+**Category:** [Category name]
+
+[PROJECT]-[TYPE]-##: [Title]
+
+**Context:** [Why this is project-specific]  
+**Base Pattern:** [Generic entry it builds on]
+
+[Content - project-specific implementation details]
+
+**Keywords:** k1, k2, k3, k4  
+**Related:** [TYPE-IDs] (mix of generic and project)
 ```
 
-### Step 2.3: Document Implementation Details
-```
-Be specific:
-- Actual function signatures used
-- Real parameter values
-- Concrete examples from codebase
-- Performance measurements
-- Configuration specifics
+**REF:** `/sima/shared/File-Standards.md`, `/sima/entries/specifications/`
 
-Don't genericize - this is project documentation!
+### Step 2.2: Write Clear Content
+
+**For Generic Entries:**
+```
+- Strip ALL project specifics
+- Extract universal principle
+- Remove tool/framework names (unless core to pattern)
+- Focus on transferable knowledge
+- Keep ≤400 lines
 ```
 
-### Step 2.4: Add Code Examples
+**For Project Entries:**
 ```
-Include:
+- Be specific with actual details
+- Include real function signatures
+- Show concrete examples from project
+- Document actual configurations
+- Reference base generic patterns
+- Keep ≤400 lines
+```
+
+**REF:** `/sima/shared/Encoding-Standards.md` (Line limits)
+
+### Step 2.3: Add Code Examples
+```
+For generic entries:
+- Generic pseudocode
+- Universal patterns
+- No specific tool names
+
+For project entries:
 - Real code from project
 - Actual usage patterns
-- Complete examples (not fragments)
-- Error handling shown
-- Performance considerations noted
+- Complete examples
+- Project-specific details
 ```
 
-### Step 2.5: Add Cross-References
+### Step 2.4: Add Cross-References
+
+**Link appropriately:**
+- Generic → Other generic entries only
+- Platform → Generic + same platform
+- Language → Generic + same language  
+- Project → Generic + platform + language + same project
+
+**REF:** `/sima/entries/Master-Cross-Reference-Matrix.md`
+
+---
+
+## 📝 PHASE 3: FILE STANDARDS (5 minutes)
+
+### Step 3.1: Verify File Standards Compliance
 ```
-Link to:
-- Base NM## entries (generic patterns)
-- Other NMP## entries (related project patterns)
-- INT-## entries (interfaces used)
-- ARCH/GATE entries (architecture patterns)
+Checklist (/sima/shared/File-Standards.md):
+- [ ] Filename in header
+- [ ] Version, date, purpose present
+- [ ] UTF-8 encoding
+- [ ] LF line endings (not CRLF)
+- [ ] ≤400 lines per file
+- [ ] No trailing whitespace
+- [ ] Final newline present
+- [ ] Proper markdown formatting
+- [ ] Keywords present (4-8)
+- [ ] Related topics (3-7)
+```
+
+### Step 3.2: Split if Needed
+```
+If entry exceeds 400 lines:
+
+1. Identify logical breakpoints
+2. Create multiple focused files
+3. Link between files
+4. Update indexes for all
+
+Example:
+- INT-01_CACHE-Interface-Pattern.md (≤400 lines)
+- INT-01_CACHE-Usage-Examples.md (≤400 lines)
+```
+
+**REF:** `/sima/entries/specifications/SPEC-LINE-LIMITS.md`
+
+---
+
+## 📚 PHASE 4: INTEGRATION (5 minutes)
+
+### Step 4.1: Update Appropriate Indexes
+
+**For generic entries:**
+```
+Update indexes in /sima/entries/:
+- [Category]-Index.md (e.g., Lessons-Index.md)
+- Master-Cross-Reference-Matrix.md
+- SIMA-Quick-Reference-Card.md (if high-priority)
+```
+
+**For platform entries:**
+```
+Update indexes in /sima/platforms/[platform]/:
+- [Platform]-Master-Index.md
+- [Service]-Index.md
+```
+
+**For language entries:**
+```
+Update indexes in /sima/languages/[language]/:
+- [Language]-Patterns-Index.md
+- Category-specific indexes
+```
+
+**For project entries:**
+```
+Update indexes in /sima/projects/[project]/:
+- [project]-Index-Main.md
+- Category indexes
+- README.md
+```
+
+### Step 4.2: Update Cross-Reference Matrix
+```
+Add relationships to:
+- Base entries (if project/platform/language)
+- Related patterns
+- Implementation examples
+```
+
+### Step 4.3: Update Quick Reference (if applicable)
+```
+If entry is frequently needed:
+- Add to appropriate quick-reference card
+- Create problem → solution mapping
+- Update navigation aids
 ```
 
 ---
 
-## 📝 PHASE 3: INTEGRATION (5 minutes)
+## ✅ PHASE 5: VALIDATION (5 minutes)
 
-### Step 3.1: Update Cross-Reference Matrix
+### Step 5.1: Quality Checklist
 ```
-File: NMP##-[PROJECT]-Cross-Reference-Matrix.md
+Content Quality:
+- [ ] Title clearly describes content
+- [ ] Purpose statement accurate
+- [ ] Domain classification correct
+- [ ] No duplication of existing content
+- [ ] Examples complete and accurate
+- [ ] Cross-references valid
 
-Add entry showing relationships to:
-- Base SIMA (NM##)
-- Implementation Tiers (ARCH/GATE/INT)
-- Other NMP entries
-```
-
-### Step 3.2: Update Quick Index
-```
-File: NMP##-[PROJECT]-Quick-Index.md
-
-Add problem-based lookup:
-"When you need [specific task] → NMP##-[PROJECT]-##"
-```
-
-### Step 3.3: Update Project README (if exists)
-```
-Add entry to project documentation index
-Link to new NMP entry
-Update entry count
-```
-
----
-
-## ✅ PHASE 4: VALIDATION (5 minutes)
-
-### Step 4.1: Quality Checklist
-```
-- [ ] Title describes specific implementation
-- [ ] REF-ID follows format
-- [ ] Overview clearly states why project-specific
-- [ ] Implementation details are concrete
-- [ ] Code examples are complete and real
-- [ ] Cross-references complete
+Technical Quality:
+- [ ] File ≤400 lines
+- [ ] Filename in header
+- [ ] UTF-8 encoding
+- [ ] LF line endings
+- [ ] Markdown valid
 - [ ] Keywords relevant (4-8)
 - [ ] Related topics listed (3-7)
-- [ ] No generic content (belongs in NM##)
-- [ ] File header includes filename
 ```
 
-### Step 4.2: Separation Verification
+### Step 5.2: Domain Separation Verification
 ```
-Verify clear separation from base SIMA:
-- Does NOT duplicate NM## generic content
-- DOES build on NM## with specifics
-- DOES document actual implementation
-- DOES include project context
+For generic entries:
+- [ ] NO project/platform/language specifics
+- [ ] Universal principles only
+- [ ] Transferable patterns
+
+For specific entries:
+- [ ] References base generic pattern
+- [ ] Adds specific implementation details
+- [ ] Clearly marked as specific domain
 ```
 
-### Step 4.3: Completeness Check
+### Step 5.3: Freshness Verification
 ```
-Entry is complete when:
-- Someone can implement from this doc
-- Examples are copy-paste ready
-- All cross-references valid
-- Performance characteristics noted
-- Error handling documented
+- [ ] Used fileserver.php for all file access
+- [ ] Checked against fresh content (not cached)
+- [ ] No duplication with recently added entries
 ```
+
+**REF:** `/sima/entries/lessons/wisdom/WISD-06.md`
 
 ---
 
 ## ⚠️ COMMON PITFALLS
 
-### Pitfall 1: Generic Content in NMP
+### Pitfall 1: Wrong Domain Classification
 ```
 ❌ DON'T:
-NMP01-LEE-XX: "Gateway pattern routes requests"
+Put AWS Lambda specifics in /sima/entries/ (generic)
 
 ✅ DO:
-NMP01-LEE-XX: "LEE gateway.py execute_operation() 
-dispatch logic with 12 interfaces"
+Put AWS Lambda specifics in /sima/platforms/aws/lambda/
+Reference generic pattern from /sima/entries/
 ```
 
-### Pitfall 2: Incomplete Examples
+### Pitfall 2: Project Details in Generic Entry
 ```
 ❌ DON'T:
-"Use cache_get to retrieve values"
+LESS-15: "LEE project uses gateway.py with execute_operation()"
 
 ✅ DO:
-from gateway import cache_get
-result = cache_get(
-    key="ha_entities",
-    timeout=5,
-    default={}
-)
+LESS-15: "Verification protocol prevents implementation errors"
+LEE-LESS-05: "LEE implements LESS-15 via gateway.py checks"
 ```
 
-### Pitfall 3: Missing Cross-References
+### Pitfall 3: Missing fileserver.php Check
 ```
 ❌ DON'T:
-Create isolated NMP entry
+Create entry without checking for recent duplicates
 
 ✅ DO:
-Link to:
-- Base pattern (NM##)
-- Related interfaces (INT-##)
-- Related project patterns (NMP##)
+1. Fetch via fileserver.php (fresh URLs)
+2. Search existing entries
+3. Confirm uniqueness
+4. Create if truly new
 ```
 
-### Pitfall 4: Duplication
+### Pitfall 4: Exceeding Line Limits
 ```
 ❌ DON'T:
-Create NMP when similar entry exists
+Create 600-line entry file
 
 ✅ DO:
-Search first
-Update existing if similar
-Create new only if truly unique
+Split into multiple ≤400 line files:
+- [TYPE-##]-Core.md
+- [TYPE-##]-Examples.md
 ```
 
 ---
 
 ## 🎓 EXAMPLE WALKTHROUGH
 
-### Example: Document CACHE Interface Usage in LEE
+### Example: Document Cache Sanitization Pattern
 
-**Step 1: Planning**
+**Step 1: Domain Classification**
 ```
-Topic: How LEE project uses INT-01 CACHE
-Project-Specific: Yes (actual function calls, configs)
-Duplicate Check: No existing CACHE catalog for LEE
-REF-ID: NMP01-LEE-02
-Category: Function Catalog
+Topic: Sanitize sentinel objects at boundaries
+Generic? Yes (universal pattern)
+Platform? No (not AWS-specific)
+Language? No (applies to any language)
+Project? No (transferable concept)
+
+Decision: Generic entry
+Path: /sima/entries/lessons/core-architecture/
+REF-ID: LESS-## (next available)
 ```
 
-**Step 2: Content Creation**
+**Step 2: Check Duplicates (via fileserver.php)**
+```
+Search: "sentinel sanitization lesson"
+Fetch relevant entries via cache-busted URLs
+Result: No existing entry
+Proceed with creation
+```
 
-**Template Applied:**
+**Step 3: Create Entry**
 ```markdown
-# File: NMP01-LEE-02_INT-01-CACHE-Function-Catalog.md
+# LESS-55.md
 
-**REF-ID:** NMP01-LEE-02  
 **Version:** 1.0.0  
-**Category:** Interface Patterns  
-**Type:** Function Catalog  
-**Project:** LEE (Lambda Execution Environment)  
-**Purpose:** Complete CACHE interface usage catalog in LEE project
+**Date:** 2025-11-10  
+**Purpose:** Sanitize implementation sentinels at boundaries
+**Category:** Core Architecture
 
-## 📋 OVERVIEW
+LESS-55: Sanitize implementation sentinels at boundaries
 
-Documents all CACHE interface functions used in LEE, with:
-- Actual usage patterns
-- Performance characteristics
-- Configuration specifics
-- Error handling
+Generic Context: Internal sentinel objects fail serialization  
+Prevention: Sanitize at boundary layer before serialization  
+Impact: Prevents JSON failures, API errors
 
-**Base Pattern:** INT-01 CACHE (generic interface)
-
-## 🎯 FUNCTIONS USED
-
-### cache_get
+Example:
 ```python
-from gateway import cache_get
-
-result = cache_get(
-    key="ha_entities",
-    timeout=5,
-    default={}
-)
+# At boundary (router, API response builder)
+if value is SENTINEL:
+    value = None  # or appropriate default
 ```
 
-**Used in:** 8 locations
-**Performance:** ~2ms average
-**Cache hit rate:** 87%
-
-[... continue with all functions ...]
+**Keywords:** sentinel, sanitization, boundary, serialization  
+**Related:** BUG-01, DEC-05, AP-19
 ```
 
-**Step 3: Integration**
-
-**Update Cross-Reference:**
-```markdown
-| NMP Entry | Base SIMA | Implementation |
-|-----------|-----------|----------------|
-| NMP01-LEE-02 | INT-01 | CACHE usage in LEE |
+**Step 4: Integration**
+```
+Update:
+- /sima/entries/lessons/Lessons-Master-Index.md
+- /sima/entries/lessons/core-architecture/Core-Architecture-Index.md
+- /sima/entries/Master-Cross-Reference-Matrix.md
 ```
 
-**Update Quick Index:**
-```markdown
-"CACHE interface usage in LEE → NMP01-LEE-02"
-"INT-01 function catalog → NMP01-LEE-02"
+**Step 5: Validation**
 ```
-
-**Step 4: Validation**
-```
-✅ Project-specific (LEE usage patterns)
-✅ No duplication (first CACHE catalog)
-✅ Complete examples (all functions shown)
-✅ Cross-references present (INT-01 linked)
-✅ Performance data included (real metrics)
+✅ Generic (no project specifics)
+✅ Unique (not duplicate)
+✅ Complete (actionable content)
+✅ ≤400 lines (well under limit)
+✅ File standards compliant
+✅ Cross-references added
+✅ Indexes updated
 ```
 
 ---
 
 ## 📊 SUCCESS CRITERIA
 
-NMP entry creation complete when:
-- ✅ Entry is project-specific (not generic)
-- ✅ No duplication (unique contribution)
-- ✅ Complete implementation details
-- ✅ Code examples are real and complete
+Entry creation complete when:
+- ✅ Domain correctly classified
+- ✅ No duplication (checked via fileserver.php)
+- ✅ Content appropriate for domain
+- ✅ File standards compliant (≤400 lines, headers, encoding)
+- ✅ Examples complete
 - ✅ Cross-references added
 - ✅ Indexes updated
 - ✅ Quality checklist passed
-- ✅ Clear separation from base SIMA
-- ✅ Filename in header
+- ✅ Clear domain separation maintained
 
 ---
 
 ## 🔗 RELATED RESOURCES
 
-**Project NMPs:**
-- NMP01-LEE Quick Index
-- NMP01-LEE Cross-Reference Matrix
+**Standards:**
+- `/sima/shared/File-Standards.md` - File requirements
+- `/sima/shared/Artifact-Standards.md` - Complete file rules
+- `/sima/shared/Encoding-Standards.md` - Line limits, UTF-8
+- `/sima/entries/specifications/` - All SPEC-* files
 
-**Base SIMA:**
-- NM## entries (generic patterns)
-- INT-## entries (interfaces)
-- ARCH/GATE entries (architecture)
+**Structure:**
+- `/sima/entries/specifications/SPEC-STRUCTURE.md` - Domain organization
+- `/sima/docs/SIMAv4-Directory-Structure.md` - Complete hierarchy
+
+**Wisdom:**
+- `/sima/entries/lessons/wisdom/WISD-06.md` - Cache-busting (fileserver.php)
+
+**Indexes:**
+- `/sima/entries/Master-Index-of-Indexes.md` - All index locations
+- `/sima/entries/Master-Cross-Reference-Matrix.md` - Cross-reference system
 
 **Workflows:**
-- WF-01: Add Feature (generates NMP content)
-- WF-02: Debug Issue (generates bug NMPs)
+- Workflow-01: Add Feature (generates documentation content)
+- Workflow-02: Debug Issue (generates bug documentation)
 
 ---
 
-## 🎯 NMP CATEGORIES
+## 🎯 DOMAIN-SPECIFIC GUIDELINES
 
-**Function Catalogs:**
-- Interface usage (INT-## functions in project)
-- Gateway operations (gateway.py specifics)
+### Generic Entries (/sima/entries/)
+```
+Include:
+- Universal patterns
+- Core architecture concepts
+- Transferable lessons
+- Platform-agnostic wisdom
 
-**Integration Patterns:**
-- External API usage (HA, AWS, etc.)
-- Third-party library integration
+Exclude:
+- Project names
+- Tool names (unless core to pattern)
+- Platform specifics
+- Language specifics
+```
 
-**Performance Patterns:**
-- Optimization techniques used
-- ZAPH implementation
-- Cold start strategies
+### Platform Entries (/sima/platforms/)
+```
+Include:
+- Platform-specific constraints
+- Service integration patterns
+- Platform features usage
+- Cloud provider specifics
 
-**Resilience Patterns:**
-- Circuit breaker implementation
-- Error handling specifics
-- Retry logic
+Reference:
+- Generic patterns from /sima/entries/
+- Platform documentation
+```
 
-**Configuration Patterns:**
-- Project config structure
-- Environment-specific settings
+### Language Entries (/sima/languages/)
+```
+Include:
+- Language-specific patterns
+- Standard library usage
+- Language features
+- Idioms and conventions
+
+Reference:
+- Generic patterns from /sima/entries/
+- Language architectures
+```
+
+### Project Entries (/sima/projects/)
+```
+Include:
+- Actual implementation details
+- Real function signatures
+- Project configurations
+- Concrete examples
+
+Reference:
+- Generic patterns from /sima/entries/
+- Platform patterns from /sima/platforms/
+- Language patterns from /sima/languages/
+```
 
 ---
 
 **END OF WORKFLOW-05**
 
-**Related workflows:** WF-01 (Add Feature), WF-02 (Debug Issue)
+**Version:** 2.0.0 (SIMAv4 major update)  
+**Changes:** Complete rewrite for SIMAv4 hierarchy, domain separation, fileserver.php, shared knowledge  
+**Replaces:** Old NMP entry workflow  
+**Related workflows:** Workflow-01 (Add Feature), Workflow-02 (Debug Issue)
