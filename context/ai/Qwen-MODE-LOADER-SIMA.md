@@ -6,7 +6,7 @@ Project: SIMA (Structured Intelligence Memory Architecture)
 Type: Operational Utility
 
 📋 AVAILABLE MODES
-Use this file with `File Server URLs (1).md` to auto-load fresh mode contexts.
+Use this file with `File Server URLs.md` to auto-load fresh mode contexts.
 
 | Mode Name                    | Activation Command               | Context File Path                                |
 | ---------------------------- | -------------------------------- | ------------------------------------------------ |
