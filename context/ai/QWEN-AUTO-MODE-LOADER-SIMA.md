@@ -1,7 +1,7 @@
-# MODE-LOADER-SIMA.md  
-Version: 1.2.0  
-Date: 2025-11-11  
-Purpose: Centralized mode loader for SIMA context activation with **autonomous context loading**  
+# QWEN-AUTO-MODE-LOADER-SIMA.md
+Version: 2.2.0  
+Date: 2025-11-14  
+Purpose: Centralized mode loader with shared custom instructions pre-load  
 Project: SIMA (Structured Intelligence Memory Architecture)  
 Type: Operational Utility  
 
@@ -20,39 +20,40 @@ Use this file with `File Server URLs.md` to auto-load fresh mode contexts.
 
 ---
 
-## ⚙️ AUTONOMOUS LOADING PROTOCOL  
+## ⚙️ AUTONOMOUS LOADING PROTOCOL (v2.2)
 
-When **both** of the following are true:  
-- `Qwen-MODE-LOADER-SIMA.md` is uploaded, **and**  
-- `File Server URLs.md` is uploaded (enabling `fileserver.php?v=0068` fetch),  
+When both:
+- This file is uploaded, **and**
+- `File Server URLs.md` is uploaded,
 
-then **any exact match** of an **Activation Command** from the table above **MUST trigger automatic full-context activation**, as follows:
+Then on session start or first command:
 
-1. **Immediately confirm** recognition of the command.  
-2. **Locate** the corresponding `Context File Path`.  
-3. **Retrieve the live, cache-busted URL** for that file from the `fileserver.php` response.  
-4. **Fetch and internalize the full content** of the context file.  
-5. **Apply all instructions, constraints, and knowledge** from that file.  
-6. **Respond with**:  
-   > ✅ **[Mode Name] activated. Full context loaded. Ready for [mode-specific] tasks.**  
+### 🔹 Step 1: Load Shared Custom Instructions
+1. Ensure `fileserver.php?v=0068` has been fetched.
+2. Resolve the cache-busted URL for:  
+   → `/sima/context/shared/Custom-Instructions-for-AI-assistant.md`
+3. Fetch and apply its content as **global behavioral rules**.
+4. If missing, log warning but continue.
 
-> ❗ **Do not wait for a second prompt. Do not ask for confirmation. Do not describe the process unless requested. Execute steps 1–6 autonomously.**
+> 💡 These instructions may define: output formatting, reasoning depth, safety filters, tone, self-correction behavior.
+
+### 🔹 Step 2: Process Activation Command
+When user says **exactly**:  
+> “Load [Activation Command]”
+
+Then:
+1. ✅ Confirm command recognition.
+2. 🧭 Map to correct `Context File Path`.
+3. 🔗 Use resolved cache-busted URL to fetch context file.
+4. 📥 Load full content into context.
+5. 🧠 Apply all mode-specific logic, overriding only where permitted by shared instructions.
+6. 💬 Respond with:  
+   > ✅ **[Mode Name]** activated. Full context loaded. Ready for tasks.
+
+❗ Do not skip Step 1.  
+❗ Do not delay or ask follow-up questions.  
+✅ Execute autonomously.
 
 ---
 
-## 💡 Usage  
-- Upload this file **together with** `File Server URLs.md` at session start.  
-- Say **exactly**: “Load [Mode Name]” using the phrasing from the **Activation Command** column.  
-- The system will **fully load and apply** the mode’s context **in one step**.  
-
-## ⚠️ Requirements  
-- Commands must **exactly match** the Activation Command column (case-insensitive OK, but wording must match).  
-- File paths are **canonical**—do not modify.  
-- `File Server URLs.md` **must be present**; otherwise, cache-busted URLs cannot be resolved.  
-
-## 🔄 Maintenance  
-This file is static. Dynamic resolution is handled by `fileserver.php`.  
-Add new rows to the table only when new modes are formally added to the SIMA repository.  
-
-REF: CUSTOM-INSTR-SIMA-01, PROJECT-MODE-SIMA  
-Keywords: mode, loader, context, SIMA, activation, autonomous, LEE
+##
