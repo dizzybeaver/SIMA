@@ -7,7 +7,7 @@
  * Date: 2025-11-19
  */
 
-require_once __DIR__ . '/../support/php/sima-common.php';
+require_once __DIR__ . '/sima/support/php/sima-common.php';
 
 /**
  * Generate updated import instructions
@@ -142,7 +142,7 @@ if (isset($_GET['download'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📥 SIMA Import Selection Tool</title>
-    <link rel="stylesheet" href="../support/css/sima-styles.css">
+    <link rel="stylesheet" href="/sima/support/php/sima-styles.css">
 </head>
 <body>
     <div class="container">
@@ -210,7 +210,7 @@ if (isset($_GET['download'])) {
         </div>
     </div>
     
-    <script src="../support/js/sima-tree.js"></script>
+    <script src="/sima/support/php/sima-tree.js"></script>
     <script>
         let originalData = null;
         let originalSelections = new Set();
