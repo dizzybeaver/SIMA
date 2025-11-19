@@ -7,7 +7,7 @@
  * Date: 2025-11-19
  */
 
-require_once __DIR__ . '/../support/php/sima-common.php';
+require_once __DIR__ . '/sima/support/php/sima-common.php';
 
 // Ensure export directory exists
 if (!is_dir(EXPORT_DIR)) {
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎯 SIMA Knowledge Export Tool</title>
-    <link rel="stylesheet" href="../support/css/sima-styles.css">
+    <link rel="stylesheet" href="/sima/support/php/sima-styles.css">
 </head>
 <body>
     <div class="container">
@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
     
-    <script src="../support/js/sima-tree.js"></script>
+    <script src="/sima/support/php/sima-tree.js"></script>
     <script>
         let knowledgeTree = null;
         let selectedFiles = new Set();
