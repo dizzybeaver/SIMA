@@ -4,7 +4,7 @@
  * Shared JavaScript for SIMA collapsible tree functionality
  * Version: 1.0.0
  * Date: 2025-11-19
- * Location: /sima/support/php/
+ * Location: /support/php/
  */
 
 const SIMATree = {
