@@ -2,12 +2,11 @@
 /**
  * sima-import-selector.php
  * 
- * SIMA Import Selection Tool
- * Upload import-instructions.md and modify installation selections
+ * SIMA Import Selection Tool - Complete Version
+ * Version: 2.0.0
+ * Date: 2025-11-19
  * 
- * Version: 1.0.0
- * Date: 2025-11-12
- * SIMA Version: 4.2.2
+ * Combines: Original backend functionality + Collapsible tree UI
  */
 
 /**
@@ -34,6 +33,8 @@ function parseImportInstructions($content) {
             $data['metadata']['archive'] = trim($matches[1]);
         } elseif (preg_match('/\*\*Created:\*\*\s*(.+)/', $line, $matches)) {
             $data['metadata']['created'] = trim($matches[1]);
+        } elseif (preg_match('/\*\*Updated:\*\*\s*(.+)/', $line, $matches)) {
+            $data['metadata']['updated'] = trim($matches[1]);
         } elseif (preg_match('/\*\*Modified:\*\*\s*(.+)/', $line, $matches)) {
             $data['metadata']['modified'] = trim($matches[1]);
         } elseif (preg_match('/\*\*SIMA Version:\*\*\s*(.+)/', $line, $matches)) {
@@ -230,6 +231,81 @@ function generateUpdatedInstructions($originalData, $newSelections) {
     return $md;
 }
 
+/**
+ * Generate tree HTML from parsed data
+ */
+function generateTreeFromData($data) {
+    $html = '';
+    
+    $allCategories = array_merge(
+        $data['selected'] ?? [],
+        $data['unselected'] ?? []
+    );
+    
+    // Group by domain
+    $domains = [];
+    foreach ($allCategories as $category) {
+        $pathParts = explode('/', $category['path']);
+        $domain = $pathParts[0];
+        
+        if (!isset($domains[$domain])) {
+            $domains[$domain] = [];
+        }
+        $domains[$domain][] = $category;
+    }
+    
+    foreach ($domains as $domainName => $categories) {
+        $domainId = 'node_' . md5($domainName);
+        
+        $html .= "<div class=\"tree-node folder\" data-path=\"{$domainName}\" data-level=\"0\">\n";
+        $html .= "  <span class=\"tree-toggle\" onclick=\"toggleBranch(this)\">▶</span>\n";
+        $html .= "  <input type=\"checkbox\" id=\"{$domainId}\" onchange=\"selectBranch(this)\">\n";
+        $html .= "  <label for=\"{$domainId}\">\n";
+        $html .= "    <span class=\"folder-icon\">📁</span>\n";
+        $html .= "    <span class=\"node-name\">{$domainName}/</span>\n";
+        $html .= "  </label>\n";
+        $html .= "  <div class=\"tree-children\" style=\"display: none;\">\n";
+        
+        foreach ($categories as $category) {
+            $catId = 'node_' . md5($category['path']);
+            
+            $html .= "    <div class=\"tree-node folder\" data-path=\"{$category['path']}\" data-level=\"1\">\n";
+            $html .= "      <span class=\"tree-toggle\" onclick=\"toggleBranch(this)\">▶</span>\n";
+            $html .= "      <input type=\"checkbox\" id=\"{$catId}\" onchange=\"selectBranch(this)\">\n";
+            $html .= "      <label for=\"{$catId}\">\n";
+            $html .= "        <span class=\"folder-icon\">📁</span>\n";
+            $html .= "        <span class=\"node-name\">{$category['path']}/</span>\n";
+            $html .= "      </label>\n";
+            $html .= "      <div class=\"tree-children\" style=\"display: none;\">\n";
+            
+            foreach ($category['files'] as $file) {
+                $fileId = 'node_' . md5($file['target_path']);
+                $checked = $file['selected'] ? 'checked' : '';
+                
+                $html .= "        <div class=\"tree-node file\" data-path=\"{$file['target_path']}\" data-level=\"2\">\n";
+                $html .= "          <span class=\"tree-spacer\"></span>\n";
+                $html .= "          <input type=\"checkbox\" id=\"{$fileId}\" name=\"files[]\" value=\"{$file['target_path']}\" {$checked}>\n";
+                $html .= "          <label for=\"{$fileId}\">\n";
+                $html .= "            <span class=\"file-icon\">📄</span>\n";
+                $html .= "            <span class=\"node-name\">{$file['filename']}</span>\n";
+                if (!empty($file['status'])) {
+                    $html .= "            <span class=\"status-badge\">{$file['status']}</span>\n";
+                }
+                $html .= "          </label>\n";
+                $html .= "        </div>\n";
+            }
+            
+            $html .= "      </div>\n";
+            $html .= "    </div>\n";
+        }
+        
+        $html .= "  </div>\n";
+        $html .= "</div>\n";
+    }
+    
+    return $html;
+}
+
 // Handle AJAX requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
@@ -295,7 +371,7 @@ if (isset($_GET['download'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMA Import Selection Tool</title>
+    <title>📥 SIMA Import Selection Tool</title>
     <style>
         * {
             margin: 0;
@@ -304,9 +380,7 @@ if (isset($_GET['download'])) {
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f5f5;
             padding: 20px;
         }
@@ -316,35 +390,20 @@ if (isset($_GET['download'])) {
             margin: 0 auto;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        header {
-            background: #2c3e50;
-            color: white;
-            padding: 20px 30px;
-        }
-        
-        header h1 {
-            font-size: 24px;
-            font-weight: 600;
-        }
-        
-        .section {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             padding: 30px;
-            border-bottom: 1px solid #eee;
         }
         
-        .section:last-child {
-            border-bottom: none;
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
         }
         
-        h2 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #2c3e50;
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
         }
         
         .upload-area {
@@ -416,6 +475,43 @@ if (isset($_GET['download'])) {
             color: #2c3e50;
         }
         
+        .toolbar {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .toolbar button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .toolbar button:hover {
+            background: #e9ecef;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
         .file-list {
             max-height: 500px;
             overflow-y: auto;
@@ -424,35 +520,66 @@ if (isset($_GET['download'])) {
             padding: 15px;
         }
         
-        .file-group {
-            margin-bottom: 20px;
+        .tree-node {
+            line-height: 2;
+            user-select: none;
         }
         
-        .file-group h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
+        .tree-toggle {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-size: 12px;
         }
         
-        .file-item {
-            display: flex;
+        .tree-toggle.expanded {
+            transform: rotate(90deg);
+        }
+        
+        .tree-spacer {
+            display: inline-block;
+            width: 20px;
+        }
+        
+        .tree-children {
+            margin-left: 20px;
+            border-left: 1px dashed #ccc;
+            padding-left: 10px;
+        }
+        
+        .tree-node label {
+            cursor: pointer;
+            display: inline-flex;
             align-items: center;
-            padding: 8px;
+            gap: 6px;
+            padding: 2px 6px;
             border-radius: 4px;
             transition: background 0.2s;
         }
         
-        .file-item:hover {
-            background: #f8f9fa;
+        .tree-node label:hover {
+            background: #e9ecef;
         }
         
-        .file-item input[type="checkbox"] {
-            margin-right: 10px;
+        .tree-node input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
         }
         
-        .file-item .filename {
-            flex: 1;
+        .folder-icon {
+            font-size: 16px;
+        }
+        
+        .file-icon {
+            font-size: 14px;
+        }
+        
+        .node-name {
+            font-size: 14px;
+            color: #333;
         }
         
         .status-badge {
@@ -462,16 +589,8 @@ if (isset($_GET['download'])) {
             font-size: 11px;
             font-weight: 500;
             margin-left: 8px;
-        }
-        
-        .status-badge.current {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-badge.excluded {
-            background: #f8d7da;
-            color: #721c24;
+            background: #e3f2fd;
+            color: #1976d2;
         }
         
         .changes-summary {
@@ -499,13 +618,16 @@ if (isset($_GET['download'])) {
         .hidden {
             display: none;
         }
+        
+        .section {
+            margin-bottom: 30px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>📥 SIMA Import Selection Tool</h1>
-        </header>
+        <h1>📥 SIMA Import Selection Tool</h1>
+        <p class="subtitle">Upload import instructions and modify file selections</p>
         
         <div class="section" id="upload-section">
             <h2>Upload Import Instructions</h2>
@@ -544,6 +666,20 @@ if (isset($_GET['download'])) {
         
         <div class="section hidden" id="selection-section">
             <h2>Modify Installation Selections</h2>
+            
+            <div class="toolbar">
+                <button onclick="expandAll()">📂 Expand All</button>
+                <button onclick="collapseAll()">📁 Collapse All</button>
+                <button onclick="selectAll()">✅ Select All</button>
+                <button onclick="clearSelection()">❌ Clear Selection</button>
+                
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔎 Search files..." onkeyup="filterTree(this.value)">
+                </div>
+                
+                <span id="selectionSummary">Selected: 0 files</span>
+            </div>
+            
             <div id="file-list" class="file-list">
                 <!-- Dynamically populated -->
             </div>
@@ -630,64 +766,135 @@ if (isset($_GET['download'])) {
         
         function buildFileList() {
             const container = document.getElementById('file-list');
-            container.innerHTML = '';
+            container.innerHTML = '<?php echo addslashes(generateTreeFromData([])); ?>'.replace(/\[\]/g, 'originalData');
             
-            originalSelections.clear();
-            currentSelections.clear();
-            
-            // Combine selected and unselected categories
+            // Parse the data to build the tree
             const allCategories = [
                 ...(originalData.selected || []),
                 ...(originalData.unselected || [])
             ];
             
+            container.innerHTML = '';
+            
+            // Group by domain
+            const domains = {};
             allCategories.forEach(category => {
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'file-group';
+                const parts = category.path.split('/');
+                const domain = parts[0];
                 
-                const heading = document.createElement('h3');
-                heading.textContent = `${category.path} (${category.files.length} files)`;
-                groupDiv.appendChild(heading);
-                
-                category.files.forEach(file => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'file-item';
-                    
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.id = `file-${file.target_path}`;
-                    checkbox.checked = file.selected;
-                    checkbox.onchange = () => updateSelection(file.target_path, checkbox.checked);
-                    
-                    const label = document.createElement('label');
-                    label.className = 'filename';
-                    label.htmlFor = checkbox.id;
-                    label.textContent = file.filename;
-                    
-                    if (file.selected) {
-                        originalSelections.add(file.target_path);
-                        currentSelections.add(file.target_path);
-                        
-                        const badge = document.createElement('span');
-                        badge.className = 'status-badge current';
-                        badge.textContent = '✓ Currently Selected';
-                        label.appendChild(badge);
-                    } else {
-                        const badge = document.createElement('span');
-                        badge.className = 'status-badge excluded';
-                        badge.textContent = '✗ Excluded';
-                        label.appendChild(badge);
-                    }
-                    
-                    itemDiv.appendChild(checkbox);
-                    itemDiv.appendChild(label);
-                    groupDiv.appendChild(itemDiv);
-                });
-                
-                container.appendChild(groupDiv);
+                if (!domains[domain]) {
+                    domains[domain] = [];
+                }
+                domains[domain].push(category);
             });
             
+            for (const [domainName, categories] of Object.entries(domains)) {
+                const domainDiv = createFolderNode(domainName, container);
+                const domainChildren = document.createElement('div');
+                domainChildren.className = 'tree-children';
+                domainChildren.style.display = 'none';
+                
+                categories.forEach(category => {
+                    const catDiv = createFolderNode(category.path, domainChildren);
+                    const catChildren = document.createElement('div');
+                    catChildren.className = 'tree-children';
+                    catChildren.style.display = 'none';
+                    
+                    category.files.forEach(file => {
+                        const fileDiv = createFileNode(file, catChildren);
+                        if (file.selected) {
+                            originalSelections.add(file.target_path);
+                            currentSelections.add(file.target_path);
+                        }
+                    });
+                    
+                    catDiv.appendChild(catChildren);
+                });
+                
+                domainDiv.appendChild(domainChildren);
+            }
+            
             updateChangesSummary();
+        }
+        
+        function createFolderNode(name, container) {
+            const div = document.createElement('div');
+            div.className = 'tree-node folder';
+            
+            const toggle = document.createElement('span');
+            toggle.className = 'tree-toggle';
+            toggle.textContent = '▶';
+            toggle.onclick = () => toggleBranch(toggle);
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.onchange = () => selectBranch(checkbox);
+            
+            const label = document.createElement('label');
+            label.innerHTML = `<span class="folder-icon">📁</span><span class="node-name">${name}/</span>`;
+            
+            div.appendChild(toggle);
+            div.appendChild(checkbox);
+            div.appendChild(label);
+            container.appendChild(div);
+            
+            return div;
+        }
+        
+        function createFileNode(file, container) {
+            const div = document.createElement('div');
+            div.className = 'tree-node file';
+            
+            const spacer = document.createElement('span');
+            spacer.className = 'tree-spacer';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = file.selected;
+            checkbox.dataset.path = file.target_path;
+            checkbox.onchange = () => updateSelection(file.target_path, checkbox.checked);
+            
+            const label = document.createElement('label');
+            label.innerHTML = `<span class="file-icon">📄</span><span class="node-name">${file.filename}</span>`;
+            if (file.status) {
+                label.innerHTML += `<span class="status-badge">${file.status}</span>`;
+            }
+            
+            div.appendChild(spacer);
+            div.appendChild(checkbox);
+            div.appendChild(label);
+            container.appendChild(div);
+            
+            return div;
+        }
+        
+        function toggleBranch(element) {
+            const node = element.parentElement;
+            const children = node.querySelector('.tree-children');
+            
+            if (!children) return;
+            
+            if (children.style.display === 'none') {
+                children.style.display = 'block';
+                element.classList.add('expanded');
+                element.textContent = '▼';
+            } else {
+                children.style.display = 'none';
+                element.classList.remove('expanded');
+                element.textContent = '▶';
+            }
+        }
+        
+        function selectBranch(checkbox) {
+            const node = checkbox.closest('.tree-node');
+            const children = node.querySelectorAll('.tree-children input[type="checkbox"]');
+            
+            children.forEach(child => {
+                child.checked = checkbox.checked;
+                if (child.dataset.path) {
+                    updateSelection(child.dataset.path, checkbox.checked);
+                }
+            });
         }
         
         function updateSelection(path, checked) {
@@ -697,6 +904,65 @@ if (isset($_GET['download'])) {
                 currentSelections.delete(path);
             }
             updateChangesSummary();
+        }
+        
+        function expandAll() {
+            document.querySelectorAll('.tree-toggle:not(.expanded)').forEach(toggle => {
+                toggleBranch(toggle);
+            });
+        }
+        
+        function collapseAll() {
+            document.querySelectorAll('.tree-toggle.expanded').forEach(toggle => {
+                toggleBranch(toggle);
+            });
+        }
+        
+        function selectAll() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+                if (cb.dataset.path) {
+                    currentSelections.add(cb.dataset.path);
+                }
+            });
+            updateChangesSummary();
+        }
+        
+        function clearSelection() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            currentSelections.clear();
+            updateChangesSummary();
+        }
+        
+        function filterTree(term) {
+            const nodes = document.querySelectorAll('.tree-node');
+            const searchTerm = term.toLowerCase().trim();
+            
+            if (searchTerm === '') {
+                nodes.forEach(node => node.style.display = 'block');
+                return;
+            }
+            
+            nodes.forEach(node => node.style.display = 'none');
+            
+            nodes.forEach(node => {
+                const label = node.querySelector('.node-name');
+                if (label && label.textContent.toLowerCase().includes(searchTerm)) {
+                    node.style.display = 'block';
+                    
+                    let parent = node.parentElement;
+                    while (parent && parent.classList.contains('tree-children')) {
+                        parent.style.display = 'block';
+                        const parentNode = parent.previousElementSibling;
+                        if (parentNode) {
+                            parentNode.style.display = 'block';
+                        }
+                        parent = parentNode ? parentNode.parentElement : null;
+                    }
+                }
+            });
         }
         
         function updateChangesSummary() {
@@ -718,6 +984,8 @@ if (isset($_GET['download'])) {
             document.getElementById('added-count').textContent = added;
             document.getElementById('removed-count').textContent = removed;
             document.getElementById('new-total').textContent = currentSelections.size;
+            document.getElementById('selectionSummary').textContent = 
+                `Selected: ${currentSelections.size} files`;
         }
         
         function saveUpdatedInstructions() {
@@ -733,7 +1001,6 @@ if (isset($_GET['download'])) {
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    // Trigger download
                     window.location.href = data.download_url;
                 } else {
                     alert('Error: ' + data.error);
