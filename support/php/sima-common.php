@@ -10,7 +10,7 @@
 
 // Configuration constants
 if (!defined('SIMA_ROOT')) {
-    define('SIMA_ROOT', '/home/joe/sima');
+    define('SIMA_ROOT', '/home/joe/web/claude.dizzybeaver.com/public_html/sima');
 }
 if (!defined('SIMA_VERSION')) {
     define('SIMA_VERSION', '4.2.2');
