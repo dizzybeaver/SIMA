@@ -2,12 +2,11 @@
 /**
  * sima-archive-updater.php
  * 
- * SIMA Archive Updater Tool
- * Add new knowledge to existing archive incrementally
+ * SIMA Archive Updater Tool - Complete Version
+ * Version: 2.0.0
+ * Date: 2025-11-19
  * 
- * Version: 1.0.0
- * Date: 2025-11-12
- * SIMA Version: 4.2.2
+ * Combines: Original backend functionality + Collapsible tree UI + Archive visualization
  */
 
 // Configuration
@@ -61,10 +60,8 @@ function discoverChanges($archivedInventory) {
         'unchanged' => []
     ];
     
-    // Scan current SIMA
     $tree = scanKnowledgeTree(SIMA_ROOT);
     
-    // Check each file
     foreach ($tree as $domainName => $domain) {
         scanDomainForChanges($domain, $archivedInventory, $changes);
     }
@@ -75,7 +72,7 @@ function discoverChanges($archivedInventory) {
 /**
  * Recursively scan domain for changes
  */
-function scanDomainForChanges($domain, $archivedInventory, &$changes, $parentPath = '') {
+function scanDomainForChanges($domain, $archivedInventory, &$changes) {
     if (isset($domain['categories'])) {
         foreach ($domain['categories'] as $category) {
             foreach ($category['files'] as $file) {
@@ -83,14 +80,11 @@ function scanDomainForChanges($domain, $archivedInventory, &$changes, $parentPat
                 $currentChecksum = $file['checksum'];
                 
                 if (!isset($archivedInventory[$relativePath])) {
-                    // New file
                     $changes['new'][] = $file;
                 } elseif ($archivedInventory[$relativePath]['checksum'] !== $currentChecksum) {
-                    // Modified file
                     $file['previous_checksum'] = $archivedInventory[$relativePath]['checksum'];
                     $changes['modified'][] = $file;
                 } else {
-                    // Unchanged
                     $changes['unchanged'][] = $file;
                 }
             }
@@ -108,11 +102,9 @@ function scanDomainForChanges($domain, $archivedInventory, &$changes, $parentPat
  * Update manifest with increment
  */
 function updateManifest($manifest, $selectedFiles, $incrementNumber) {
-    // Update version
     $manifest['archive']['updated'] = date('c');
     $manifest['archive']['version'] = ($manifest['archive']['version'] ?? 1) + 1;
     
-    // Add increment to structure
     $incrementPackage = "knowledge-increment-{$incrementNumber}.zip";
     $manifest['structure']['increments'][] = [
         'package' => $incrementPackage,
@@ -120,21 +112,15 @@ function updateManifest($manifest, $selectedFiles, $incrementNumber) {
         'files' => count($selectedFiles)
     ];
     
-    // Update inventory totals
     $newFileCount = 0;
-    $modifiedFileCount = 0;
-    
     foreach ($selectedFiles as $file) {
         if ($file['change_type'] === 'new') {
             $newFileCount++;
-        } else {
-            $modifiedFileCount++;
         }
     }
     
     $manifest['inventory']['total_files'] += $newFileCount;
     
-    // Add/update files in manifest
     foreach ($selectedFiles as $file) {
         $fileEntry = [
             'path' => $file['relative_path'],
@@ -152,7 +138,6 @@ function updateManifest($manifest, $selectedFiles, $incrementNumber) {
             $fileEntry['previous_checksum'] = $file['previous_checksum'];
         }
         
-        // Find and update or append
         $found = false;
         for ($i = 0; $i < count($manifest['files']); $i++) {
             if ($manifest['files'][$i]['path'] === $file['relative_path']) {
@@ -167,7 +152,6 @@ function updateManifest($manifest, $selectedFiles, $incrementNumber) {
         }
     }
     
-    // Update category counts
     if (!isset($manifest['inventory']['categories'])) {
         $manifest['inventory']['categories'] = [];
     }
@@ -189,16 +173,13 @@ function updateManifest($manifest, $selectedFiles, $incrementNumber) {
  * Update import instructions with increment
  */
 function updateImportInstructions($instructionsContent, $manifest, $selectedFiles) {
-    // Parse existing instructions
     $data = parseImportInstructions($instructionsContent);
     
-    // Update metadata
     $data['metadata']['updated'] = date('Y-m-d');
     $data['metadata']['version'] = $manifest['archive']['version'];
     $data['metadata']['total_files'] = $manifest['inventory']['total_files'];
     $data['metadata']['selected_count'] = $manifest['inventory']['total_files'];
     
-    // Add new files to selected list
     foreach ($selectedFiles as $file) {
         $categoryPath = dirname($file['relative_path']);
         $found = false;
@@ -231,7 +212,6 @@ function updateImportInstructions($instructionsContent, $manifest, $selectedFile
         }
     }
     
-    // Add to changelog
     $newCount = count(array_filter($selectedFiles, fn($f) => $f['change_type'] === 'new'));
     $modCount = count(array_filter($selectedFiles, fn($f) => $f['change_type'] === 'modified'));
     
@@ -243,7 +223,6 @@ function updateImportInstructions($instructionsContent, $manifest, $selectedFile
         'description' => $changeDesc
     ]);
     
-    // Add package to list
     $incrementNumber = count($manifest['structure']['increments']);
     $data['packages'][] = [
         'type' => 'Increment ' . str_pad($incrementNumber, 2, '0', STR_PAD_LEFT),
@@ -251,7 +230,6 @@ function updateImportInstructions($instructionsContent, $manifest, $selectedFile
         'file_count' => count($selectedFiles)
     ];
     
-    // Generate new markdown
     return generateUpdatedInstructionsFromData($data);
 }
 
@@ -373,7 +351,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $instructionsContent = $_POST['instructions_content'];
             $selectedPaths = json_decode($_POST['selected_files'], true);
             
-            // Build selected files array with metadata
             $selectedFiles = [];
             $allChanges = json_decode($_POST['all_changes'], true);
             
@@ -391,31 +368,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("No valid files selected");
             }
             
-            // Determine increment number
             $incrementNumber = count($manifest['structure']['increments'] ?? []) + 1;
             $incrementNumberStr = str_pad($incrementNumber, 2, '0', STR_PAD_LEFT);
             
-            // Create export directory
             $exportId = uniqid();
             $exportPath = EXPORT_DIR . '/' . $exportId;
             mkdir($exportPath, 0755, true);
             
-            // Update manifest
             $updatedManifest = updateManifest($manifest, $selectedFiles, $incrementNumber);
             $manifestYaml = yaml_emit($updatedManifest);
             file_put_contents($exportPath . '/manifest.yaml', $manifestYaml);
             
-            // Update import instructions
             $updatedInstructions = updateImportInstructions($instructionsContent, $updatedManifest, $selectedFiles);
             file_put_contents($exportPath . '/import-instructions.md', $updatedInstructions);
             
-            // Create increment ZIP
             $incrementZipPath = $exportPath . "/knowledge-increment-{$incrementNumberStr}.zip";
             $incrementPackageName = "knowledge-increment-{$incrementNumberStr}.zip";
             
             createArchiveZip($selectedFiles, $incrementZipPath, $incrementPackageName);
             
-            // Create download bundle (manifest + instructions + increment)
             $bundleZipPath = $exportPath . "/archive-update-{$incrementNumberStr}.zip";
             $bundleZip = new ZipArchive();
             $bundleZip->open($bundleZipPath, ZipArchive::CREATE);
@@ -444,7 +415,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMA Archive Updater</title>
+    <title>📦 SIMA Archive Updater</title>
     <style>
         * {
             margin: 0;
@@ -859,7 +830,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const container = document.getElementById('changes-tree');
             container.innerHTML = '';
             
-            // Group by category
             const grouped = {};
             
             [...changesData.new, ...changesData.modified].forEach(file => {
@@ -880,67 +850,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'tree-item group';
-                
-                const groupCheck = document.createElement('input');
-                groupCheck.type = 'checkbox';
-                groupCheck.id = `group-${category}`;
-                groupCheck.onchange = () => toggleGroup(category, groupCheck.checked);
-                
-                const groupLabel = document.createElement('label');
-                groupLabel.htmlFor = groupCheck.id;
-                groupLabel.textContent = `${category} (${totalFiles} files)`;
-                
-                groupDiv.appendChild(groupCheck);
-                groupDiv.appendChild(groupLabel);
+                groupDiv.innerHTML = `<input type="checkbox" id="group-${category}" onchange="toggleGroup('${category}', this.checked)"> <label for="group-${category}">${category} (${totalFiles} files)</label>`;
                 container.appendChild(groupDiv);
                 
-                // Add new files
                 files.new.forEach(file => {
                     const fileDiv = document.createElement('div');
                     fileDiv.className = 'tree-item';
-                    
-                    const fileCheck = document.createElement('input');
-                    fileCheck.type = 'checkbox';
-                    fileCheck.id = `file-${file.relative_path}`;
-                    fileCheck.dataset.path = file.relative_path;
-                    fileCheck.onchange = () => toggleFile(file.relative_path, fileCheck.checked);
-                    
-                    const fileLabel = document.createElement('label');
-                    fileLabel.htmlFor = fileCheck.id;
-                    fileLabel.textContent = file.filename;
-                    
-                    const badge = document.createElement('span');
-                    badge.className = 'badge new';
-                    badge.textContent = 'NEW';
-                    fileLabel.appendChild(badge);
-                    
-                    fileDiv.appendChild(fileCheck);
-                    fileDiv.appendChild(fileLabel);
+                    fileDiv.innerHTML = `<input type="checkbox" id="file-${file.relative_path}" data-path="${file.relative_path}" onchange="toggleFile('${file.relative_path}', this.checked)"> <label for="file-${file.relative_path}">${file.filename}<span class="badge new">NEW</span></label>`;
                     container.appendChild(fileDiv);
                 });
                 
-                // Add modified files
                 files.modified.forEach(file => {
                     const fileDiv = document.createElement('div');
                     fileDiv.className = 'tree-item';
-                    
-                    const fileCheck = document.createElement('input');
-                    fileCheck.type = 'checkbox';
-                    fileCheck.id = `file-${file.relative_path}`;
-                    fileCheck.dataset.path = file.relative_path;
-                    fileCheck.onchange = () => toggleFile(file.relative_path, fileCheck.checked);
-                    
-                    const fileLabel = document.createElement('label');
-                    fileLabel.htmlFor = fileCheck.id;
-                    fileLabel.textContent = file.filename;
-                    
-                    const badge = document.createElement('span');
-                    badge.className = 'badge modified';
-                    badge.textContent = 'MODIFIED';
-                    fileLabel.appendChild(badge);
-                    
-                    fileDiv.appendChild(fileCheck);
-                    fileDiv.appendChild(fileLabel);
+                    fileDiv.innerHTML = `<input type="checkbox" id="file-${file.relative_path}" data-path="${file.relative_path}" onchange="toggleFile('${file.relative_path}', this.checked)"> <label for="file-${file.relative_path}">${file.filename}<span class="badge modified">MODIFIED</span></label>`;
                     container.appendChild(fileDiv);
                 });
             }
