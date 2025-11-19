@@ -64,7 +64,7 @@ h2 {
 /* Buttons */
 button {
     background: #3498db;
-    color: white;
+    color: black;
     border: none;
     padding: 12px 24px;
     border-radius: 4px;
@@ -99,6 +99,7 @@ button:disabled {
     padding: 8px 16px;
     border: 1px solid #ddd;
     background: white;
+    color: black;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
