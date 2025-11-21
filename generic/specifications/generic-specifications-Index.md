@@ -31,7 +31,7 @@ This index catalogs all specification files that define standards, conventions, 
 
 ### SPEC-LINE-LIMITS.md
 **Purpose:** File size limits for all SIMA content  
-**Defines:** 400-line limit per file, exceptions, measurement rules, splitting strategies  
+**Defines:** 350-line limit per file, exceptions, measurement rules, splitting strategies  
 **Applies to:** All documentation files  
 **Priority:** Critical
 
@@ -283,5 +283,6 @@ SPEC-CHANGELOG
 - Artifact-Standards.md (shared implementation)
 
 ---
+
 
 **END OF FILE**
