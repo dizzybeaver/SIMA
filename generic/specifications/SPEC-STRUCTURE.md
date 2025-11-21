@@ -31,9 +31,8 @@ Define internal structure and organization for SIMA documents to ensure consiste
 ```markdown
 # filename.md
 
-**Version:** X.Y.Z  
-**Date:** YYYY-MM-DD  
-**Purpose:** Brief description  
+**Version:** (Year).(Month).(Day)-(Revision)
+**Purpose:** Very Brief description  
 **Category:** Category name
 
 ---
@@ -473,5 +472,6 @@ Common issues
 - v1.0.0 (2025-11-06): Initial structure specification
 
 ---
+
 
 **END OF FILE**
