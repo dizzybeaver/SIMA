@@ -18,9 +18,8 @@ Define mandatory header format for all SIMA files to ensure consistency, traceab
 ```markdown
 # filename.md
 
-**Version:** X.Y.Z  
-**Date:** YYYY-MM-DD  
-**Purpose:** [Brief description]  
+**Version:** (Year).(Month).(Day)-(Revision)
+**Purpose:** [Very Brief description]  
 **Category:** [Category name]
 ```
 
@@ -42,19 +41,19 @@ Define mandatory header format for all SIMA files to ensure consistency, traceab
 ```
 
 ### Version (Required)
-**Format:** `**Version:** X.Y.Z`  
+**Format:** `**Version:** (Year).(Month).(Day)-(Revision)'
 **Rules:**
 - Semantic versioning (MAJOR.MINOR.PATCH)
 - Bold label, regular version number
-- Start at 1.0.0 for new files
+- Start at current date only for new files
 - Increment according to change type
 
 **Examples:**
 ```markdown
-**Version:** 1.0.0  (Initial)
-**Version:** 1.0.1  (Patch/fix)
-**Version:** 1.1.0  (Minor addition)
-**Version:** 2.0.0  (Breaking change)
+**Version:** 2025.11.10  (Initial)
+**Version:** 2025.11.10-1  (Patch/fix)
+**Version:** 2025.11.10-2  (Minor addition)
+**Version:** 2025.11.10-3  (Breaking change)
 ```
 
 ### Date (Required)
@@ -72,7 +71,7 @@ Define mandatory header format for all SIMA files to ensure consistency, traceab
 ```
 
 ### Purpose (Required)
-**Format:** `**Purpose:** [Brief description]`  
+**Format:** `**Purpose:** [Very Brief description]`  
 **Rules:**
 - Max 100 characters
 - Describes what file does
@@ -150,9 +149,8 @@ Define mandatory header format for all SIMA files to ensure consistency, traceab
 ```markdown
 # filename.md
 
-**Version:** 1.0.0  
-**Date:** 2025-11-10  
-**Purpose:** Brief description  
+**Version:** 2025.11.10
+**Purpose:** Very Brief description  
 **Category:** Category name
 
 ---
@@ -172,8 +170,7 @@ Define mandatory header format for all SIMA files to ensure consistency, traceab
 
 ### Checklist
 - [ ] H1 heading with filename
-- [ ] Version in X.Y.Z format
-- [ ] Date in YYYY-MM-DD format
+- [ ] Version in (Year).(Month).(Day)-(Revision) format
 - [ ] Purpose under 100 chars
 - [ ] Category specified
 - [ ] Proper spacing
@@ -192,10 +189,6 @@ def validate_header(file_content):
     if '**Version:**' not in lines[2]:
         return False, "Missing version"
     
-    # Check date format
-    if '**Date:**' not in lines[3]:
-        return False, "Missing date"
-    
     # Check purpose
     if '**Purpose:**' not in lines[4]:
         return False, "Missing purpose"
@@ -213,19 +206,19 @@ def validate_header(file_content):
 
 ### When to Update Version
 
-**PATCH (X.Y.Z → X.Y.Z+1):**
+**PATCH (Year.Month.Day → Year.Month.Day-Revision+1):**
 - Typo fixes
 - Clarifications
 - Formatting improvements
 - Minor corrections
 
-**MINOR (X.Y.Z → X.Y+1.0):**
+**MINOR (Year.Month.Day → Year.Month.Day-Revision+1):**
 - New sections added
 - Significant examples added
 - Related content expanded
 - Non-breaking enhancements
 
-**MAJOR (X.Y.Z → X+1.0.0):**
+**MAJOR (Year.Month.Day → Year.Month.Day-Revision+1):**
 - Complete restructuring
 - Breaking changes
 - Different approach
@@ -234,8 +227,7 @@ def validate_header(file_content):
 ### Update Both
 When updating version, also update date:
 ```markdown
-**Version:** 1.2.3  
-**Date:** 2025-11-10
+**Version:** 2025.11.10
 ```
 
 ---
@@ -246,8 +238,7 @@ When updating version, also update date:
 ```markdown
 # LESS-15-Verification-Protocol.md
 
-**Version:** 1.0.0  
-**Date:** 2025-11-10  
+**Version:** 2025.11.10
 **Purpose:** 5-step verification checklist for code changes  
 **Category:** Lessons - Operations
 
@@ -258,8 +249,7 @@ When updating version, also update date:
 ```markdown
 # SPEC-HEADERS.md
 
-**Version:** 4.2.2-blank  
-**Date:** 2025-11-10  
+**Version:** 2025.11.10
 **Purpose:** Header requirements for all SIMA files  
 **Category:** Specifications
 
@@ -270,8 +260,7 @@ When updating version, also update date:
 ```markdown
 # DEC-04-No-Threading.md
 
-**Version:** 1.0.0  
-**Date:** 2025-11-10  
+**Version:** 2025.11.10
 **Purpose:** Why threading is prohibited in environments  
 **Category:** Decisions - Architecture
 
@@ -282,8 +271,7 @@ When updating version, also update date:
 ```markdown
 # ARCH-SUGA.md
 
-**Version:** 2.1.0  
-**Date:** 2025-11-10  
+**Version:** 2025-11-10
 **Purpose:** Complete SUGA architecture pattern documentation  
 **Category:** Core Architecture  
 **Status:** Active  
@@ -316,5 +304,6 @@ When updating version, also update date:
 - v1.0.0 (2025-11-06): Initial header specification
 
 ---
+
 
 **END OF FILE**
