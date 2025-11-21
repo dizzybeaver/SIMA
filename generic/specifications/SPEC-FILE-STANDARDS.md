@@ -20,9 +20,8 @@ Every file MUST include:
 ```markdown
 # filename.md
 
-**Version:** X.Y.Z  
-**Date:** YYYY-MM-DD  
-**Purpose:** [Brief description]  
+**Version:** (Year).(Month).(Day)-(Revision)  
+**Purpose:** [Very Brief description]  
 **Category:** [Category name]
 ```
 
@@ -41,32 +40,40 @@ Every file MUST include:
 - Location: `/sima/generic/entries/`
 - Naming: `[TYPE]-[NUMBER].md` (e.g., `LESS-01.md`)
 - Purpose: Document patterns, decisions, lessons
-- Max: 400 lines
+- Max: 399 lines
 
 ### Specification Files
 - Location: `/sima/generic/specifications/`
 - Naming: `SPEC-[NAME].md` (e.g., `SPEC-LINE-LIMITS.md`)
 - Purpose: Define standards and rules
-- Max: 400 lines
+- Max: 399 lines
+- Do not go over 399 lines at all costs or you will lose 22% of file due to truncation
+- Do not make file more than 399 lines You will lose 22% of file - this has been verfied.
 
 ### Context Files
 - Location: `/sima/context/`
 - Naming: `[MODE]-Context.md` (e.g., `PROJECT-MODE-Context.md`)
 - Purpose: Mode activation and guidelines
-- Max: 500 lines (exception for bootstrap files)
+- Max: 399 lines (exception for bootstrap files)
+- Do not go over 399 lines at all costs or you will lose 22% of file due to truncation
+- Do not make file more than 399 lines You will lose 22% of file - this has been verfied.
 
 ### Support Files
 - Location: `/sima/support/`
 - Naming: Descriptive names with category prefix
 - Purpose: Tools, workflows, templates
-- Max: 400 lines
+- Max: 399 lines
+- Do not go over 399 lines at all costs or you will lose 22% of file due to truncation
+- Do not make file more than 399 lines You will lose 22% of file - this has been verfied.
 
 ### Project Files
 - Location: `/sima/projects/[project-name]/`
 - Naming: Project-specific conventions
 - Purpose: Project implementation details
-- Max: 400 lines
-
+- Max: 399 lines
+- Do not go over 399 lines at all costs or you will lose 22% of file due to truncation
+- Do not make file more than 399 lines You will lose 22% of file - this has been verfied.
+  
 ---
 
 ## ENCODING
@@ -96,7 +103,7 @@ Every file MUST include:
 ## VERSION CONTROL
 
 ### Version Format
-`MAJOR.MINOR.PATCH`
+`YEAR.MONTH.DAY-Revision`
 
 **MAJOR:** Breaking changes, restructuring  
 **MINOR:** New content, significant additions  
@@ -104,6 +111,7 @@ Every file MUST include:
 
 ### Changelog Location
 - Major changes: In file header
+- Clear All Changelog and only have new changelog information.
 - Full history: Separate CHANGELOG.md per directory
 
 ---
@@ -128,7 +136,7 @@ REF: TYPE-## (Brief context)
 - [ ] Proper line endings (LF)
 - [ ] No trailing whitespace
 - [ ] Final newline present
-- [ ] Within line limit (400 for most)
+- [ ] Within line limit (399 maximum for all)
 - [ ] Cross-references valid
 - [ ] Version number appropriate
 
@@ -136,7 +144,7 @@ REF: TYPE-## (Brief context)
 
 ## EXCEPTIONS
 
-**Context Files:** May exceed 400 lines (up to 500) for bootstrap purposes  
+**Context Files:** May never exceed 399 lines maximum, you lose 22% of file once you hit 401 lines this has been verified due to truncation
 **Source Code:** No line limit (must be deployable)  
 **Generated Files:** Follow source standards
 
@@ -153,5 +161,6 @@ REF: TYPE-## (Brief context)
 - v1.0.0 (2025-11-06): Initial specification
 
 ---
+
 
 **END OF FILE**
