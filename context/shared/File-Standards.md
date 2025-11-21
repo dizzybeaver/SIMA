@@ -12,12 +12,14 @@
 ### Strict Limits
 
 **Source Code:**
-- Maximum: 400 lines
+- Maximum: 350 lines
+- Do not go over 400 lines at all costs or you will lose 22% of file due to truncation
 - Reason: Readability, maintainability
 - Action: Split if exceeded
 
 **Neural Maps:**
-- Maximum: 400 lines
+- Maximum: 350 lines
+- Do not go over 400 lines at all costs or you will lose 22% of file due to truncation
 - Reason: AI processing constraints
 - Critical: Files >400 lines may be truncated
 
@@ -39,19 +41,18 @@
 ```markdown
 # filename.md
 
-**Version:** 1.0.0
+**Version:** (Year).(Month).(Day).(Revision)
 **Date:** 2025-11-10
-**Purpose:** [Brief description]
+**Purpose:** [Very Brief description]
 ```
 
 **Source files:**
 ```python
 # filename.py
 """
-Brief description.
+Very Brief description.
 
-Version: 1.0.0
-Date: 2025-11-10
+Version: (Year).(Month).(Day).(Revision)
 """
 ```
 
@@ -101,7 +102,8 @@ Date: 2025-11-10
 ### When to Split
 
 **Triggers:**
-- File exceeds 400 lines
+- File exceeds 250 lines
+- Do not go over 400 lines at all costs or you will lose 22% of file due to truncation
 - Multiple distinct topics
 - Unrelated functionality
 - Complex navigation
@@ -110,9 +112,9 @@ Date: 2025-11-10
 
 **By Topic:**
 ```
-Large-File.md (600 lines)
-â†' Topic-A.md (300 lines)
-â†' Topic-B.md (300 lines)
+Large-File.md (500 lines)
+â†' Topic-A.md (250 lines)
+â†' Topic-B.md (250 lines)
 ```
 
 **By Category:**
@@ -125,9 +127,9 @@ All-Decisions.md (800 lines)
 
 **By Function:**
 ```
-utilities.py (500 lines)
-â†' utility_validation.py (200 lines)
-â†' utility_transformation.py (200 lines)
+utilities.py (400 lines)
+â†' utility_validation.py (150 lines)
+â†' utility_transformation.py (150 lines)
 â†' utility_formatting.py (100 lines)
 ```
 
@@ -147,5 +149,6 @@ utilities.py (500 lines)
 ---
 
 **END OF FILE**
+
 
 **Summary:** All files â‰¤400 lines, proper headers, split when exceeded, clear naming.
