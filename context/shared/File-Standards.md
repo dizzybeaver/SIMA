@@ -13,15 +13,17 @@
 
 **Source Code:**
 - Maximum: 350 lines
-- Do not go over 400 lines at all costs or you will lose 22% of file due to truncation
+- Do not go over 399 lines at all costs or you will lose 22% of file due to truncation
+- Do not make file more than 399 lines You will lose 22% of file - verfied.
 - Reason: Readability, maintainability
 - Action: Split if exceeded
 
 **Neural Maps:**
 - Maximum: 350 lines
-- Do not go over 400 lines at all costs or you will lose 22% of file due to truncation
+- Do not go over 399 lines at all costs or you will lose 22% of file due to truncation
+- Do not make file more than 399 lines You will lose 22% of file - verfied.
 - Reason: AI processing constraints
-- Critical: Files >400 lines may be truncated
+- Critical: Files >399 lines may be truncated
 
 **Summaries:**
 - Maximum: 100 lines
@@ -103,7 +105,8 @@ Version: (Year).(Month).(Day).(Revision)
 
 **Triggers:**
 - File exceeds 250 lines
-- Do not go over 400 lines at all costs or you will lose 22% of file due to truncation
+- Do not go over 399 lines at all costs or you will lose 22% of file due to truncation
+- Do not make file more than 399 lines You will lose 22% of file - verfied.
 - Multiple distinct topics
 - Unrelated functionality
 - Complex navigation
@@ -152,3 +155,4 @@ utilities.py (400 lines)
 
 
 **Summary:** All files â‰¤400 lines, proper headers, split when exceeded, clear naming.
+
