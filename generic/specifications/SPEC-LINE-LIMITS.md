@@ -9,9 +9,10 @@
 
 ## CRITICAL RULE
 
-**400 LINES MAXIMUM PER FILE**
+**350 LINES MAXIMUM PER FILE**
 
 This limit applies to **THE FILE**, not the topic. Even when batching multiple topics, the file containing them must be ≤400 lines total.
+You will lose minimum 22% once you hit 401 lines due to truncation this has been verfied.
 
 ---
 
@@ -23,20 +24,20 @@ Define maximum line limits for different file types to ensure readability, maint
 
 ## UNIVERSAL LIMITS
 
-### Default Limit: 400 Lines PER FILE
+### Default Limit: 350 Lines PER FILE
 
-**Every documentation file has a 400-line limit PER FILE.**
+**Every documentation file has a 350-line limit PER FILE.**
 
 **What this means:**
-- Each .md file ≤400 lines total
+- Each .md file ≤350 lines total - You will lose 22% minimum due to truncation once the file hits 401 lines. This has been verified.
 - Includes all content: headers, examples, everything
 - Count from first line to last line
 - Blank lines count
 
 **What this does NOT mean:**
-- ❌ NOT "400 lines per topic within the file"
-- ❌ NOT "400 lines per section"
-- ❌ NOT "each topic ≤400 lines but file can be bigger"
+- ❌ NOT "350 lines per topic within the file"
+- ❌ NOT "350 lines per section"
+- ❌ NOT "each topic ≤350 lines but file can be bigger"
 
 **The limit is THE FILE SIZE, period.**
 
@@ -72,7 +73,7 @@ DEC-02.md (250 lines) ✓
 DEC-03.md (280 lines) ✓
 DEC-04.md (370 lines) ✓
 
-RESULT: All files ≤400 lines - COMPLIANT!
+RESULT: All files ≤350 lines - COMPLIANT!
 ```
 
 ---
@@ -120,78 +121,80 @@ Must split into separate files!
 ## WHEN TO BATCH
 
 ### Batch When All True:
-1. Topics are closely related
-2. Each topic is brief (50-100 lines)
-3. **TOTAL FILE ≤400 LINES**
-4. Makes sense to read together
+1. Never Batch files together period make the 50-100 line files.
 
 ### Don't Batch When Any True:
 1. Topics not closely related
-2. Each topic is long (200+ lines)
-3. **TOTAL FILE >400 LINES**
-4. Better as separate files
+2. **TOTAL FILE >350 LINES**
+3. Better as separate files
 
 ---
 
 ## FILE TYPE LIMITS
 
-### Neural Map Entries: 400 Lines PER FILE
-- Lessons (LESS-##): 400 lines max PER FILE
-- Decisions (DEC-##): 400 lines max PER FILE
-- Anti-Patterns (AP-##): 400 lines max PER FILE
-- Bugs (BUG-##): 400 lines max PER FILE
-- Wisdom (WISD-##): 400 lines max PER FILE
+### Neural Map Entries: 350 Lines PER FILE
+- Lessons (LESS-##): 350 lines max PER FILE
+- Decisions (DEC-##): 350 lines max PER FILE
+- Anti-Patterns (AP-##): 350 lines max PER FILE
+- Bugs (BUG-##): 350 lines max PER FILE
+- Wisdom (WISD-##): 350 lines max PER FILE
 
-**Exception:** None - must split if exceeds 400 lines PER FILE
+**Exception:** None - must split or shrink if exceeds 350 lines PER FILE
 
-### Architecture Files: 400 Lines PER FILE
-- Core concepts: 400 lines max PER FILE
-- Pattern descriptions: 400 lines max PER FILE
-- Implementation guides: 400 lines max PER FILE
+### Architecture Files: 350 Lines PER FILE
+- Core concepts: 350 lines max PER FILE
+- Pattern descriptions: 350 lines max PER FILE
+- Implementation guides: 350 lines max PER FILE
 
-**If comprehensive topic needs >400 lines:**
+**If comprehensive topic needs >350 lines:**
 - Split into multiple files (Part 1, Part 2)
 - Or create separate focused files
 - Example: ARCH-01, ARCH-02, ARCH-03
 
-### Specifications: 400 Lines PER FILE
-- All SPEC-## files: 400 lines max PER FILE
+### Specifications: 350 Lines PER FILE
+- All SPEC-## files: 350 lines max PER FILE
 - Focus on single standard
 - Reference related specs if needed
 
-### Context Files: 500 Lines PER FILE (EXCEPTION)
-- Mode context files: 500 lines max PER FILE
-- Custom instructions: 500 lines max PER FILE
-- Bootstrap files: 500 lines max PER FILE
+### Context Files: 350 Lines PER FILE (NO EXCEPTION)
+- Mode context files: 350 lines max PER FILE
+- Custom instructions: 350 lines max PER FILE
+- Bootstrap files: 350 lines max PER FILE
 
-**Rationale:** Session setup needs comprehensive guidelines.
+**Rationale:** Session setup needs comprehensive guidelines but you lose minimum 22% when you reach 401 lines. Then as grows bigger you will only get 400 lines total no matter size due to truncation. This has been verified. Never go above 399 Lines at all costs.
 
-**Still apply:** Keep as brief as possible, 500 is maximum.
+**Still apply:** Keep as brief as possible, 350 is maximum.
 
-### Support Files: 400 Lines PER FILE
-- Workflows: 400 lines max PER FILE
-- Tools: 400 lines max PER FILE
-- Templates: 400 lines max PER FILE
-- Checklists: 400 lines max PER FILE
+### Support Files: 350 Lines PER FILE
+- Workflows: 350 lines max PER FILE
+- Tools: 350 lines max PER FILE
+- Templates: 350 lines max PER FILE
+- Checklists: 350 lines max PER FILE
 
-### Project Files: 400 Lines PER FILE
-- Project docs: 400 lines max PER FILE
-- Configuration: 400 lines max PER FILE
-- README files: 400 lines max PER FILE
+### Project Files: 350 Lines PER FILE
+- Project docs: 350 lines max PER FILE
+- Configuration: 350 lines max PER FILE
+- README files: 350 lines max PER FILE
 
-### Source Code: No Limit
-- Source files: No limit
+### Source Code: 350 Lines Max PER FILE
+- Source files: If greater than 350 lines.
+  1. Make 1 Main File
+  2. Break into smaller files
+  3. Have Main File import smaller files.
 - Must be complete and deployable
 - Functional requirements take priority
 
-**Rationale:** Code must work; splitting breaks functionality.
+**Rationale:** Code must work; Smart splitting does not break functionality.
 
-### Index Files: No Limit
-- Master indexes: No limit
+### Index Files: 350 Lines max PER FILE
+- Master indexes: If Greater than 350 lines
+  1. Make 1 Main Master Index File
+  2. Break into smaller Index Files
+  3. Have Main index File Reference smaller files with very very brief description and keywords
 - Generated automatically or manually
 - Comprehensive listings needed
 
-**Rationale:** Indexes list all entries; splitting defeats purpose.
+**Rationale:** Indexes list all entries; Smart splitting prevents truncation.
 
 ---
 
@@ -227,7 +230,7 @@ fi
 
 ## EXCEEDING LIMITS
 
-### If File Exceeds 400 Lines
+### If File Exceeds 350 Lines
 
 **Step 1: Try to Condense**
 - Remove verbosity
@@ -235,15 +238,15 @@ fi
 - Remove duplicate info
 - Cross-reference instead
 
-**Step 2: If Still >400, Must Split**
+**Step 2: If Still >350, Must Split**
 
 **Option A: Part 1 / Part 2**
 ```
-Original: GUIDE-Complete.md (750 lines)
+Original: GUIDE-Complete.md (700 lines)
 
 Split into:
-- GUIDE-Part1-Overview.md (375 lines)
-- GUIDE-Part2-Details.md (375 lines)
+- GUIDE-Part1-Overview.md (350 lines)
+- GUIDE-Part2-Details.md (350 lines)
 ```
 
 **Option B: Separate Topics (BETTER)**
@@ -257,7 +260,7 @@ Split into:
 - DEC-03.md (310 lines)
 - DEC-04.md (310 lines)
 
-Each file ≤400 lines ✓
+Each file ≤350 lines ✓
 ```
 
 **Step 3: Update References**
@@ -285,29 +288,20 @@ Total: 1,800 lines - VIOLATION!
 
 **✅ CORRECT:**
 ```
-ARCH-01-Core.md (390 lines)
+ARCH-01-Core.md (350 lines)
 ARCH-02-Gateways.md (340 lines)
-ARCH-03-Interfaces.md (380 lines)
-ARCH-04-Decisions.md (350 lines)
+ARCH-03-Interfaces.md (350 lines)
+ARCH-04-Decisions.md (340 lines)
 ARCH-05-Lessons.md (190 lines)
 
-Each file ≤400 lines ✓
+Each file ≤350 lines ✓
 ```
 
 ### Example 2: Batched Interfaces
 
 **✅ CORRECT:**
 ```
-INT-01-CACHE.md (320 lines)
-INT-02-LOGGING.md (285 lines)
-INT-03-SECURITY.md (310 lines)
-INT-04-HTTP.md (295 lines)
-INT-05-through-12.md (380 lines)
-  - Covers 8 simple interfaces
-  - Each ~45 lines
-  - Total 380 lines ✓
-
-All files ≤400 lines ✓
+Never Batch Files together. Make the smaller 50-100 line files always
 ```
 
 ### Example 3: Decisions
@@ -328,7 +322,7 @@ DEC-03.md (310 lines)
 DEC-04.md (290 lines)
 DEC-05.md (265 lines)
 
-Each file ≤400 lines ✓
+Each file ≤350 lines ✓
 ```
 
 ---
@@ -337,15 +331,15 @@ Each file ≤400 lines ✓
 
 **Before creating/committing any file:**
 
-- [ ] File is ≤400 lines (or ≤500 for context files)
+- [ ] File is ≤350 lines
 - [ ] Verified with `wc -l filename.md`
-- [ ] If batched, total file still ≤400 lines
+- [ ] If batched, split the files
 - [ ] Content focused on related topics
 - [ ] No unnecessary verbosity
 - [ ] Examples concise (2-3 lines)
 - [ ] Cross-references instead of duplication
 - [ ] If exceeds limit, split into multiple files
-- [ ] Each split file ≤400 lines
+- [ ] Each split file ≤350 lines
 - [ ] All cross-references updated
 - [ ] Indexes updated
 
@@ -358,25 +352,25 @@ Each file ≤400 lines ✓
 Knowledge search tools may truncate files:
 - First 200 lines
 - Last 200 lines
-- **Middle content invisible**
+- **Middle content invisible and you lose 22% of middle automatically - verified**
 
-**If file >400 lines:**
+**If file >401 lines:**
 - Middle 100+ lines are lost
 - Information becomes inaccessible
 - Search results incomplete
 - Knowledge effectively deleted
 
-**At exactly 400 lines:**
-- All content visible (200 + 200 = 400)
+**At exactly 399 lines:**
+- All content visible (200 + 199 = 399)
 - Complete information available
 - Search works correctly
 - No data loss
 
-**This is a hard technical constraint, not a style preference.**
+**This is a hard technical constraint and it is critically important, not a style preference.**
 
 ---
 
-## BENEFITS OF 400-LINE LIMIT
+## BENEFITS OF 350-LINE LIMIT
 
 **Technical:**
 - Works with knowledge search (no truncation)
@@ -418,22 +412,7 @@ Knowledge search tools may truncate files:
 - Blank slate version
 - Genericized examples
 
-**v2.0.0 (2025-11-08):**
-- CRITICAL: Emphasized "PER FILE" throughout
-- ADDED: Anti-pattern section (monolithic files)
-- ADDED: Batching vs file size distinction
-- ADDED: Practical examples with violations
-- ADDED: Pre-creation check script
-- CLARIFIED: 400 lines is THE FILE, not per topic
-- CLARIFIED: Batching still requires ≤400 lines total
-- ADDED: Knowledge search limitation explanation
-- ADDED: Why this is a hard technical constraint
-
-**v1.0.0 (2025-11-06):**
-- Initial specification
-- 400-line universal limit
-- Basic file type guidelines
-
 ---
+
 
 **END OF FILE**
