@@ -35,7 +35,7 @@ Define changelog format to track document changes clearly and concisely while re
 
 ### Single Line Per Version
 ```markdown
-- vX.Y.Z: Description (max 80 chars)
+- v(Year).(Month).(Day)-(Revision): Description (max 80 chars)
 ```
 
 ### Rules
@@ -75,17 +75,17 @@ Define changelog format to track document changes clearly and concisely while re
 ### Single-Line Descriptions
 **Good:**
 ```markdown
-- v1.2.0: Added ZAPH tier system, updated indexes
+- v2025.11.10-2: Added ZAPH tier system, updated indexes
 ```
 
 **Bad (too long):**
 ```markdown
-- v1.2.0: Added complete ZAPH tier system with all three tiers including hot path optimization and comprehensive documentation plus updated all related indexes
+- v2025.11.10-3: Added complete ZAPH tier system with all three tiers including hot path optimization and comprehensive documentation plus updated all related indexes
 ```
 
 **Fixed:**
 ```markdown
-- v1.2.0: Added ZAPH tiers, updated docs
+- v2025.11.10-4: Added ZAPH tiers, updated docs
 ```
 
 ---
@@ -103,12 +103,12 @@ Define changelog format to track document changes clearly and concisely while re
 
 ### Examples
 ```markdown
-- v2.0.0: Refactored for SIMAv4 structure
-- v1.3.0: Added fileserver.php integration
-- v1.2.1: Fixed broken cross-references
-- v1.2.0: Enhanced examples with code
-- v1.1.0: Updated for Python 3.11
-- v1.0.1: Removed outdated section
+- v2025.11.11-1: Refactored for SIMAv4 structure
+- v2025.11.11: Added fileserver.php integration
+- v2025.11.10-3: Fixed broken cross-references
+- v2025.11.10-2: Enhanced examples with code
+- v2025.11.10-1: Updated for Python 3.11
+- v2025.11.10: Removed outdated section
 ```
 
 ---
@@ -118,18 +118,18 @@ Define changelog format to track document changes clearly and concisely while re
 ### In-Header Format
 ```markdown
 **Changelog:**
-- v1.3.0: Added fileserver.php support
-- v1.2.0: SIMAv4 path corrections
-- v1.1.0: Enhanced with examples
-- v1.0.0: Initial creation
+- v2025.11.12: Added fileserver.php support
+- v2025.11.11: SIMAv4 path corrections
+- v2025.11.10-1: Enhanced with examples
+- v2025.11.10: Initial creation
 ```
 
 ### When Over 4 Entries
 ```markdown
 **Changelog:**
-- v1.5.0: Latest changes here
-- v1.4.0: Recent changes
-- v1.3.0: More changes
+- v2025.11.11-1: Latest changes here
+- v2025.11.11: Recent changes
+- v2025.11.10: More changes
 - [Full history in CHANGELOG.md]
 ```
 
@@ -147,7 +147,7 @@ Define changelog format to track document changes clearly and concisely while re
 ```markdown
 # CHANGELOG
 
-## v1.3.0 (2025-11-06)
+## v2025.11.06-1
 ### Added
 - fileserver.php integration
 - Cache-busting URLs
@@ -159,14 +159,14 @@ Define changelog format to track document changes clearly and concisely while re
 ### Fixed
 - Broken cross-references
 
-## v1.2.0 (2025-11-02)
+## v2025.11.02
 ### Added
 - SIMAv4 structure support
 
 ### Changed
 - Directory paths updated
 
-## v1.0.0 (2025-10-25)
+## v2025.10.25
 ### Added
 - Initial specification
 ```
@@ -178,9 +178,9 @@ Define changelog format to track document changes clearly and concisely while re
 ### Simple List
 ```markdown
 **Version History:**
-- v1.2.0 (2025-11-06): Description
-- v1.1.0 (2025-11-01): Description
-- v1.0.0 (2025-10-25): Initial
+- v2025.11.06: Description
+- v2025.11.01: Description
+- v2025.10.25: Initial
 ```
 
 ### Rules
@@ -196,12 +196,12 @@ Define changelog format to track document changes clearly and concisely while re
 ### Compress Descriptions
 **Before:**
 ```markdown
-- v1.2.0: Added complete fileserver.php integration system with cache-busting URLs and updated all documentation
+- v2025.11.10: Added complete fileserver.php integration system with cache-busting URLs and updated all documentation
 ```
 
 **After:**
 ```markdown
-- v1.2.0: Added fileserver.php, cache-busting
+- v2025.11.10: Added fileserver.php, cache-busting
 ```
 
 ### Abbreviations
@@ -221,25 +221,25 @@ Define changelog format to track document changes clearly and concisely while re
 ### Neural Map Entry
 ```markdown
 **Changelog:**
-- v1.1.0: Enhanced with code examples
-- v1.0.1: Fixed REF-ID typo
-- v1.0.0: Initial lesson
+- v2025.11.12: Enhanced with code examples
+- v2025.11.10-1: Fixed REF-ID typo
+- v2025.11.10: Initial lesson
 ```
 
 ### Specification
 ```markdown
 **Changelog:**
-- v1.2.0: Added validation section
-- v1.1.0: Enhanced examples
-- v1.0.0: Initial spec
+- v2025.11.14: Added validation section
+- v2025.11.10-1: Enhanced examples
+- v2025.11.10: Initial spec
 ```
 
 ### Context File
 ```markdown
 **Changelog:**
-- v3.4.0: fileserver.php integration
-- v3.3.0: SIMAv4 paths
-- v3.2.0: Cache-busting
+- v2025.11.11: fileserver.php integration
+- v2025.11.07: SIMAv4 paths
+- v2025.11.01: Cache-busting
 - [Full history: 15 versions]
 ```
 
@@ -250,14 +250,14 @@ Define changelog format to track document changes clearly and concisely while re
 ### Highlight in Changelog
 ```markdown
 **Changelog:**
-- v2.0.0: BREAKING - New directory structure
-- v1.5.0: Added new features
+- v2025.11.10-1: BREAKING - New directory structure
+- v2025.11.10: Added new features
 ```
 
 ### When Major Version
 **Always explain breaking change:**
 ```markdown
-- v2.0.0: BREAKING - Moved to /sima/entries/
+- v2025.11.10: BREAKING - Moved to /sima/entries/
 ```
 
 ---
@@ -314,5 +314,6 @@ if len(entries) > 4:
 - v1.0.0 (2025-11-06): Initial changelog spec
 
 ---
+
 
 **END OF FILE**
