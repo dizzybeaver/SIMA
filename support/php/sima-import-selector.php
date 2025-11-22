@@ -2,17 +2,148 @@
 /**
  * sima-import-selector.php
  * 
- * SIMA Import Selection Tool - Refactored
- * Version: 2.1.0
- * Date: 2025-11-19
+ * SIMA Import Selection Tool - Version-Aware
+ * Version: 3.0.0
+ * Date: 2025-11-21
+ * 
+ * PHP backend only - JavaScript in sima-import.js
+ * 
+ * MODIFIED: Added version compatibility system
+ * - Directory selection for target import location
+ * - Source/target version detection
+ * - Automatic conversion during import
+ * - Shared tree renderer from sima-tree.js
  */
 
 require_once __DIR__ . '/sima/support/php/sima-common.php';
+require_once __DIR__ . '/sima/support/php/sima-version-utils.php';
+
+/**
+ * Validate and normalize directory path
+ */
+function validateDirectory($path) {
+    $path = rtrim($path, '/');
+    
+    if ($path[0] !== '/') {
+        throw new Exception("Path must be absolute");
+    }
+    
+    if (strpos($path, '..') !== false) {
+        throw new Exception("Invalid path: parent directory not allowed");
+    }
+    
+    if (!is_dir($path) || !is_writable($path)) {
+        throw new Exception("Directory not found or not writable");
+    }
+    
+    return realpath($path);
+}
+
+/**
+ * Parse import instructions with version detection
+ */
+function parseImportInstructions($content) {
+    $lines = explode("\n", $content);
+    $metadata = [];
+    $selectedFiles = [];
+    $unselectedFiles = [];
+    $currentCategory = null;
+    $inSelected = false;
+    
+    foreach ($lines as $line) {
+        $line = trim($line);
+        
+        // Extract metadata
+        if (preg_match('/^\*\*Archive:\*\* (.+)$/', $line, $matches)) {
+            $metadata['archive'] = $matches[1];
+        } elseif (preg_match('/^\*\*Created:\*\* (.+)$/', $line, $matches)) {
+            $metadata['created'] = $matches[1];
+        } elseif (preg_match('/^\*\*SIMA Version:\*\* (.+)$/', $line, $matches)) {
+            $metadata['sima_version'] = $matches[1];
+        } elseif (preg_match('/^\*\*Total Files:\*\* (\d+)$/', $line, $matches)) {
+            $metadata['total_files'] = (int)$matches[1];
+        } elseif (preg_match('/^\*\*Selected:\*\* (\d+)$/', $line, $matches)) {
+            $metadata['selected_count'] = (int)$matches[1];
+        }
+        
+        // Track sections
+        if (strpos($line, '### Selected for Install') !== false) {
+            $inSelected = true;
+        } elseif (strpos($line, '### Not Selected for Install') !== false) {
+            $inSelected = false;
+        }
+        
+        // Track categories
+        if (preg_match('/^#### (.+) \((\d+) files\)$/', $line, $matches)) {
+            $currentCategory = $matches[1];
+        }
+        
+        // Parse file entries
+        if (preg_match('/^- \[([ x])\] (.+?) → (.+?)(?: \((.+)\))?$/', $line, $matches)) {
+            $file = [
+                'checked' => $matches[1] === 'x',
+                'filename' => $matches[2],
+                'target_path' => $matches[3],
+                'status' => $matches[4] ?? '',
+                'category' => $currentCategory
+            ];
+            
+            if ($inSelected) {
+                $selectedFiles[] = $file;
+            } else {
+                $unselectedFiles[] = $file;
+            }
+        } elseif (preg_match('/^- \[ \] (.+?) \(SKIP\)$/', $line, $matches)) {
+            $file = [
+                'checked' => false,
+                'filename' => $matches[1],
+                'target_path' => '',
+                'status' => 'SKIP',
+                'category' => $currentCategory
+            ];
+            $unselectedFiles[] = $file;
+        }
+    }
+    
+    // Organize by category for tree display
+    $selectedByCategory = [];
+    foreach ($selectedFiles as $file) {
+        $cat = $file['category'] ?? 'Uncategorized';
+        if (!isset($selectedByCategory[$cat])) {
+            $selectedByCategory[$cat] = [
+                'path' => $cat,
+                'files' => []
+            ];
+        }
+        $selectedByCategory[$cat]['files'][] = $file;
+    }
+    
+    $unselectedByCategory = [];
+    foreach ($unselectedFiles as $file) {
+        $cat = $file['category'] ?? 'Uncategorized';
+        if (!isset($unselectedByCategory[$cat])) {
+            $unselectedByCategory[$cat] = [
+                'path' => $cat,
+                'files' => []
+            ];
+        }
+        $unselectedByCategory[$cat]['files'][] = $file;
+    }
+    
+    return [
+        'metadata' => $metadata,
+        'selected' => $selectedByCategory,
+        'unselected' => $unselectedByCategory
+    ];
+}
 
 /**
  * Generate updated import instructions
  */
-function generateUpdatedInstructions($originalData, $newSelections) {
+function generateUpdatedInstructions($originalData, $newSelections, $targetVersion = null) {
+    $sourceVersion = $originalData['metadata']['sima_version'] ?? '4.2';
+    $targetVersion = $targetVersion ?? $sourceVersion;
+    
     $md = "# Import Instructions - {$originalData['metadata']['archive']}\n\n";
     $md .= "**Archive:** {$originalData['metadata']['archive']}\n";
     $md .= "**Created:** {$originalData['metadata']['created']}\n";
@@ -21,7 +152,11 @@ function generateUpdatedInstructions($originalData, $newSelections) {
     $selectedCount = count($newSelections);
     $totalFiles = $originalData['metadata']['total_files'];
     
-    $md .= "**SIMA Version:** {$originalData['metadata']['sima_version']}\n";
+    $md .= "**SIMA Version:** {$sourceVersion}";
+    if ($sourceVersion !== $targetVersion) {
+        $md .= " → {$targetVersion} (converted)";
+    }
+    $md .= "\n";
     $md .= "**Total Files:** {$totalFiles}\n";
     $md .= "**Selected:** {$selectedCount}\n\n";
     
@@ -37,10 +172,23 @@ function generateUpdatedInstructions($originalData, $newSelections) {
     
     foreach ($allCategories as $category) {
         foreach ($category['files'] as $file) {
+            $targetPath = $file['target_path'];
+            
+            // Apply version conversion to path if needed
+            if ($sourceVersion !== $targetVersion && 
+                SIMAVersionUtils::canConvert($sourceVersion, $targetVersion)) {
+                $targetPath = SIMAVersionUtils::convertPath(
+                    $targetPath, 
+                    $sourceVersion, 
+                    $targetVersion
+                );
+            }
+            
             if (in_array($file['target_path'], $newSelections)) {
                 if (!isset($selectedFiles[$category['path']])) {
                     $selectedFiles[$category['path']] = [];
                 }
+                $file['converted_path'] = $targetPath;
                 $selectedFiles[$category['path']][] = $file;
             } else {
                 if (!isset($unselectedFiles[$category['path']])) {
@@ -55,9 +203,13 @@ function generateUpdatedInstructions($originalData, $newSelections) {
     foreach ($selectedFiles as $categoryPath => $files) {
         $md .= "#### {$categoryPath} (" . count($files) . " files)\n";
         foreach ($files as $file) {
-            $md .= "- [x] {$file['filename']} → {$file['target_path']}";
+            $displayPath = $file['converted_path'] ?? $file['target_path'];
+            $md .= "- [x] {$file['filename']} → {$displayPath}";
             if (!empty($file['status'])) {
                 $md .= " ({$file['status']})";
+            }
+            if (isset($file['converted_path']) && $file['converted_path'] !== $file['target_path']) {
+                $md .= " [converted]";
             }
             $md .= "\n";
         }
@@ -86,6 +238,23 @@ function generateUpdatedInstructions($originalData, $newSelections) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     
+    if ($action === 'scan_target') {
+        // ADDED: Scan target directory for version info
+        try {
+            $directory = $_POST['directory'] ?? SIMA_ROOT;
+            $validatedDir = validateDirectory($directory);
+            
+            $versionInfo = SIMAVersionUtils::getVersionInfo($validatedDir);
+            
+            sendJsonResponse(true, [
+                'version_info' => $versionInfo,
+                'directory' => $validatedDir
+            ]);
+        } catch (Exception $e) {
+            sendJsonResponse(false, [], $e->getMessage());
+        }
+    }
+    
     if ($action === 'parse') {
         try {
             if (!isset($_FILES['import_instructions'])) {
@@ -105,8 +274,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $originalData = json_decode($_POST['original_data'], true);
             $newSelections = json_decode($_POST['new_selections'], true);
+            $targetVersion = $_POST['target_version'] ?? null;
             
-            $updatedContent = generateUpdatedInstructions($originalData, $newSelections);
+            $updatedContent = generateUpdatedInstructions(
+                $originalData, 
+                $newSelections,
+                $targetVersion
+            );
             
             $tmpFile = tempnam(sys_get_temp_dir(), 'import-instructions-');
             file_put_contents($tmpFile, $updatedContent);
@@ -148,10 +322,25 @@ if (isset($_GET['download'])) {
     <div class="container">
         <header>
             <h1>📥 SIMA Import Selection Tool</h1>
+            <p>Version-aware import with automatic conversion</p>
         </header>
         
+        <!-- ADDED: Target directory configuration -->
+        <div class="section">
+            <h2>1. Target SIMA Installation</h2>
+            <div class="form-group">
+                <label for="targetDirectory">Target Directory:</label>
+                <input type="text" id="targetDirectory" value="<?= SIMA_ROOT ?>" 
+                       placeholder="/path/to/sima">
+                <button id="scan-target-btn" onclick="SIMAImport.scanTargetDirectory()">
+                    🔍 Detect Version
+                </button>
+            </div>
+            <div id="targetVersion" class="info-box" style="display: none;"></div>
+        </div>
+        
         <div class="section" id="upload-section">
-            <h2>Upload Import Instructions</h2>
+            <h2>2. Upload Import Instructions</h2>
             <div class="upload-area" id="upload-area">
                 <p style="font-size: 48px; margin-bottom: 10px;">📄</p>
                 <p style="font-size: 18px;">Drop import-instructions.md here</p>
@@ -159,198 +348,68 @@ if (isset($_GET['download'])) {
                 <input type="file" id="file-input" accept=".md">
             </div>
             <div style="margin-top: 20px; text-align: center;">
-                <button onclick="document.getElementById('file-input').click()">📂 Select File</button>
+                <button onclick="document.getElementById('file-input').click()">
+                    📂 Select File
+                </button>
             </div>
         </div>
         
         <div class="section hidden" id="metadata-section">
-            <h2>Archive Information</h2>
+            <h2>3. Archive Information</h2>
+            <!-- ADDED: Source/target version display -->
             <div class="metadata-grid">
                 <div class="metadata-item">
                     <label>Archive</label>
                     <div class="value" id="meta-archive"></div>
                 </div>
                 <div class="metadata-item">
-                    <label>Created</label>
-                    <div class="value" id="meta-created"></div>
+                    <label>Source Version</label>
+                    <div class="value" id="meta-source-version"></div>
+                </div>
+                <div class="metadata-item">
+                    <label>Target Version</label>
+                    <div class="value" id="meta-target-version"></div>
                 </div>
                 <div class="metadata-item">
                     <label>Total Files</label>
                     <div class="value" id="meta-total"></div>
                 </div>
             </div>
-        </div>
-        
-        <div class="section hidden" id="selection-section">
-            <h2>Modify Selections</h2>
-            
-            <div class="toolbar">
-                <button onclick="expandAll()">📂 Expand All</button>
-                <button onclick="collapseAll()">📁 Collapse All</button>
-                <button onclick="selectAll()">✅ Select All</button>
-                <button onclick="clearSelection()">❌ Clear</button>
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="🔎 Search..." onkeyup="filterTree(this.value)">
-                </div>
-                <span id="selectionSummary">Selected: 0</span>
-            </div>
-            
-            <div id="file-list" class="file-list"></div>
-            
-            <div class="changes-summary">
-                <h3>Changes</h3>
-                <div class="stat">Added: <strong id="added-count">0</strong></div>
-                <div class="stat">Removed: <strong id="removed-count">0</strong></div>
-                <div class="stat">New Total: <strong id="new-total">0</strong></div>
+            <!-- ADDED: Conversion warning -->
+            <div id="conversion-warning" class="warning-box" style="display: none;">
+                ⚠️ Version conversion will be applied during import
             </div>
         </div>
         
-        <div class="section hidden" id="actions-section">
-            <button onclick="saveUpdatedInstructions()">💾 Save Updated Instructions</button>
+        <div class="section hidden" id="tree-section">
+            <h2>4. Select Files to Import</h2>
+            <div class="tree-controls">
+                <button onclick="SIMATree.expandAll()">➕ Expand All</button>
+                <button onclick="SIMATree.collapseAll()">➖ Collapse All</button>
+                <button onclick="SIMATree.selectAll()">☑️ Select All</button>
+                <button onclick="SIMATree.clearSelection()">⬜ Clear All</button>
+            </div>
+            <div class="tree-container" id="tree"></div>
+            <div class="selection-summary" id="summary"></div>
+        </div>
+        
+        <div class="section hidden" id="generate-section">
+            <h2>5. Generate Updated Instructions</h2>
+            <button id="generate-btn" onclick="SIMAImport.generateInstructions()">
+                💾 Generate Import Instructions
+            </button>
+        </div>
+        
+        <div id="loading" style="display: none;">
+            <p>⏳ Processing...</p>
+        </div>
+        
+        <div id="error" class="error-box">
+            <p id="error-text"></p>
         </div>
     </div>
     
     <script src="/sima/support/php/sima-tree.js"></script>
-    <script>
-        let originalData = null;
-        let originalSelections = new Set();
-        let currentSelections = new Set();
-        
-        const uploadArea = document.getElementById('upload-area');
-        const fileInput = document.getElementById('file-input');
-        
-        uploadArea.addEventListener('click', () => fileInput.click());
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
-        });
-        
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) handleFile(e.target.files[0]);
-        });
-        
-        function handleFile(file) {
-            const formData = new FormData();
-            formData.append('action', 'parse');
-            formData.append('import_instructions', file);
-            
-            fetch('', { method: 'POST', body: formData })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    originalData = data.data;
-                    displayMetadata();
-                    buildFileList();
-                    document.getElementById('metadata-section').classList.remove('hidden');
-                    document.getElementById('selection-section').classList.remove('hidden');
-                    document.getElementById('actions-section').classList.remove('hidden');
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            });
-        }
-        
-        function displayMetadata() {
-            document.getElementById('meta-archive').textContent = originalData.metadata.archive || 'N/A';
-            document.getElementById('meta-created').textContent = originalData.metadata.created || 'N/A';
-            document.getElementById('meta-total').textContent = originalData.metadata.total_files || 'N/A';
-        }
-        
-        function buildFileList() {
-            const container = document.getElementById('file-list');
-            container.innerHTML = '';
-            
-            const allCategories = [...(originalData.selected || []), ...(originalData.unselected || [])];
-            
-            allCategories.forEach(category => {
-                const catDiv = createTreeNode('folder', category.path, container);
-                const catChildren = document.createElement('div');
-                catChildren.className = 'tree-children';
-                catChildren.style.display = 'none';
-                
-                category.files.forEach(file => {
-                    createTreeNode('file', file.filename, catChildren, file.target_path, file.selected);
-                    if (file.selected) {
-                        originalSelections.add(file.target_path);
-                        currentSelections.add(file.target_path);
-                    }
-                });
-                
-                catDiv.appendChild(catChildren);
-            });
-            
-            updateChangesSummary();
-        }
-        
-        function createTreeNode(type, name, parent, path = null, checked = false) {
-            const div = document.createElement('div');
-            div.className = `tree-node ${type}`;
-            
-            if (type === 'folder') {
-                const toggle = document.createElement('span');
-                toggle.className = 'tree-toggle';
-                toggle.textContent = '▶';
-                toggle.onclick = () => toggleBranch(toggle);
-                div.appendChild(toggle);
-            } else {
-                div.appendChild(document.createElement('span')).className = 'tree-spacer';
-            }
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = checked;
-            if (path) checkbox.dataset.path = path;
-            checkbox.onchange = type === 'folder' ? 
-                () => selectBranch(checkbox) : 
-                () => updateSelection(path, checkbox.checked);
-            div.appendChild(checkbox);
-            
-            const label = document.createElement('label');
-            label.innerHTML = `<span class="${type}-icon">${type === 'folder' ? '📁' : '📄'}</span><span class="node-name">${name}</span>`;
-            div.appendChild(label);
-            
-            parent.appendChild(div);
-            return div;
-        }
-        
-        function updateSelection(path, checked) {
-            checked ? currentSelections.add(path) : currentSelections.delete(path);
-            updateChangesSummary();
-        }
-        
-        function updateChangesSummary() {
-            let added = 0, removed = 0;
-            currentSelections.forEach(path => { if (!originalSelections.has(path)) added++; });
-            originalSelections.forEach(path => { if (!currentSelections.has(path)) removed++; });
-            
-            document.getElementById('added-count').textContent = added;
-            document.getElementById('removed-count').textContent = removed;
-            document.getElementById('new-total').textContent = currentSelections.size;
-            document.getElementById('selectionSummary').textContent = `Selected: ${currentSelections.size}`;
-        }
-        
-        function saveUpdatedInstructions() {
-            const formData = new FormData();
-            formData.append('action', 'generate');
-            formData.append('original_data', JSON.stringify(originalData));
-            formData.append('new_selections', JSON.stringify(Array.from(currentSelections)));
-            
-            fetch('', { method: 'POST', body: formData })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = data.download_url;
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            });
-        }
-    </script>
+    <script src="/sima/support/php/sima-import.js"></script>
 </body>
 </html>
