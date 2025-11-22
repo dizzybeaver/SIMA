@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sourceVersion = $_POST['source_version'] ?? null;
             $targetVersion = $_POST['target_version'] ?? null;
             
-            if (!$sourceVersion) {
+            if (!$sourceVersion || $sourceVersion === 'auto') {
                 $versionInfo = SIMAVersionUtils::getVersionInfo($validatedBase);
                 $sourceVersion = $versionInfo['version'];
             }
@@ -89,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (file_exists($fullPath)) {
                     $content = file_get_contents($fullPath);
                     
+                    // Apply version conversion if needed
                     if ($sourceVersion !== $targetVersion && 
                         SIMAVersionUtils::canConvert($sourceVersion, $targetVersion)) {
                         $content = SIMAVersionUtils::convertMetadata($content, $sourceVersion, $targetVersion);
@@ -117,22 +118,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("No valid files selected");
             }
             
+            // Create export directory
             $exportId = uniqid();
             $exportPath = EXPORT_DIR . '/' . $exportId;
             mkdir($exportPath, 0755, true);
             
+            // Generate manifest
             $manifestContent = generateManifest($archiveName, $description, $selectedFiles);
             file_put_contents($exportPath . '/manifest.yaml', $manifestContent);
             
+            // Generate import instructions
             $instructionsContent = generateImportInstructions($archiveName, $selectedFiles);
             file_put_contents($exportPath . '/import-instructions.md', $instructionsContent);
             
+            // Create knowledge base ZIP
             $zipPath = $exportPath . '/knowledge-base.zip';
-            createArchiveZip($selectedFiles, $zipPath, 'knowledge-base.zip');
+            createArchiveZip($selectedFiles, $zipPath, $archiveName);
             
+            // Create final archive
             $finalZipPath = $exportPath . '/SIMA-Archive-' . $archiveName . '-' . date('Y-m-d') . '.zip';
             $finalZip = new ZipArchive();
-            $finalZip->open($finalZipPath, ZipArchive::CREATE);
+            if ($finalZip->open($finalZipPath, ZipArchive::CREATE) !== true) {
+                throw new Exception("Cannot create final archive");
+            }
             $finalZip->addFile($exportPath . '/manifest.yaml', 'manifest.yaml');
             $finalZip->addFile($exportPath . '/import-instructions.md', 'import-instructions.md');
             $finalZip->addFile($zipPath, 'knowledge-base.zip');
@@ -162,15 +170,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container">
         <header>
             <h1>🎯 SIMA Knowledge Export Tool</h1>
+            <p>Version-aware export with automatic conversion</p>
         </header>
         
         <div class="section">
-            <h2>Source Configuration</h2>
+            <h2>1. Source Configuration</h2>
             <div class="form-group">
                 <label for="simaDirectory">SIMA Directory Path:</label>
                 <input type="text" id="simaDirectory" value="<?= SIMA_ROOT ?>" 
                        placeholder="/path/to/sima" style="font-family: monospace;">
-                <small>Absolute path to SIMA installation (e.g., /home/user/simav4)</small>
+                <small>Absolute path to SIMA installation</small>
             </div>
             <div class="form-group">
                 <label for="sourceVersion">Source Version:</label>
@@ -179,67 +188,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="4.2">SIMA v4.2</option>
                     <option value="4.1">SIMA v4.1</option>
                 </select>
-                <small id="detectedVersion" style="display:none; color: #27ae60; margin-top: 5px;"></small>
             </div>
             <div class="form-group">
-                <label for="targetVersion">Export As (Target Version):</label>
+                <label for="targetVersion">Target Version:</label>
                 <select id="targetVersion">
-                    <option value="same">Same as Source</option>
+                    <option value="auto">Same as Source</option>
                     <option value="4.2">SIMA v4.2</option>
                     <option value="4.1">SIMA v4.1</option>
                 </select>
-                <small>Convert files to different SIMA version format</small>
+                <small>Convert files to different version during export</small>
             </div>
+            <button id="scan-btn" onclick="SIMAExport.loadKnowledgeTree()">
+                🔍 Scan Directory
+            </button>
+            <div id="detectedVersion" style="display: none; margin-top: 10px; padding: 10px; background: #e7f3ff; border-radius: 4px;"></div>
         </div>
         
-        <div class="section">
-            <h2>Export Configuration</h2>
+        <div class="section hidden" id="tree-section">
+            <h2>2. Select Files to Export</h2>
+            <div class="tree-controls">
+                <button onclick="SIMATree.expandAll()">➕ Expand All</button>
+                <button onclick="SIMATree.collapseAll()">➖ Collapse All</button>
+                <button onclick="SIMATree.selectAll()">☑️ Select All</button>
+                <button onclick="SIMATree.clearSelection()">⬜ Clear All</button>
+            </div>
+            <div class="tree-container" id="tree"></div>
+            <div class="selection-summary" id="summary"></div>
+        </div>
+        
+        <div class="section hidden" id="export-section">
+            <h2>3. Export Configuration</h2>
             <div class="form-group">
-                <label for="exportName">Archive Name:</label>
-                <input type="text" id="exportName" placeholder="my-export-package" required>
+                <label for="archiveName">Archive Name:</label>
+                <input type="text" id="archiveName" value="SIMA-Export" placeholder="Archive name">
             </div>
             <div class="form-group">
                 <label for="description">Description:</label>
-                <input type="text" id="description" placeholder="AWS Lambda, DynamoDB knowledge">
+                <textarea id="description" rows="3" placeholder="Describe the contents of this export..."></textarea>
             </div>
+            <button id="export-btn" onclick="SIMAExport.exportFiles()">
+                💾 Create Export Package
+            </button>
         </div>
         
-        <div class="section">
-            <div class="toolbar">
-                <button onclick="loadKnowledgeTree()" id="scan-btn">🔍 Scan SIMA</button>
-                <button onclick="expandAll()">📂 Expand All</button>
-                <button onclick="collapseAll()">📁 Collapse All</button>
-                <button onclick="selectAll()">✅ Select All</button>
-                <button onclick="clearSelection()">❌ Clear</button>
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="🔎 Search..." onkeyup="filterTree(this.value)">
-                </div>
-                <span class="selection-summary" id="selectionSummary">Selected: 0</span>
-            </div>
-            
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Scanning SIMA directory...</p>
-            </div>
-            
-            <div class="error" id="error">
-                <p id="error-text"></p>
-            </div>
-            
-            <div class="tree-container" id="tree"></div>
+        <div id="loading" style="display: none;">
+            <p>⏳ Processing...</p>
         </div>
         
-        <div class="section">
-            <button id="exportButton" onclick="createExport()" disabled>📦 Create Archive</button>
-        </div>
-        
-        <div class="success" id="success">
-            <h3>✅ Export Complete</h3>
-            <p id="success-text"></p>
-            <a id="download-link" class="download-btn" download>⬇️ Download Archive</a>
+        <div id="error" class="error-box">
+            <p id="error-text"></p>
         </div>
     </div>
-
+    
     <script src="/sima/support/php/sima-tree.js"></script>
     <script src="/sima/support/php/sima-export.js"></script>
 </body>
