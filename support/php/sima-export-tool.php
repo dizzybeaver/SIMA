@@ -1,187 +1,44 @@
-function renderTree() {
-            const container = document.getElementById('tree');
-            container.innerHTML = '';
-            
-            for (const [domainName, domain] of Object.entries(knowledgeTree)) {
-                if (domain.total_files === 0) continue;
-                
-                // Create domain folder
-                const domainDiv = createFolderNode(domainName, container);
-                const domainChildren = document.createElement('div');
-                domainChildren.className = 'tree-children';
-                domainChildren.style.display = 'block'; // Start expanded
-                
-                // Add categories
-                if (domain.categories) {
-                    for (const [catName, category] of Object.entries(domain.categories)) {
-                        const catDiv = createFolderNode(`${catName} (${category.file_count})`, domainChildren);
-                        const catChildren = document.createElement('div');
-                        catChildren.className = 'tree-children';
-                        catChildren.style.display = 'none'; // Start collapsed
-                        
-                        // Add files
-                        category.files.forEach(file => {
-                            createFileNode(file.filename, catChildren, file.relative_path);
-                        });
-                        
-                        catDiv.appendChild(catChildren);
-                    }
-                }
-                
-                domainDiv.appendChild(domainChildren);
-            }
-        }
-        
-        function createFolderNode(name, parent) {
-            const div = document.createElement('div');
-            div.className = 'tree-node folder';
-            
-            const toggle = document.createElement('span');
-            toggle.className = 'tree-toggle expanded';
-            toggle.textContent = '▼';
-            toggle.onclick = () => toggleBranch(toggle);
-            div.appendChild(toggle);
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.onchange = () => selectBranch(checkbox);
-            div.appendChild(checkbox);
-            
-            const label = document.createElement('label<?php
+<?php
 /**
  * sima-export-tool.php
  * 
- * SIMA Knowledge Export Tool - Directory Selection Version
- * Version: 2.2.0
+ * SIMA Knowledge Export Tool - Version-Aware
+ * Version: 3.0.0
  * Date: 2025-11-21
  * 
- * MODIFIED: Added directory selection capability
+ * PHP backend only - JavaScript in sima-export.js
  */
 
 require_once __DIR__ . '/sima/support/php/sima-common.php';
+require_once __DIR__ . '/sima/support/php/sima-version-utils.php';
 
 // Ensure export directory exists
+if (!defined('EXPORT_DIR')) {
+    define('EXPORT_DIR', '/tmp/sima-exports');
+}
 if (!is_dir(EXPORT_DIR)) {
     mkdir(EXPORT_DIR, 0755, true);
 }
 
 /**
  * Validate and normalize directory path
- * ADDED: Security validation for user-selected directories
  */
 function validateDirectory($path) {
     $path = rtrim($path, '/');
     
-    // Security: Must be absolute path
     if ($path[0] !== '/') {
         throw new Exception("Path must be absolute");
     }
     
-    // Security: No parent directory traversal
     if (strpos($path, '..') !== false) {
         throw new Exception("Invalid path: parent directory not allowed");
     }
     
-    // Must exist and be readable
     if (!is_dir($path) || !is_readable($path)) {
         throw new Exception("Directory not found or not readable");
     }
     
     return realpath($path);
-}
-
-/**
- * Scan knowledge tree from specified directory
- * MODIFIED: Accept custom base path
- */
-function scanKnowledgeTreeFrom($basePath) {
-    $tree = [];
-    $domains = ['generic', 'platforms', 'languages', 'projects'];
-    
-    foreach ($domains as $domain) {
-        $domainPath = $basePath . '/' . $domain;
-        if (!is_dir($domainPath)) continue;
-        
-        $tree[$domain] = scanDomainFrom($domainPath, $domain, $basePath);
-    }
-    
-    return $tree;
-}
-
-/**
- * Scan domain with base path reference
- * MODIFIED: Track base path for relative path calculation
- */
-function scanDomainFrom($domainPath, $domainName, $basePath) {
-    $domain = [
-        'name' => $domainName,
-        'path' => $domainPath,
-        'categories' => [],
-        'total_files' => 0
-    ];
-    
-    $subdirs = glob($domainPath . '/*', GLOB_ONLYDIR);
-    
-    foreach ($subdirs as $subdir) {
-        $subdirName = basename($subdir);
-        
-        $categories = ['lessons', 'decisions', 'anti-patterns', 'specifications', 
-                      'core', 'wisdom', 'workflows', 'frameworks'];
-        
-        if (in_array($subdirName, $categories)) {
-            $categoryData = scanCategoryFrom($subdir, $subdirName, $basePath);
-            if ($categoryData['file_count'] > 0) {
-                $domain['categories'][$subdirName] = $categoryData;
-                $domain['total_files'] += $categoryData['file_count'];
-            }
-        } else {
-            $subdomainData = scanDomainFrom($subdir, $subdirName, $basePath);
-            if ($subdomainData['total_files'] > 0) {
-                $domain['subdomains'][$subdirName] = $subdomainData;
-                $domain['total_files'] += $subdomainData['total_files'];
-            }
-        }
-    }
-    
-    return $domain;
-}
-
-/**
- * Scan category with base path reference
- * MODIFIED: Calculate relative paths from custom base
- */
-function scanCategoryFrom($categoryPath, $categoryName, $basePath) {
-    $category = [
-        'name' => $categoryName,
-        'path' => $categoryPath,
-        'files' => [],
-        'file_count' => 0
-    ];
-    
-    $files = glob($categoryPath . '/*.md');
-    
-    foreach ($files as $file) {
-        $filename = basename($file);
-        
-        if (strpos($filename, 'Index') !== false || 
-            strpos($filename, 'index') !== false) {
-            continue;
-        }
-        
-        $metadata = extractFileMetadata($file);
-        
-        $category['files'][] = [
-            'filename' => $filename,
-            'path' => $file,
-            'relative_path' => str_replace($basePath . '/', '', $file),
-            'ref_id' => $metadata['ref_id'],
-            'version' => $metadata['version'],
-            'size' => filesize($file)
-        ];
-        $category['file_count']++;
-    }
-    
-    return $category;
 }
 
 // Handle AJAX requests
@@ -190,12 +47,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($action === 'scan') {
         try {
-            // ADDED: Get directory from request
             $directory = $_POST['directory'] ?? SIMA_ROOT;
             $validatedDir = validateDirectory($directory);
             
-            $tree = scanKnowledgeTreeFrom($validatedDir);
-            sendJsonResponse(true, ['tree' => $tree, 'base_path' => $validatedDir]);
+            $versionInfo = SIMAVersionUtils::getVersionInfo($validatedDir);
+            $tree = SIMAVersionUtils::scanWithVersion($validatedDir, $versionInfo['version']);
+            
+            sendJsonResponse(true, [
+                'tree' => $tree,
+                'base_path' => $validatedDir,
+                'version_info' => $versionInfo
+            ]);
         } catch (Exception $e) {
             sendJsonResponse(false, [], $e->getMessage());
         }
@@ -203,28 +65,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($action === 'export') {
         try {
-            // ADDED: Get and validate base directory
             $baseDir = $_POST['base_directory'] ?? SIMA_ROOT;
             $validatedBase = validateDirectory($baseDir);
-            
             $archiveName = $_POST['archive_name'] ?? 'SIMA-Archive';
             $description = $_POST['description'] ?? '';
             $selectedPaths = json_decode($_POST['selected_files'] ?? '[]', true);
             
+            $sourceVersion = $_POST['source_version'] ?? null;
+            $targetVersion = $_POST['target_version'] ?? null;
+            
+            if (!$sourceVersion) {
+                $versionInfo = SIMAVersionUtils::getVersionInfo($validatedBase);
+                $sourceVersion = $versionInfo['version'];
+            }
+            
+            if (!$targetVersion) {
+                $targetVersion = $sourceVersion;
+            }
+            
             $selectedFiles = [];
             foreach ($selectedPaths as $path) {
-                // MODIFIED: Use validated base directory
                 $fullPath = $validatedBase . '/' . $path;
                 if (file_exists($fullPath)) {
+                    $content = file_get_contents($fullPath);
+                    
+                    if ($sourceVersion !== $targetVersion && 
+                        SIMAVersionUtils::canConvert($sourceVersion, $targetVersion)) {
+                        $content = SIMAVersionUtils::convertMetadata($content, $sourceVersion, $targetVersion);
+                        $path = SIMAVersionUtils::convertPath($path, $sourceVersion, $targetVersion);
+                        $filename = SIMAVersionUtils::convertFilename(basename($path), $sourceVersion, $targetVersion);
+                    } else {
+                        $filename = basename($path);
+                    }
+                    
                     $metadata = extractFileMetadata($fullPath);
                     $selectedFiles[] = [
                         'path' => $fullPath,
                         'relative_path' => $path,
-                        'filename' => basename($path),
+                        'filename' => $filename,
                         'ref_id' => $metadata['ref_id'],
                         'category' => basename(dirname($path)),
-                        'size' => filesize($fullPath),
-                        'checksum' => md5_file($fullPath)
+                        'size' => strlen($content),
+                        'checksum' => md5($content),
+                        'content' => $content,
+                        'converted' => $sourceVersion !== $targetVersion
                     ];
                 }
             }
@@ -280,14 +164,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1>🎯 SIMA Knowledge Export Tool</h1>
         </header>
         
-        <!-- ADDED: Directory Selection Section -->
         <div class="section">
-            <h2>Source Directory</h2>
+            <h2>Source Configuration</h2>
             <div class="form-group">
                 <label for="simaDirectory">SIMA Directory Path:</label>
                 <input type="text" id="simaDirectory" value="<?= SIMA_ROOT ?>" 
                        placeholder="/path/to/sima" style="font-family: monospace;">
-                <small>Absolute path to SIMA installation (e.g., /home/user/sima)</small>
+                <small>Absolute path to SIMA installation (e.g., /home/user/simav4)</small>
+            </div>
+            <div class="form-group">
+                <label for="sourceVersion">Source Version:</label>
+                <select id="sourceVersion">
+                    <option value="auto">Auto-Detect</option>
+                    <option value="4.2">SIMA v4.2</option>
+                    <option value="4.1">SIMA v4.1</option>
+                </select>
+                <small id="detectedVersion" style="display:none; color: #27ae60; margin-top: 5px;"></small>
+            </div>
+            <div class="form-group">
+                <label for="targetVersion">Export As (Target Version):</label>
+                <select id="targetVersion">
+                    <option value="same">Same as Source</option>
+                    <option value="4.2">SIMA v4.2</option>
+                    <option value="4.1">SIMA v4.1</option>
+                </select>
+                <small>Convert files to different SIMA version format</small>
             </div>
         </div>
         
@@ -305,7 +206,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <div class="section">
             <div class="toolbar">
-                <!-- MODIFIED: Scan button now uses selected directory -->
                 <button onclick="loadKnowledgeTree()" id="scan-btn">🔍 Scan SIMA</button>
                 <button onclick="expandAll()">📂 Expand All</button>
                 <button onclick="collapseAll()">📁 Collapse All</button>
@@ -341,144 +241,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script src="/sima/support/php/sima-tree.js"></script>
-    <script>
-        let knowledgeTree = {};
-        let selectedFiles = new Set();
-        let currentBasePath = ''; // ADDED: Track current base path
-        
-        // MODIFIED: Load tree from specified directory
-        function loadKnowledgeTree() {
-            const directory = document.getElementById('simaDirectory').value.trim();
-            
-            if (!directory) {
-                alert('Please enter a directory path');
-                return;
-            }
-            
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('error').classList.remove('active');
-            document.getElementById('tree').innerHTML = '';
-            document.getElementById('scan-btn').disabled = true;
-            
-            const formData = new FormData();
-            formData.append('action', 'scan');
-            formData.append('directory', directory); // ADDED: Send directory
-            
-            fetch('', {
-                method: 'POST',
-                body: formData
-            })
-            .then(r => r.json())
-            .then(data => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('scan-btn').disabled = false;
-                
-                if (data.success) {
-                    knowledgeTree = data.tree;
-                    currentBasePath = data.base_path; // ADDED: Store base path
-                    renderTree();
-                } else {
-                    document.getElementById('error-text').textContent = 'Error: ' + data.error;
-                    document.getElementById('error').classList.add('active');
-                }
-            })
-            .catch(err => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('scan-btn').disabled = false;
-                document.getElementById('error-text').textContent = 'Error: ' + err.message;
-                document.getElementById('error').classList.add('active');
-            });
-        }
-        
-        function renderTree() {
-            const container = document.getElementById('tree');
-            container.innerHTML = '';
-            
-            for (const [domainName, domain] of Object.entries(knowledgeTree)) {
-                if (domain.total_files === 0) continue;
-                
-                // Create domain folder (start expanded)
-                const domainNode = SIMATree.createTreeNode('folder', domainName, container, {
-                    path: domainName,
-                    startExpanded: true
-                });
-                const domainChildren = domainNode.querySelector('.tree-children');
-                
-                if (domain.categories) {
-                    for (const [catName, category] of Object.entries(domain.categories)) {
-                        // Create category folder
-                        const catNode = SIMATree.createTreeNode('folder', `${catName} (${category.file_count})`, domainChildren, {
-                            path: `${domainName}/${catName}`,
-                            startExpanded: false
-                        });
-                        const catChildren = catNode.querySelector('.tree-children');
-                        
-                        // Add files
-                        category.files.forEach(file => {
-                            SIMATree.createTreeNode('file', file.filename, catChildren, {
-                                path: file.relative_path,
-                                onToggleFile: toggleFile
-                            });
-                        });
-                    }
-                }
-            }
-        }
-        
-        function toggleFile(path, checked) {
-            checked ? selectedFiles.add(path) : selectedFiles.delete(path);
-            updateSelectionSummary();
-        }
-        
-        function updateSelectionSummary() {
-            document.getElementById('selectionSummary').textContent = `Selected: ${selectedFiles.size}`;
-            document.getElementById('exportButton').disabled = selectedFiles.size === 0;
-        }
-        
-        // MODIFIED: Include base directory in export request
-        function createExport() {
-            const archiveName = document.getElementById('exportName').value.trim();
-            const description = document.getElementById('description').value.trim();
-            
-            if (!archiveName) {
-                alert('Please enter an archive name');
-                return;
-            }
-            
-            if (selectedFiles.size === 0) {
-                alert('Please select at least one file');
-                return;
-            }
-            
-            document.getElementById('exportButton').disabled = true;
-            document.getElementById('exportButton').textContent = 'Creating...';
-            
-            const formData = new FormData();
-            formData.append('action', 'export');
-            formData.append('base_directory', currentBasePath); // ADDED: Send base path
-            formData.append('archive_name', archiveName);
-            formData.append('description', description);
-            formData.append('selected_files', JSON.stringify(Array.from(selectedFiles)));
-            
-            fetch('', {
-                method: 'POST',
-                body: formData
-            })
-            .then(r => r.json())
-            .then(data => {
-                document.getElementById('exportButton').disabled = false;
-                document.getElementById('exportButton').textContent = '📦 Create Archive';
-                
-                if (data.success) {
-                    document.getElementById('success-text').textContent = 
-                        `Successfully exported ${data.file_count} files.`;
-                    document.getElementById('download-link').href = data.download_url;
-                    document.getElementById('success').classList.add('active');
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            });
-        }
-    </script>
+    <script src="/sima/support/php/sima-export.js"></script>
 </body>
 </html>
