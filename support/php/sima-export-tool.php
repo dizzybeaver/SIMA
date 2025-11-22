@@ -187,6 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="auto">Auto-Detect</option>
                     <option value="4.2">SIMA v4.2</option>
                     <option value="4.1">SIMA v4.1</option>
+                    <option value="3.0">SIMA v3.0 (Neural Maps)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -195,6 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="auto">Same as Source</option>
                     <option value="4.2">SIMA v4.2</option>
                     <option value="4.1">SIMA v4.1</option>
+                    <option value="3.0">SIMA v3.0 (Neural Maps)</option>
                 </select>
                 <small>Convert files to different version during export</small>
             </div>
