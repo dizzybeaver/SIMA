@@ -25,6 +25,8 @@ class SIMAv4_1_Spec {
     /**
      * Get category directories for domains
      * Returns domain-keyed array of categories
+     * 
+     * FIXED: Changed from flat array to domain-keyed structure
      */
     public static function getCategories() {
         return [
@@ -105,6 +107,8 @@ class SIMAv4_1_Spec {
     
     /**
      * Get required directories for a domain
+     * 
+     * MODIFIED: Updated to use new getCategories() structure
      */
     public static function getRequiredDirectories($domain) {
         $base = [
@@ -136,6 +140,7 @@ class SIMAv4_1_Spec {
     
     /**
      * Detect if this is v4.1
+     * 
      * FIXED: Removed /simav4 prefix from markers since $basePath already points there
      */
     public static function detectVersion($basePath) {
