@@ -2,11 +2,11 @@
  * sima-tree.js
  * 
  * Shared JavaScript for SIMA collapsible tree functionality
- * Version: 1.1.0
+ * Version: 1.2.0
  * Date: 2025-11-21
  * Location: /support/php/
  * 
- * MODIFIED: Added createTreeNode helper for programmatic tree building
+ * MODIFIED: Added renderKnowledgeTree and createTreeNode for shared rendering
  */
 
 const SIMATree = {
