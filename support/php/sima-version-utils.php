@@ -3,19 +3,24 @@
  * sima-version-utils.php
  * 
  * SIMA Version Detection and Conversion Utilities
- * Version: 2.0.0
+ * Version: 4.0.0
  * Date: 2025-11-22
- * Location: /support/php/
+ * Location: /sima/support/php/
  * 
- * MODIFIED: Added SIMA v3.0 support
+ * MODIFIED: Uses new SIMAScanner for file discovery
+ * - Removed old scanWithVersion() that used spec files
+ * - Now uses comprehensive recursive scanning
+ * - Maintains version detection for conversion
+ * - Delegates scanning to SIMAScanner class
  * 
- * Handles version detection and conversion between SIMA versions
- * Supports: v3.0, v4.1, v4.2
+ * CRITICAL: Stays under 350 lines
  */
 
 require_once __DIR__ . '/spec_simav3.php';
 require_once __DIR__ . '/spec_simav4.1.php';
 require_once __DIR__ . '/spec_simav4.2.php';
+require_once __DIR__ . '/sima-scanner.php';
+require_once __DIR__ . '/sima-tree-formatter.php';
 
 class SIMAVersionUtils {
     
@@ -75,6 +80,81 @@ class SIMAVersionUtils {
             '4.1' => 'SIMA v4.1',
             '3.0' => 'SIMA v3.0 (Neural Maps)'
         ];
+    }
+    
+    /**
+     * Get version info
+     */
+    public static function getVersionInfo($basePath) {
+        $version = self::detectVersion($basePath);
+        $specClass = self::getSpec($version);
+        
+        $info = [
+            'version' => $version,
+            'version_string' => $specClass ? $specClass::VERSION : 'Unknown',
+            'detected' => true,
+            'spec_available' => $specClass !== null
+        ];
+        
+        if ($specClass) {
+            $info['domains'] = $specClass::getDomains();
+            $info['categories'] = $specClass::getCategories();
+            $info['support_files'] = $specClass::getSupportFiles();
+        }
+        
+        return $info;
+    }
+    
+    /**
+     * Comprehensive scan using new scanner
+     * REPLACES old scanWithVersion()
+     * 
+     * @param string $basePath Root SIMA directory
+     * @param string|null $version Detected version (optional)
+     * @return array UI-formatted tree
+     */
+    public static function scanWithVersion($basePath, $version = null) {
+        if ($version === null) {
+            $version = self::detectVersion($basePath);
+        }
+        
+        // Use new comprehensive scanner
+        $scanResult = SIMAScanner::scanComplete($basePath, [
+            'include_hidden' => false,
+            'max_depth' => 20,
+            'file_extensions' => ['.md'],
+            'exclude_dirs' => ['.git', 'node_modules', '.idea', '__pycache__'],
+            'include_metadata' => true
+        ]);
+        
+        // Convert to UI format
+        $uiTree = SIMATreeFormatter::formatForUI($scanResult);
+        
+        return $uiTree;
+    }
+    
+    /**
+     * Get flat file list for export
+     */
+    public static function getFlatFileList($basePath, $version = null) {
+        if ($version === null) {
+            $version = self::detectVersion($basePath);
+        }
+        
+        $scanResult = SIMAScanner::scanComplete($basePath);
+        return SIMATreeFormatter::getFlatFileList($scanResult);
+    }
+    
+    /**
+     * Get statistics about SIMA installation
+     */
+    public static function getStats($basePath, $version = null) {
+        if ($version === null) {
+            $version = self::detectVersion($basePath);
+        }
+        
+        $scanResult = SIMAScanner::scanComplete($basePath);
+        return SIMATreeFormatter::generateStats($scanResult);
     }
     
     /**
@@ -214,114 +294,10 @@ class SIMAVersionUtils {
         $supported = [
             '4.1' => ['4.2'],
             '4.2' => ['4.1'],
-            '3.0' => ['4.2']  // ADDED: v3 to v4.2 conversion
+            '3.0' => ['4.2']
         ];
         
         return isset($supported[$fromVersion]) && 
                in_array($toVersion, $supported[$fromVersion]);
-    }
-    
-    /**
-     * Get version info
-     */
-    public static function getVersionInfo($basePath) {
-        $version = self::detectVersion($basePath);
-        $specClass = self::getSpec($version);
-        
-        $info = [
-            'version' => $version,
-            'version_string' => $specClass ? $specClass::VERSION : 'Unknown',
-            'detected' => true,
-            'spec_available' => $specClass !== null
-        ];
-        
-        if ($specClass) {
-            $info['domains'] = $specClass::getDomains();
-            $info['categories'] = $specClass::getCategories();
-            $info['support_files'] = $specClass::getSupportFiles();
-        }
-        
-        return $info;
-    }
-    
-    /**
-     * Scan directory with version-aware structure
-     */
-    public static function scanWithVersion($basePath, $version = null) {
-        if ($version === null) {
-            $version = self::detectVersion($basePath);
-        }
-        
-        $specClass = self::getSpec($version);
-        if (!$specClass) {
-            throw new Exception("Unsupported SIMA version: $version");
-        }
-        
-        $tree = [];
-        $domains = $specClass::getDomains();
-        $categories = $specClass::getCategories();
-        
-        foreach ($domains as $domain) {
-            $domainPath = $basePath . '/' . $domain;
-            
-            if (!is_dir($domainPath)) {
-                continue;
-            }
-            
-            $tree[$domain] = [
-                'total_files' => 0,
-                'categories' => []
-            ];
-            
-            // Scan for files in domain
-            if (isset($categories[$domain])) {
-                foreach ($categories[$domain] as $category) {
-                    $categoryPath = $domainPath . '/' . $category;
-                    
-                    if (is_dir($categoryPath)) {
-                        $files = glob($categoryPath . '/*.md');
-                    } else {
-                        // For v3, categories might be part of filename
-                        $files = glob($domainPath . '/*' . $category . '*.md');
-                    }
-                    
-                    if (!empty($files)) {
-                        $tree[$domain]['categories'][$category] = [
-                            'file_count' => count($files),
-                            'files' => []
-                        ];
-                        
-                        foreach ($files as $file) {
-                            $relativePath = str_replace($basePath . '/', '', $file);
-                            $tree[$domain]['categories'][$category]['files'][] = [
-                                'filename' => basename($file),
-                                'relative_path' => $relativePath
-                            ];
-                            $tree[$domain]['total_files']++;
-                        }
-                    }
-                }
-            } else {
-                // Scan all files in domain directly
-                $files = glob($domainPath . '/*.md');
-                if (!empty($files)) {
-                    $tree[$domain]['categories']['root'] = [
-                        'file_count' => count($files),
-                        'files' => []
-                    ];
-                    
-                    foreach ($files as $file) {
-                        $relativePath = str_replace($basePath . '/', '', $file);
-                        $tree[$domain]['categories']['root']['files'][] = [
-                            'filename' => basename($file),
-                            'relative_path' => $relativePath
-                        ];
-                        $tree[$domain]['total_files']++;
-                    }
-                }
-            }
-        }
-        
-        return $tree;
     }
 }
