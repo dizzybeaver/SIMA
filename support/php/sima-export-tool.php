@@ -3,10 +3,18 @@
  * sima-export-tool.php
  * 
  * SIMA Knowledge Export Tool - Version-Aware
- * Version: 3.0.0
- * Date: 2025-11-21
+ * Version: 4.0.0
+ * Date: 2025-11-22
+ * 
+ * MODIFIED: Uses new comprehensive scanner
+ * - Scans ALL directories (context, docs, support, etc.)
+ * - Finds ALL .md files recursively
+ * - No spec-based filtering
+ * - Maintains version conversion capability
  * 
  * PHP backend only - JavaScript in sima-export.js
+ * 
+ * CRITICAL: Stays under 350 lines
  */
 
 require_once __DIR__ . '/sima/support/php/sima-common.php';
@@ -50,13 +58,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $directory = $_POST['directory'] ?? SIMA_ROOT;
             $validatedDir = validateDirectory($directory);
             
+            // Get version info
             $versionInfo = SIMAVersionUtils::getVersionInfo($validatedDir);
+            
+            // Use comprehensive scanner (includes ALL directories)
             $tree = SIMAVersionUtils::scanWithVersion($validatedDir, $versionInfo['version']);
+            
+            // Get statistics
+            $stats = SIMAVersionUtils::getStats($validatedDir, $versionInfo['version']);
             
             sendJsonResponse(true, [
                 'tree' => $tree,
                 'base_path' => $validatedDir,
-                'version_info' => $versionInfo
+                'version_info' => $versionInfo,
+                'stats' => $stats
             ]);
         } catch (Exception $e) {
             sendJsonResponse(false, [], $e->getMessage());
@@ -74,48 +89,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sourceVersion = $_POST['source_version'] ?? null;
             $targetVersion = $_POST['target_version'] ?? null;
             
+            // Auto-detect source version if needed
             if (!$sourceVersion || $sourceVersion === 'auto') {
                 $versionInfo = SIMAVersionUtils::getVersionInfo($validatedBase);
                 $sourceVersion = $versionInfo['version'];
             }
             
-            if (!$targetVersion) {
+            // Default target to source if not specified
+            if (!$targetVersion || $targetVersion === 'auto') {
                 $targetVersion = $sourceVersion;
             }
             
+            // Validate we have files to export
+            if (empty($selectedPaths)) {
+                throw new Exception("No files selected for export");
+            }
+            
+            // Build selected files array
             $selectedFiles = [];
             foreach ($selectedPaths as $path) {
                 $fullPath = $validatedBase . '/' . $path;
-                if (file_exists($fullPath)) {
-                    $content = file_get_contents($fullPath);
-                    
-                    // Apply version conversion if needed
-                    if ($sourceVersion !== $targetVersion && 
-                        SIMAVersionUtils::canConvert($sourceVersion, $targetVersion)) {
-                        $content = SIMAVersionUtils::convertMetadata($content, $sourceVersion, $targetVersion);
-                        $path = SIMAVersionUtils::convertPath($path, $sourceVersion, $targetVersion);
-                        $filename = SIMAVersionUtils::convertFilename(basename($path), $sourceVersion, $targetVersion);
-                    } else {
-                        $filename = basename($path);
-                    }
-                    
-                    $metadata = extractFileMetadata($fullPath);
-                    $selectedFiles[] = [
-                        'path' => $fullPath,
-                        'relative_path' => $path,
-                        'filename' => $filename,
-                        'ref_id' => $metadata['ref_id'],
-                        'category' => basename(dirname($path)),
-                        'size' => strlen($content),
-                        'checksum' => md5($content),
-                        'content' => $content,
-                        'converted' => $sourceVersion !== $targetVersion
-                    ];
+                
+                if (!file_exists($fullPath)) {
+                    error_log("Warning: File not found: {$fullPath}");
+                    continue;
                 }
+                
+                $content = file_get_contents($fullPath);
+                
+                // Apply version conversion if needed
+                $convertedPath = $path;
+                $convertedFilename = basename($path);
+                $wasConverted = false;
+                
+                if ($sourceVersion !== $targetVersion && 
+                    SIMAVersionUtils::canConvert($sourceVersion, $targetVersion)) {
+                    
+                    $content = SIMAVersionUtils::convertMetadata(
+                        $content, 
+                        $sourceVersion, 
+                        $targetVersion
+                    );
+                    
+                    $convertedPath = SIMAVersionUtils::convertPath(
+                        $path, 
+                        $sourceVersion, 
+                        $targetVersion
+                    );
+                    
+                    $convertedFilename = SIMAVersionUtils::convertFilename(
+                        basename($path), 
+                        $sourceVersion, 
+                        $targetVersion
+                    );
+                    
+                    $wasConverted = true;
+                }
+                
+                // Extract metadata
+                $metadata = extractFileMetadata($fullPath);
+                
+                $selectedFiles[] = [
+                    'path' => $fullPath,
+                    'relative_path' => $convertedPath,
+                    'original_path' => $path,
+                    'filename' => $convertedFilename,
+                    'ref_id' => $metadata['ref_id'],
+                    'category' => $metadata['category'] ?? basename(dirname($path)),
+                    'size' => strlen($content),
+                    'checksum' => md5($content),
+                    'content' => $content,
+                    'converted' => $wasConverted,
+                    'sima_version' => $targetVersion
+                ];
             }
             
             if (empty($selectedFiles)) {
-                throw new Exception("No valid files selected");
+                throw new Exception("No valid files to export");
             }
             
             // Create export directory
@@ -124,125 +174,155 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mkdir($exportPath, 0755, true);
             
             // Generate manifest
-            $manifestContent = generateManifest($archiveName, $description, $selectedFiles);
+            $manifestContent = generateManifest(
+                $archiveName, 
+                $description, 
+                $selectedFiles,
+                $sourceVersion,
+                $targetVersion
+            );
             file_put_contents($exportPath . '/manifest.yaml', $manifestContent);
             
             // Generate import instructions
-            $instructionsContent = generateImportInstructions($archiveName, $selectedFiles);
+            $instructionsContent = generateImportInstructions(
+                $archiveName, 
+                $selectedFiles,
+                $sourceVersion,
+                $targetVersion
+            );
             file_put_contents($exportPath . '/import-instructions.md', $instructionsContent);
             
             // Create knowledge base ZIP
             $zipPath = $exportPath . '/knowledge-base.zip';
-            createArchiveZip($selectedFiles, $zipPath, $archiveName);
+            $zip = new ZipArchive();
             
-            // Create final archive
-            $finalZipPath = $exportPath . '/SIMA-Archive-' . $archiveName . '-' . date('Y-m-d') . '.zip';
-            $finalZip = new ZipArchive();
-            if ($finalZip->open($finalZipPath, ZipArchive::CREATE) !== true) {
-                throw new Exception("Cannot create final archive");
+            if ($zip->open($zipPath, ZipArchive::CREATE) !== true) {
+                throw new Exception("Could not create ZIP file");
             }
+            
+            foreach ($selectedFiles as $file) {
+                $zip->addFromString($file['relative_path'], $file['content']);
+            }
+            
+            $zip->close();
+            
+            // Create final archive with all export files
+            $finalZipPath = $exportPath . '/' . $archiveName . '.zip';
+            $finalZip = new ZipArchive();
+            
+            if ($finalZip->open($finalZipPath, ZipArchive::CREATE) !== true) {
+                throw new Exception("Could not create final archive");
+            }
+            
             $finalZip->addFile($exportPath . '/manifest.yaml', 'manifest.yaml');
             $finalZip->addFile($exportPath . '/import-instructions.md', 'import-instructions.md');
             $finalZip->addFile($zipPath, 'knowledge-base.zip');
             $finalZip->close();
             
             sendJsonResponse(true, [
-                'download_url' => '/sima-exports/' . $exportId . '/' . basename($finalZipPath),
-                'file_count' => count($selectedFiles)
+                'archive_path' => $finalZipPath,
+                'archive_name' => $archiveName . '.zip',
+                'file_count' => count($selectedFiles),
+                'converted_count' => count(array_filter($selectedFiles, fn($f) => $f['converted'])),
+                'source_version' => $sourceVersion,
+                'target_version' => $targetVersion,
+                'download_url' => '/exports/' . $exportId . '/' . $archiveName . '.zip'
             ]);
             
         } catch (Exception $e) {
             sendJsonResponse(false, [], $e->getMessage());
         }
     }
+    
+    exit;
+}
+
+/**
+ * Generate manifest.yaml
+ * MODIFIED: Include version info per file
+ */
+function generateManifest($archiveName, $description, $selectedFiles, $sourceVersion, $targetVersion) {
+    $manifest = [
+        'archive' => [
+            'name' => $archiveName,
+            'created' => date('Y-m-d H:i:s'),
+            'description' => $description,
+            'source_version' => $sourceVersion,
+            'target_version' => $targetVersion,
+            'total_files' => count($selectedFiles),
+            'converted_files' => count(array_filter($selectedFiles, fn($f) => $f['converted']))
+        ],
+        'files' => []
+    ];
+    
+    foreach ($selectedFiles as $file) {
+        $manifest['files'][] = [
+            'filename' => $file['filename'],
+            'path' => $file['relative_path'],
+            'original_path' => $file['original_path'],
+            'ref_id' => $file['ref_id'],
+            'category' => $file['category'],
+            'size' => $file['size'],
+            'checksum' => $file['checksum'],
+            'converted' => $file['converted'],
+            'sima_version' => $file['sima_version']
+        ];
+    }
+    
+    $manifest['packages'] = [
+        [
+            'name' => 'knowledge-base.zip',
+            'type' => 'base',
+            'files' => count($selectedFiles)
+        ]
+    ];
+    
+    return arrayToYaml($manifest);
+}
+
+/**
+ * Generate import-instructions.md
+ * MODIFIED: Include conversion info
+ */
+function generateImportInstructions($archiveName, $selectedFiles, $sourceVersion, $targetVersion) {
+    $md = "# Import Instructions - {$archiveName}\n\n";
+    $md .= "**Archive:** {$archiveName}\n";
+    $md .= "**Created:** " . date('Y-m-d') . "\n";
+    $md .= "**Source SIMA Version:** {$sourceVersion}\n";
+    $md .= "**Target SIMA Version:** {$targetVersion}\n";
+    $md .= "**Total Files:** " . count($selectedFiles) . "\n";
+    $md .= "**Converted Files:** " . count(array_filter($selectedFiles, fn($f) => $f['converted'])) . "\n\n";
+    
+    // Group by directory
+    $grouped = [];
+    foreach ($selectedFiles as $file) {
+        $dir = dirname($file['relative_path']);
+        if (!isset($grouped[$dir])) {
+            $grouped[$dir] = [];
+        }
+        $grouped[$dir][] = $file;
+    }
+    
+    $md .= "## Installation State\n\n";
+    $md .= "### Selected for Install (" . count($selectedFiles) . " files)\n\n";
+    
+    foreach ($grouped as $dir => $files) {
+        $md .= "#### {$dir} (" . count($files) . " files)\n";
+        foreach ($files as $file) {
+            $status = $file['converted'] ? 'converted' : 'original';
+            $md .= "- [x] {$file['filename']} → {$file['relative_path']} ({$status})\n";
+        }
+        $md .= "\n";
+    }
+    
+    $md .= "## Import Process\n\n";
+    $md .= "1. Extract knowledge-base.zip\n";
+    $md .= "2. Use SIMA Import Tool to review files\n";
+    $md .= "3. Select target SIMA directory\n";
+    $md .= "4. Verify version compatibility\n";
+    $md .= "5. Import selected files\n\n";
+    
+    return $md;
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 SIMA Knowledge Export Tool</title>
-    <link rel="stylesheet" href="/sima/support/php/sima-styles.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🎯 SIMA Knowledge Export Tool</h1>
-            <p>Version-aware export with automatic conversion</p>
-        </header>
-        
-        <div class="section">
-            <h2>1. Source Configuration</h2>
-            <div class="form-group">
-                <label for="simaDirectory">SIMA Directory Path:</label>
-                <input type="text" id="simaDirectory" value="<?= SIMA_ROOT ?>" 
-                       placeholder="/path/to/sima" style="font-family: monospace;">
-                <small>Absolute path to SIMA installation</small>
-            </div>
-            <div class="form-group">
-                <label for="sourceVersion">Source Version:</label>
-                <select id="sourceVersion">
-                    <option value="auto">Auto-Detect</option>
-                    <option value="4.2">SIMA v4.2</option>
-                    <option value="4.1">SIMA v4.1</option>
-                    <option value="3.0">SIMA v3.0 (Neural Maps)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="targetVersion">Target Version:</label>
-                <select id="targetVersion">
-                    <option value="auto">Same as Source</option>
-                    <option value="4.2">SIMA v4.2</option>
-                    <option value="4.1">SIMA v4.1</option>
-                    <option value="3.0">SIMA v3.0 (Neural Maps)</option>
-                </select>
-                <small>Convert files to different version during export</small>
-            </div>
-            <button id="scan-btn" onclick="SIMAExport.loadKnowledgeTree()">
-                🔍 Scan Directory
-            </button>
-            <div id="detectedVersion" style="display: none; margin-top: 10px; padding: 10px; background: #e7f3ff; border-radius: 4px;"></div>
-        </div>
-        
-        <div class="section hidden" id="tree-section">
-            <h2>2. Select Files to Export</h2>
-            <div class="tree-controls">
-                <button onclick="SIMATree.expandAll()">➕ Expand All</button>
-                <button onclick="SIMATree.collapseAll()">➖ Collapse All</button>
-                <button onclick="SIMATree.selectAll()">☑️ Select All</button>
-                <button onclick="SIMATree.clearSelection()">⬜ Clear All</button>
-            </div>
-            <div class="tree-container" id="tree"></div>
-            <div class="selection-summary" id="summary"></div>
-        </div>
-        
-        <div class="section hidden" id="export-section">
-            <h2>3. Export Configuration</h2>
-            <div class="form-group">
-                <label for="archiveName">Archive Name:</label>
-                <input type="text" id="archiveName" value="SIMA-Export" placeholder="Archive name">
-            </div>
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea id="description" rows="3" placeholder="Describe the contents of this export..."></textarea>
-            </div>
-            <button id="export-btn" onclick="SIMAExport.exportFiles()">
-                💾 Create Export Package
-            </button>
-        </div>
-        
-        <div id="loading" style="display: none;">
-            <p>⏳ Processing...</p>
-        </div>
-        
-        <div id="error" class="error-box">
-            <p id="error-text"></p>
-        </div>
-    </div>
-    
-    <script src="/sima/support/php/sima-tree.js"></script>
-    <script src="/sima/support/php/sima-export.js"></script>
-</body>
-</html>
