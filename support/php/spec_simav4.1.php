@@ -1,259 +1,227 @@
 <?php
 /**
- * SIMAv4.1 Directory Specification
+ * spec_simav4.1.php
  * 
+ * SIMA v4.1 Structure Specification
  * Version: 4.1.0
  * Date: 2025-11-22
- * Purpose: Define expected directory structure for SIMAv4.1 installations
+ * Location: /support/php/
  * Base Directory: /simav4/
  * 
- * Key Difference from v4.2:
- * - Uses /entries/ instead of domain separation (/generic/, /languages/, /platforms/, /projects/)
- * - Has /integration/ directory
- * - Different context file organization
+ * Defines directory structure, index locations, and metadata format for SIMA v4.1
  */
 
-// CRITICAL: Base directory for v4.1 is /simav4/
-define('SIMA_BASE', '/simav4');
-
-// Core required directories for v4.1
-$required_directories = [
-    SIMA_BASE . '/context',
-    SIMA_BASE . '/docs',
-    SIMA_BASE . '/entries',
-    SIMA_BASE . '/entries/core',
-    SIMA_BASE . '/entries/gateways',
-    SIMA_BASE . '/entries/interfaces',
-    SIMA_BASE . '/entries/languages',
-    SIMA_BASE . '/entries/anti-patterns',
-    SIMA_BASE . '/entries/decisions',
-    SIMA_BASE . '/entries/lessons',
-    SIMA_BASE . '/integration',
-    SIMA_BASE . '/projects',
-    SIMA_BASE . '/support'
-];
-
-// Optional directories (may not exist in all installations)
-$optional_directories = [
-    SIMA_BASE . '/To_Be_Added',
-    SIMA_BASE . '/entries/platforms',
-    SIMA_BASE . '/docs/planning',
-    SIMA_BASE . '/docs/deployment'
-];
-
-// Required files in /context/
-$required_context_files = [
-    'MODE-SELECTOR.md',
-    'PROJECT-MODE-Context.md',
-    'DEBUG-MODE-Context.md',
-    'SESSION-START-Quick-Context.md',
-    'SIMA-LEARNING-SESSION-START-Quick-Context.md'
-];
-
-// Required core architecture files
-$required_core_files = [
-    '/entries/core/ARCH-SUGA_ Single Universal Gateway Architecture.md',
-    '/entries/core/ARCH-ZAPH_ Zero-Abstraction Path for Hot Operations.md',
-    '/entries/core/ARCH-LMMS_ Lambda Memory Management System.md',
-    '/entries/core/ARCH-DD_ Dispatch Dictionary Pattern.md'
-];
-
-// Required gateway pattern files
-$required_gateway_files = [
-    '/entries/gateways/GATE-01_Gateway-Layer-Structure.md',
-    '/entries/gateways/GATE-02_Lazy-Import-Pattern.md',
-    '/entries/gateways/GATE-03_Cross-Interface-Communication-Rule.md'
-];
-
-// Root required files
-$required_root_files = [
-    '/README.md',
-    '/LICENSE'
-];
-
-/**
- * Validation function
- * 
- * @param string $base_path Actual filesystem base path to check
- * @return array Validation results
- */
-function validate_simav4_1_structure($base_path) {
-    global $required_directories, $optional_directories;
-    global $required_context_files, $required_core_files;
-    global $required_gateway_files, $required_root_files;
+class SIMAv4_1_Spec {
+    const VERSION = '4.1.0';
+    const VERSION_SHORT = 'v4.1';
+    const BASE_DIR = '/simav4';
     
-    $results = [
-        'valid' => true,
-        'errors' => [],
-        'warnings' => [],
-        'info' => []
-    ];
+    /**
+     * Get main directories (no domain separation in v4.1)
+     */
+    public static function getMainDirectories() {
+        return ['context', 'docs', 'entries', 'integration', 'projects', 'support'];
+    }
     
-    // Check base directory exists
-    if (!is_dir($base_path . SIMA_BASE)) {
-        $results['valid'] = false;
-        $results['errors'][] = "Base directory not found: " . $base_path . SIMA_BASE;
+    /**
+     * Get category directories under /entries/
+     */
+    public static function getCategories() {
+        return [
+            'core',
+            'gateways',
+            'interfaces',
+            'languages',
+            'anti-patterns',
+            'decisions', 
+            'lessons',
+            'platforms'  // Optional in v4.1
+        ];
+    }
+    
+    /**
+     * Get index file naming pattern
+     */
+    public static function getIndexPattern($category) {
+        $patterns = [
+            'core' => 'Core-Architecture-Quick-Index.md',
+            'gateways' => 'Gateway-Quick-Index.md',
+            'interfaces' => 'Interface-Quick-Index.md',
+            'languages' => 'Python-Language-Patterns-Quick-Index.md',
+            'anti-patterns' => 'Anti-Patterns-Master-Index.md',
+            'decisions' => 'Decisions-Master-Index.md',
+            'lessons' => 'Lessons-Master-Index.md',
+            'platforms' => 'Platforms-Master-Index.md'
+        ];
+        
+        return $patterns[$category] ?? ucfirst($category) . '-Index.md';
+    }
+    
+    /**
+     * Get metadata field mapping
+     */
+    public static function getMetadataFields() {
+        return [
+            'version' => '**Version:**',
+            'date' => '**Date:**',
+            'purpose' => '**Purpose:**',
+            'type' => '**Type:**',
+            'category' => '**Category:**',
+            'ref_id' => '**REF-ID:**'
+        ];
+    }
+    
+    /**
+     * Get file naming patterns
+     */
+    public static function getFileNamingPatterns() {
+        return [
+            'lesson' => 'LESS-{number}.md',
+            'decision' => 'DEC-{number}.md',
+            'anti-pattern' => 'AP-{number}.md',
+            'wisdom' => 'WISD-{number}.md',
+            'bug' => 'BUG-{number}.md',
+            'architecture' => 'ARCH-{name}.md',
+            'interface' => 'INT-{number}.md',
+            'gateway' => 'GATE-{number}.md'
+        ];
+    }
+    
+    /**
+     * Get required directories
+     */
+    public static function getRequiredDirectories() {
+        return [
+            self::BASE_DIR . '/context',
+            self::BASE_DIR . '/docs',
+            self::BASE_DIR . '/entries',
+            self::BASE_DIR . '/entries/core',
+            self::BASE_DIR . '/entries/gateways',
+            self::BASE_DIR . '/entries/interfaces',
+            self::BASE_DIR . '/entries/languages',
+            self::BASE_DIR . '/entries/anti-patterns',
+            self::BASE_DIR . '/entries/decisions',
+            self::BASE_DIR . '/entries/lessons',
+            self::BASE_DIR . '/integration',
+            self::BASE_DIR . '/projects',
+            self::BASE_DIR . '/support'
+        ];
+    }
+    
+    /**
+     * Get expected file counts
+     */
+    public static function getExpectedCounts() {
+        return [
+            'context' => ['min' => 5, 'max' => 15],
+            'docs' => ['min' => 15, 'max' => 25],
+            'entries' => ['min' => 200, 'max' => 250],
+            'integration' => ['min' => 3, 'max' => 10],
+            'projects' => ['min' => 20, 'max' => 50],
+            'support' => ['min' => 30, 'max' => 50],
+            'total' => ['min' => 280, 'max' => 350]
+        ];
+    }
+    
+    /**
+     * Get key differences from v4.2
+     */
+    public static function getDifferencesFromV42() {
+        return [
+            'base_dir' => 'Uses /simav4/ instead of /sima/',
+            'structure' => 'Uses /entries/ instead of domain separation',
+            'domains' => 'No /generic/, /languages/, /platforms/, /projects/ domains',
+            'integration' => 'Has /integration/ directory (v4.2 integrates into docs)',
+            'context' => 'Flat /context/ directory (v4.2 has subdirectories)'
+        ];
+    }
+    
+    /**
+     * Validate directory structure
+     */
+    public static function validate($base_path = '') {
+        $results = [
+            'valid' => true,
+            'errors' => [],
+            'warnings' => [],
+            'version' => self::VERSION
+        ];
+        
+        if (empty($base_path)) {
+            $base_path = $_SERVER['DOCUMENT_ROOT'] ?? '';
+        }
+        
+        // Check base directory
+        $full_base = $base_path . self::BASE_DIR;
+        if (!is_dir($full_base)) {
+            $results['valid'] = false;
+            $results['errors'][] = 'Base directory not found: ' . self::BASE_DIR;
+            return $results;
+        }
+        
+        // Check required directories
+        foreach (self::getRequiredDirectories() as $dir) {
+            $full_path = $base_path . $dir;
+            if (!is_dir($full_path)) {
+                $results['valid'] = false;
+                $results['errors'][] = 'Required directory missing: ' . $dir;
+            }
+        }
+        
+        // Check for required files
+        $required_files = [
+            '/README.md',
+            '/LICENSE',
+            '/context/MODE-SELECTOR.md',
+            '/context/PROJECT-MODE-Context.md',
+            '/entries/core/ARCH-SUGA_ Single Universal Gateway Architecture.md'
+        ];
+        
+        foreach ($required_files as $file) {
+            $full_path = $base_path . self::BASE_DIR . $file;
+            if (!file_exists($full_path)) {
+                $results['valid'] = false;
+                $results['errors'][] = 'Required file missing: ' . $file;
+            }
+        }
+        
         return $results;
     }
     
-    // Check required directories
-    foreach ($required_directories as $dir) {
-        $full_path = $base_path . $dir;
-        if (!is_dir($full_path)) {
-            $results['valid'] = false;
-            $results['errors'][] = "Required directory missing: $dir";
-        }
+    /**
+     * Get specification as JSON
+     */
+    public static function getSpecJSON() {
+        return json_encode([
+            'version' => self::VERSION,
+            'base_dir' => self::BASE_DIR,
+            'main_directories' => self::getMainDirectories(),
+            'categories' => self::getCategories(),
+            'required_directories' => self::getRequiredDirectories(),
+            'expected_counts' => self::getExpectedCounts(),
+            'metadata_fields' => self::getMetadataFields(),
+            'file_naming_patterns' => self::getFileNamingPatterns(),
+            'differences_from_v42' => self::getDifferencesFromV42()
+        ], JSON_PRETTY_PRINT);
     }
-    
-    // Check optional directories (warnings only)
-    foreach ($optional_directories as $dir) {
-        $full_path = $base_path . $dir;
-        if (!is_dir($full_path)) {
-            $results['warnings'][] = "Optional directory missing: $dir";
-        }
-    }
-    
-    // Check required context files
-    foreach ($required_context_files as $file) {
-        $full_path = $base_path . SIMA_BASE . '/context/' . $file;
-        if (!file_exists($full_path)) {
-            $results['valid'] = false;
-            $results['errors'][] = "Required context file missing: /context/$file";
-        }
-    }
-    
-    // Check required core files
-    foreach ($required_core_files as $file) {
-        $full_path = $base_path . SIMA_BASE . $file;
-        if (!file_exists($full_path)) {
-            $results['valid'] = false;
-            $results['errors'][] = "Required core file missing: $file";
-        }
-    }
-    
-    // Check required gateway files
-    foreach ($required_gateway_files as $file) {
-        $full_path = $base_path . SIMA_BASE . $file;
-        if (!file_exists($full_path)) {
-            $results['valid'] = false;
-            $results['errors'][] = "Required gateway file missing: $file";
-        }
-    }
-    
-    // Check required root files
-    foreach ($required_root_files as $file) {
-        $full_path = $base_path . SIMA_BASE . $file;
-        if (!file_exists($full_path)) {
-            $results['valid'] = false;
-            $results['errors'][] = "Required root file missing: $file";
-        }
-    }
-    
-    // Add info about structure
-    $results['info'][] = "SIMAv4.1 uses /entries/ for knowledge organization";
-    $results['info'][] = "Base directory: " . SIMA_BASE;
-    $results['info'][] = "Key difference from v4.2: No domain separation (generic/languages/platforms)";
-    
-    return $results;
 }
 
-/**
- * Get expected file count ranges for v4.1
- * 
- * @return array Expected counts by category
- */
-function get_simav4_1_file_counts() {
-    return [
-        'context' => ['min' => 5, 'max' => 15, 'note' => 'Mode files and custom instructions'],
-        'docs' => ['min' => 15, 'max' => 25, 'note' => 'Documentation including planning and deployment'],
-        'entries' => ['min' => 200, 'max' => 250, 'note' => 'All knowledge entries (core, patterns, decisions, etc.)'],
-        'integration' => ['min' => 3, 'max' => 10, 'note' => 'E2E workflow examples'],
-        'projects' => ['min' => 20, 'max' => 50, 'note' => 'Project-specific configurations and templates'],
-        'support' => ['min' => 30, 'max' => 50, 'note' => 'Tools, checklists, workflows'],
-        'total' => ['min' => 280, 'max' => 350, 'note' => 'Total files in installation']
-    ];
-}
+// Handle different request types
+header('Content-Type: application/json');
 
-/**
- * Display structure information
- */
-function display_simav4_1_info() {
-    $counts = get_simav4_1_file_counts();
-    
-    echo "<h2>SIMAv4.1 Directory Structure Specification</h2>\n";
-    echo "<p><strong>Base Directory:</strong> /simav4/</p>\n";
-    echo "<p><strong>Version:</strong> 4.1.0</p>\n";
-    
-    echo "<h3>Key Characteristics</h3>\n";
-    echo "<ul>\n";
-    echo "<li>Uses <code>/entries/</code> for all knowledge organization</li>\n";
-    echo "<li>Has <code>/integration/</code> directory for E2E workflows</li>\n";
-    echo "<li>No domain separation (unlike v4.2 which has /generic/, /languages/, /platforms/)</li>\n";
-    echo "<li>Context files organized in flat /context/ directory</li>\n";
-    echo "</ul>\n";
-    
-    echo "<h3>Expected File Counts</h3>\n";
-    echo "<table border='1' cellpadding='5'>\n";
-    echo "<tr><th>Category</th><th>Min</th><th>Max</th><th>Note</th></tr>\n";
-    
-    foreach ($counts as $category => $range) {
-        echo "<tr>";
-        echo "<td><strong>$category</strong></td>";
-        echo "<td>{$range['min']}</td>";
-        echo "<td>{$range['max']}</td>";
-        echo "<td>{$range['note']}</td>";
-        echo "</tr>\n";
+if (isset($_GET['action'])) {
+    switch ($_GET['action']) {
+        case 'validate':
+            $base_path = $_GET['base_path'] ?? '';
+            echo json_encode(SIMAv4_1_Spec::validate($base_path));
+            break;
+            
+        case 'spec':
+        default:
+            echo SIMAv4_1_Spec::getSpecJSON();
+            break;
     }
-    
-    echo "</table>\n";
-    
-    echo "<h3>Required Directories</h3>\n";
-    global $required_directories;
-    echo "<ul>\n";
-    foreach ($required_directories as $dir) {
-        echo "<li><code>$dir</code></li>\n";
-    }
-    echo "</ul>\n";
+} else {
+    // Default: return full spec
+    echo SIMAv4_1_Spec::getSpecJSON();
 }
-
-// If executed directly, display info
-if (php_sapi_name() === 'cli' || !empty($_GET['info'])) {
-    display_simav4_1_info();
-}
-
-// If validation requested
-if (!empty($_GET['validate'])) {
-    $base_path = $_GET['base_path'] ?? $_SERVER['DOCUMENT_ROOT'];
-    $results = validate_simav4_1_structure($base_path);
-    
-    echo "<h2>Validation Results</h2>\n";
-    echo "<p><strong>Valid:</strong> " . ($results['valid'] ? 'YES' : 'NO') . "</p>\n";
-    
-    if (!empty($results['errors'])) {
-        echo "<h3>Errors</h3>\n";
-        echo "<ul>\n";
-        foreach ($results['errors'] as $error) {
-            echo "<li style='color:red'>$error</li>\n";
-        }
-        echo "</ul>\n";
-    }
-    
-    if (!empty($results['warnings'])) {
-        echo "<h3>Warnings</h3>\n";
-        echo "<ul>\n";
-        foreach ($results['warnings'] as $warning) {
-            echo "<li style='color:orange'>$warning</li>\n";
-        }
-        echo "</ul>\n";
-    }
-    
-    if (!empty($results['info'])) {
-        echo "<h3>Information</h3>\n";
-        echo "<ul>\n";
-        foreach ($results['info'] as $info) {
-            echo "<li>$info</li>\n";
-        }
-        echo "</ul>\n";
-    }
-}
-?>
