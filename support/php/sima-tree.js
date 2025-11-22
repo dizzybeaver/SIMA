@@ -14,6 +14,54 @@ const SIMATree = {
     storageKeyPrefix: 'sima_tree_state_',
     
     /**
+     * Render knowledge tree from data structure
+     * ADDED: Shared renderer for all SIMA tools
+     */
+    renderKnowledgeTree(container, treeData, options = {}) {
+        const {
+            onFileToggle = null,
+            onSelectionChange = null,
+            domainExpanded = true,
+            categoryExpanded = false
+        } = options;
+        
+        container.innerHTML = '';
+        
+        for (const [domainName, domain] of Object.entries(treeData)) {
+            if (domain.total_files === 0) continue;
+            
+            // Create domain folder
+            const domainNode = this.createTreeNode('folder', domainName, container, {
+                path: domainName,
+                startExpanded: domainExpanded
+            });
+            const domainChildren = domainNode.querySelector('.tree-children');
+            
+            if (domain.categories) {
+                for (const [catName, category] of Object.entries(domain.categories)) {
+                    // Create category folder
+                    const catNode = this.createTreeNode('folder', `${catName} (${category.file_count})`, domainChildren, {
+                        path: `${domainName}/${catName}`,
+                        startExpanded: categoryExpanded
+                    });
+                    const catChildren = catNode.querySelector('.tree-children');
+                    
+                    // Add files
+                    category.files.forEach(file => {
+                        this.createTreeNode('file', file.filename, catChildren, {
+                            path: file.relative_path,
+                            onToggleFile: (path, checked) => {
+                                if (onFileToggle) onFileToggle(path, checked);
+                                if (onSelectionChange) onSelectionChange();
+                            }
+                        });
+                    });
+                }
+            }
+        }
+    },
+    
+    /**
      * Create a tree node programmatically
      * ADDED: Helper for building trees in JavaScript
      */
