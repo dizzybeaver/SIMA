@@ -58,6 +58,10 @@ const SIMAExport = {
                 }
                 
                 this.renderTree();
+                
+                // Show sections
+                document.getElementById('tree-section').classList.remove('hidden');
+                document.getElementById('export-section').classList.remove('hidden');
             } else {
                 document.getElementById('error-text').textContent = 'Error: ' + data.error;
                 document.getElementById('error').classList.add('active');
@@ -83,6 +87,8 @@ const SIMAExport = {
             domainExpanded: true,
             categoryExpanded: false
         });
+        
+        this.updateSelectionSummary();
     },
     
     /**
@@ -94,38 +100,46 @@ const SIMAExport = {
         } else {
             this.selectedFiles.delete(path);
         }
-        this.updateSelectionSummary();
     },
     
     /**
      * Update selection summary
      */
     updateSelectionSummary() {
-        document.getElementById('selectionSummary').textContent = `Selected: ${this.selectedFiles.size}`;
-        document.getElementById('exportButton').disabled = this.selectedFiles.size === 0;
+        // Count total files in tree
+        let totalFiles = 0;
+        for (const domain of Object.values(this.knowledgeTree)) {
+            totalFiles += domain.total_files || 0;
+        }
+        
+        const selected = this.selectedFiles.size;
+        const summary = document.getElementById('summary');
+        summary.innerHTML = `
+            <strong>Selection:</strong> ${selected} of ${totalFiles} files selected for export
+            ${selected === 0 ? '<br><span style="color: #dc3545;">⚠️ No files selected</span>' : ''}
+        `;
     },
     
     /**
-     * Create export archive
+     * Export selected files
      */
-    createExport() {
-        const archiveName = document.getElementById('exportName').value.trim();
+    exportFiles() {
+        if (this.selectedFiles.size === 0) {
+            alert('Please select at least one file to export');
+            return;
+        }
+        
+        const archiveName = document.getElementById('archiveName').value.trim();
         const description = document.getElementById('description').value.trim();
-        const sourceVersion = document.getElementById('sourceVersion').value;
-        const targetVersion = document.getElementById('targetVersion').value;
         
         if (!archiveName) {
             alert('Please enter an archive name');
             return;
         }
         
-        if (this.selectedFiles.size === 0) {
-            alert('Please select at least one file');
-            return;
-        }
-        
-        document.getElementById('exportButton').disabled = true;
-        document.getElementById('exportButton').textContent = 'Creating...';
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('error').classList.remove('active');
+        document.getElementById('export-btn').disabled = true;
         
         const formData = new FormData();
         formData.append('action', 'export');
@@ -134,11 +148,15 @@ const SIMAExport = {
         formData.append('description', description);
         formData.append('selected_files', JSON.stringify(Array.from(this.selectedFiles)));
         
-        // Send version parameters
+        // Get version settings
+        let sourceVersion = document.getElementById('sourceVersion').value;
+        let targetVersion = document.getElementById('targetVersion').value;
+        
         if (sourceVersion !== 'auto') {
             formData.append('source_version', sourceVersion);
         }
-        if (targetVersion !== 'same') {
+        
+        if (targetVersion !== 'auto') {
             formData.append('target_version', targetVersion);
         }
         
@@ -148,31 +166,36 @@ const SIMAExport = {
         })
         .then(r => r.json())
         .then(data => {
-            document.getElementById('exportButton').disabled = false;
-            document.getElementById('exportButton').textContent = '📦 Create Archive';
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('export-btn').disabled = false;
             
             if (data.success) {
-                document.getElementById('success-text').textContent = 
-                    `Successfully exported ${data.file_count} files.`;
-                document.getElementById('download-link').href = data.download_url;
-                document.getElementById('success').classList.add('active');
+                // Show success message
+                const successMsg = document.createElement('div');
+                successMsg.className = 'section';
+                successMsg.innerHTML = `
+                    <h2>✅ Export Complete</h2>
+                    <p>Successfully exported ${data.file_count} files.</p>
+                    <a href="${data.download_url}" class="button" download>
+                        ⬇️ Download Export Package
+                    </a>
+                `;
+                
+                const exportSection = document.getElementById('export-section');
+                exportSection.insertAdjacentElement('afterend', successMsg);
+                
+                // Trigger download
+                window.location.href = data.download_url;
             } else {
-                alert('Error: ' + data.error);
+                document.getElementById('error-text').textContent = 'Error: ' + data.error;
+                document.getElementById('error').classList.add('active');
             }
         })
         .catch(err => {
-            document.getElementById('exportButton').disabled = false;
-            document.getElementById('exportButton').textContent = '📦 Create Archive';
-            alert('Error: ' + err.message);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('export-btn').disabled = false;
+            document.getElementById('error-text').textContent = 'Error: ' + err.message;
+            document.getElementById('error').classList.add('active');
         });
     }
 };
-
-// Global convenience functions for onclick handlers
-function loadKnowledgeTree() {
-    SIMAExport.loadKnowledgeTree();
-}
-
-function createExport() {
-    SIMAExport.createExport();
-}
