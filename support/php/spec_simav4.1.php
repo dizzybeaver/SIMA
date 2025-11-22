@@ -2,7 +2,7 @@
 /**
  * spec_simav4.1.php
  * 
- * SIMA v4.1 Structure Specification  
+ * SIMA v4.1 Structure Specification
  * Version: 4.1.0
  * Date: 2025-11-22
  * Base Directory: /simav4/
@@ -11,19 +11,38 @@
  */
 
 class SIMAv4_1_Spec {
-    const VERSION = '4.1.0';
-    const VERSION_SHORT = 'v4.1';
+    const VERSION = 'SIMA v4.1.0';
+    const VERSION_NUMBER = '4.1';
     const BASE_DIR = '/simav4';
     
     /**
-     * Get main directories (no domain separation in v4.1)
+     * Detect if directory is v4.1
      */
-    public static function getMainDirectories() {
-        return ['context', 'docs', 'entries', 'integration', 'projects', 'support'];
+    public static function detectVersion($basePath) {
+        // v4.1 has /entries/ structure
+        $has_entries = is_dir($basePath . self::BASE_DIR . '/entries/core') && 
+                       is_dir($basePath . self::BASE_DIR . '/entries/gateways');
+        
+        // v4.1 does NOT have domain separation
+        $no_domains = !is_dir($basePath . self::BASE_DIR . '/generic') &&
+                      !is_dir($basePath . self::BASE_DIR . '/languages');
+        
+        // v4.1 has integration directory
+        $has_integration = is_dir($basePath . self::BASE_DIR . '/integration');
+        
+        return $has_entries && $no_domains && $has_integration;
     }
     
     /**
-     * Get entry categories (all under /entries/)
+     * Get domains - v4.1 has no domain separation
+     * Returns main directories instead
+     */
+    public static function getDomains() {
+        return ['entries'];  // Only one "domain" in v4.1
+    }
+    
+    /**
+     * Get categories under /entries/
      */
     public static function getCategories() {
         return [
@@ -39,7 +58,20 @@ class SIMAv4_1_Spec {
     }
     
     /**
-     * Get index file patterns
+     * Get support files/directories
+     */
+    public static function getSupportFiles() {
+        return [
+            'context',
+            'docs',
+            'integration',
+            'projects',
+            'support'
+        ];
+    }
+    
+    /**
+     * Get index patterns for categories
      */
     public static function getIndexPattern($category) {
         $patterns = [
@@ -87,11 +119,10 @@ class SIMAv4_1_Spec {
     }
     
     /**
-     * Get required directories for v4.1
+     * Get required directories
      */
     public static function getRequiredDirectories() {
         return [
-            self::BASE_DIR,
             self::BASE_DIR . '/context',
             self::BASE_DIR . '/docs',
             self::BASE_DIR . '/entries',
@@ -109,78 +140,70 @@ class SIMAv4_1_Spec {
     }
     
     /**
-     * Get the directory structure for category
+     * Get master indexes
+     */
+    public static function getMasterIndexes() {
+        return [
+            'root' => 'Master-Index-of-Indexes.md',
+            'entries' => 'entries/Index-of-Indexes.md'
+        ];
+    }
+    
+    /**
+     * Get category path
      */
     public static function getCategoryPath($category) {
         return self::BASE_DIR . '/entries/' . $category;
     }
     
     /**
-     * Check if this is a v4.1 installation
+     * Get conversion rules to v4.2
      */
-    public static function isV41Installation($root_path = '') {
-        if (empty($root_path)) {
-            $root_path = $_SERVER['DOCUMENT_ROOT'] ?? '';
-        }
-        
-        $markers = [
-            self::BASE_DIR . '/entries/core',
-            self::BASE_DIR . '/entries/gateways',
-            self::BASE_DIR . '/integration'
+    public static function getConversionToV42() {
+        return [
+            'directory_mapping' => [
+                'entries/core' => 'generic/core',
+                'entries/anti-patterns' => 'generic/anti-patterns',
+                'entries/decisions' => 'generic/decisions',
+                'entries/lessons' => 'generic/lessons',
+                'entries/gateways' => 'generic/core',
+                'entries/interfaces' => 'generic/core',
+                'entries/languages' => 'languages/python',
+                'entries/platforms' => 'platforms/aws'
+            ],
+            'metadata_transform' => [
+                'add_fields' => [
+                    '**Domain:**'
+                ],
+                'remove_fields' => []
+            ],
+            'filename_transform' => [],
+            'ref_id_mapping' => []
         ];
-        
-        foreach ($markers as $marker) {
-            if (!is_dir($root_path . $marker)) {
-                return false;
-            }
-        }
-        
-        // v4.1 should NOT have domain separation
-        $v42_markers = [
-            self::BASE_DIR . '/generic',
-            self::BASE_DIR . '/languages',
-            self::BASE_DIR . '/platforms'
-        ];
-        
-        foreach ($v42_markers as $marker) {
-            if (is_dir($root_path . $marker)) {
-                return false; // Has v4.2 structure
-            }
-        }
-        
-        return true;
     }
     
     /**
-     * Get differences from v4.2
+     * Get conversion rules from v4.2
      */
-    public static function getDifferencesFromV42() {
+    public static function getConversionFromV42() {
         return [
-            'base_dir' => 'Uses /simav4/ not /sima/',
-            'structure' => 'Uses /entries/ not domain separation',
-            'domains' => 'No /generic/, /languages/, /platforms/, /projects/ domains',
-            'integration' => 'Has /integration/ directory',
-            'context' => 'Flat /context/ directory structure'
+            'directory_mapping' => [
+                'generic/core' => 'entries/core',
+                'generic/anti-patterns' => 'entries/anti-patterns',
+                'generic/decisions' => 'entries/decisions',
+                'generic/lessons' => 'entries/lessons',
+                'languages/python' => 'entries/languages',
+                'platforms/aws' => 'entries/platforms'
+            ],
+            'metadata_transform' => [
+                'add_fields' => [],
+                'remove_fields' => ['**Domain:**']
+            ],
+            'filename_transform' => [],
+            'ref_id_mapping' => []
         ];
     }
 }
 
-// Return spec as JSON for export tool
-header('Content-Type: application/json');
-
-$spec = [
-    'version' => SIMAv4_1_Spec::VERSION,
-    'base_dir' => SIMAv4_1_Spec::BASE_DIR,
-    'main_directories' => SIMAv4_1_Spec::getMainDirectories(),
-    'categories' => SIMAv4_1_Spec::getCategories(),
-    'index_patterns' => array_map(
-        [SIMAv4_1_Spec::class, 'getIndexPattern'],
-        SIMAv4_1_Spec::getCategories()
-    ),
-    'metadata_fields' => SIMAv4_1_Spec::getMetadataFields(),
-    'file_naming' => SIMAv4_1_Spec::getFileNamingPatterns(),
-    'required_directories' => SIMAv4_1_Spec::getRequiredDirectories(),
-    'differences_from_v42' => SIMAv4_1_Spec::getDifferencesFromV42()
-];
-
-echo json_encode($spec, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+// No output - this is a class definition only
+// The version utils will call the methods
