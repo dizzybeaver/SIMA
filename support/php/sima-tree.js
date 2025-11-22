@@ -2,14 +2,80 @@
  * sima-tree.js
  * 
  * Shared JavaScript for SIMA collapsible tree functionality
- * Version: 1.0.0
- * Date: 2025-11-19
+ * Version: 1.1.0
+ * Date: 2025-11-21
  * Location: /support/php/
+ * 
+ * MODIFIED: Added createTreeNode helper for programmatic tree building
  */
 
 const SIMATree = {
     // State storage key prefix
     storageKeyPrefix: 'sima_tree_state_',
+    
+    /**
+     * Create a tree node programmatically
+     * ADDED: Helper for building trees in JavaScript
+     */
+    createTreeNode(type, name, parent, options = {}) {
+        const {
+            path = null,
+            onToggleFile = null,
+            startExpanded = false
+        } = options;
+        
+        const div = document.createElement('div');
+        div.className = `tree-node ${type}`;
+        if (path) div.dataset.path = path;
+        
+        if (type === 'folder') {
+            // Create toggle arrow
+            const toggle = document.createElement('span');
+            toggle.className = startExpanded ? 'tree-toggle expanded' : 'tree-toggle';
+            toggle.textContent = startExpanded ? '▼' : '▶';
+            toggle.onclick = () => this.toggleBranch(toggle);
+            div.appendChild(toggle);
+            
+            // Create checkbox
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.onchange = () => this.selectBranch(checkbox);
+            div.appendChild(checkbox);
+            
+            // Create label
+            const label = document.createElement('label');
+            label.innerHTML = `<span class="folder-icon">📁</span><span class="node-name">${name}</span>`;
+            div.appendChild(label);
+            
+            // Create children container
+            const children = document.createElement('div');
+            children.className = 'tree-children';
+            children.style.display = startExpanded ? 'block' : 'none';
+            div.appendChild(children);
+            
+        } else {
+            // File node - spacer instead of toggle
+            const spacer = document.createElement('span');
+            spacer.className = 'tree-spacer';
+            div.appendChild(spacer);
+            
+            // Create checkbox
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            if (onToggleFile) {
+                checkbox.onchange = () => onToggleFile(path, checkbox.checked);
+            }
+            div.appendChild(checkbox);
+            
+            // Create label
+            const label = document.createElement('label');
+            label.innerHTML = `<span class="file-icon">📄</span><span class="node-name">${name}</span>`;
+            div.appendChild(label);
+        }
+        
+        parent.appendChild(div);
+        return div;
+    },
     
     /**
      * Toggle branch expand/collapse
@@ -22,18 +88,22 @@ const SIMATree = {
         
         if (!children) return;
         
-        if (children.style.display === 'none') {
+        if (children.style.display === 'none' || children.style.display === '') {
             children.style.display = 'block';
             toggle.classList.add('expanded');
             toggle.textContent = '▼';
             if (folderIcon) folderIcon.textContent = '📂';
-            this.saveExpandedState(node.dataset.path, true);
+            if (node.dataset.path) {
+                this.saveExpandedState(node.dataset.path, true);
+            }
         } else {
             children.style.display = 'none';
             toggle.classList.remove('expanded');
             toggle.textContent = '▶';
             if (folderIcon) folderIcon.textContent = '📁';
-            this.saveExpandedState(node.dataset.path, false);
+            if (node.dataset.path) {
+                this.saveExpandedState(node.dataset.path, false);
+            }
         }
     },
     
@@ -46,6 +116,8 @@ const SIMATree = {
         
         children.forEach(child => {
             child.checked = checkbox.checked;
+            // Trigger change event so onToggleFile handlers fire
+            child.dispatchEvent(new Event('change'));
         });
         
         this.updateParentCheckboxes(checkbox);
@@ -105,6 +177,8 @@ const SIMATree = {
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
             cb.checked = true;
             cb.indeterminate = false;
+            // Trigger change event
+            cb.dispatchEvent(new Event('change'));
         });
     },
     
@@ -115,6 +189,8 @@ const SIMATree = {
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
             cb.checked = false;
             cb.indeterminate = false;
+            // Trigger change event
+            cb.dispatchEvent(new Event('change'));
         });
     },
     
@@ -152,6 +228,7 @@ const SIMATree = {
                         if (toggle && !toggle.classList.contains('expanded')) {
                             toggle.classList.add('expanded');
                             toggle.textContent = '▼';
+                            parent.style.display = 'block';
                             const folderIcon = parentNode.querySelector('.folder-icon');
                             if (folderIcon) folderIcon.textContent = '📂';
                         }
@@ -217,8 +294,9 @@ const SIMATree = {
         // Restore expanded state
         this.restoreExpandedState();
         
-        // Setup checkbox change listeners
+        // Setup checkbox change listeners for parent updates
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            const originalHandler = cb.onchange;
             cb.addEventListener('change', () => {
                 if (cb.closest('.tree-node.file')) {
                     this.updateParentCheckboxes(cb);
