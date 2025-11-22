@@ -3,26 +3,175 @@
  * sima-export-tool.php
  * 
  * SIMA Knowledge Export Tool - Version-Aware
- * Version: 4.0.0
+ * Version: 4.1.0
  * Date: 2025-11-22
  * 
- * MODIFIED: Uses new comprehensive scanner
- * - Scans ALL directories (context, docs, support, etc.)
- * - Finds ALL .md files recursively
- * - No spec-based filtering
- * - Maintains version conversion capability
- * 
- * PHP backend only - JavaScript in sima-export.js
+ * FIXED: Works from any directory, auto-detects paths
+ * - No HTTP 500 errors
+ * - Auto-finds SIMA root
+ * - Works from webroot or subdirectory
+ * - Better error reporting
  * 
  * CRITICAL: Stays under 350 lines
  */
 
-require_once __DIR__ . '/sima/support/php/sima-common.php';
-require_once __DIR__ . '/sima/support/php/sima-version-utils.php';
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
+/**
+ * Auto-detect SIMA root directory
+ */
+function findSIMARoot($startPath = null) {
+    if ($startPath === null) {
+        $startPath = __DIR__;
+    }
+    
+    // Check current directory
+    if (file_exists($startPath . '/generic') && 
+        file_exists($startPath . '/platforms')) {
+        return $startPath;
+    }
+    
+    // Check parent directories (up to 5 levels)
+    $current = $startPath;
+    for ($i = 0; $i < 5; $i++) {
+        $parent = dirname($current);
+        if ($parent === $current) {
+            break; // Reached root
+        }
+        
+        if (file_exists($parent . '/generic') && 
+            file_exists($parent . '/platforms')) {
+            return $parent;
+        }
+        
+        $current = $parent;
+    }
+    
+    return null;
+}
+
+/**
+ * Load required files with error handling
+ */
+function loadRequiredFiles($simaRoot) {
+    $required = [
+        'sima-common.php',
+        'sima-scanner.php',
+        'sima-tree-formatter.php',
+        'sima-version-utils.php'
+    ];
+    
+    $phpDir = $simaRoot . '/support/php';
+    
+    if (!is_dir($phpDir)) {
+        throw new Exception("PHP support directory not found: {$phpDir}");
+    }
+    
+    foreach ($required as $file) {
+        $filepath = $phpDir . '/' . $file;
+        if (!file_exists($filepath)) {
+            throw new Exception("Required file not found: {$file} (expected at {$filepath})");
+        }
+        require_once $filepath;
+    }
+}
+
+// Auto-detect SIMA root
+$SIMA_ROOT = findSIMARoot();
+
+if ($SIMA_ROOT === null) {
+    // Show error page instead of HTTP 500
+    ?>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>SIMA Export Tool - Configuration Error</title>
+        <style>
+            body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+            .error { background: #fee; border: 2px solid #c00; padding: 20px; border-radius: 5px; }
+            h1 { color: #c00; }
+            code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; }
+            pre { background: #f0f0f0; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        </style>
+    </head>
+    <body>
+        <div class="error">
+            <h1>⚠ SIMA Root Directory Not Found</h1>
+            <p><strong>The export tool could not locate your SIMA installation.</strong></p>
+            
+            <h2>Current Location:</h2>
+            <pre><?php echo __DIR__; ?></pre>
+            
+            <h2>How to Fix:</h2>
+            <ol>
+                <li>Ensure this file is inside your SIMA installation directory</li>
+                <li>SIMA root should contain <code>generic/</code> and <code>platforms/</code> directories</li>
+                <li>Recommended location: <code>/path/to/sima/support/php/sima-export-tool.php</code></li>
+            </ol>
+            
+            <h2>Manual Configuration:</h2>
+            <p>If SIMA is in a non-standard location, edit this file and add at line 60:</p>
+            <pre>define('SIMA_ROOT', '/path/to/your/sima');</pre>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
+// Define SIMA_ROOT if not already defined
+if (!defined('SIMA_ROOT')) {
+    define('SIMA_ROOT', $SIMA_ROOT);
+}
+
+// Load required files
+try {
+    loadRequiredFiles($SIMA_ROOT);
+    
+    // Load export helpers
+    require_once $SIMA_ROOT . '/support/php/sima-export-helpers.php';
+} catch (Exception $e) {
+    ?>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>SIMA Export Tool - Missing Files</title>
+        <style>
+            body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+            .error { background: #fee; border: 2px solid #c00; padding: 20px; border-radius: 5px; }
+            h1 { color: #c00; }
+            pre { background: #f0f0f0; padding: 10px; border-radius: 3px; }
+        </style>
+    </head>
+    <body>
+        <div class="error">
+            <h1>⚠ Required Files Missing</h1>
+            <p><strong>Error:</strong> <?php echo htmlspecialchars($e->getMessage()); ?></p>
+            
+            <h2>SIMA Root Found:</h2>
+            <pre><?php echo SIMA_ROOT; ?></pre>
+            
+            <h2>Required Files:</h2>
+            <ul>
+                <li>support/php/sima-common.php</li>
+                <li>support/php/sima-scanner.php</li>
+                <li>support/php/sima-tree-formatter.php</li>
+                <li>support/php/sima-version-utils.php</li>
+            </ul>
+            
+            <p>Please upload the missing files to <code><?php echo SIMA_ROOT; ?>/support/php/</code></p>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit;
+}
 
 // Ensure export directory exists
 if (!defined('EXPORT_DIR')) {
-    define('EXPORT_DIR', '/tmp/sima-exports');
+    define('EXPORT_DIR', SIMA_ROOT . '/exports');
 }
 if (!is_dir(EXPORT_DIR)) {
     mkdir(EXPORT_DIR, 0755, true);
@@ -43,7 +192,7 @@ function validateDirectory($path) {
     }
     
     if (!is_dir($path) || !is_readable($path)) {
-        throw new Exception("Directory not found or not readable");
+        throw new Exception("Directory not found or not readable: {$path}");
     }
     
     return realpath($path);
@@ -51,6 +200,8 @@ function validateDirectory($path) {
 
 // Handle AJAX requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
+    
     $action = $_POST['action'] ?? '';
     
     if ($action === 'scan') {
@@ -61,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Get version info
             $versionInfo = SIMAVersionUtils::getVersionInfo($validatedDir);
             
-            // Use comprehensive scanner (includes ALL directories)
+            // Use comprehensive scanner
             $tree = SIMAVersionUtils::scanWithVersion($validatedDir, $versionInfo['version']);
             
             // Get statistics
@@ -168,66 +319,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("No valid files to export");
             }
             
-            // Create export directory
-            $exportId = uniqid();
-            $exportPath = EXPORT_DIR . '/' . $exportId;
-            mkdir($exportPath, 0755, true);
+            // Create export
+            $result = createExportArchive($archiveName, $description, $selectedFiles, $sourceVersion, $targetVersion);
             
-            // Generate manifest
-            $manifestContent = generateManifest(
-                $archiveName, 
-                $description, 
-                $selectedFiles,
-                $sourceVersion,
-                $targetVersion
-            );
-            file_put_contents($exportPath . '/manifest.yaml', $manifestContent);
-            
-            // Generate import instructions
-            $instructionsContent = generateImportInstructions(
-                $archiveName, 
-                $selectedFiles,
-                $sourceVersion,
-                $targetVersion
-            );
-            file_put_contents($exportPath . '/import-instructions.md', $instructionsContent);
-            
-            // Create knowledge base ZIP
-            $zipPath = $exportPath . '/knowledge-base.zip';
-            $zip = new ZipArchive();
-            
-            if ($zip->open($zipPath, ZipArchive::CREATE) !== true) {
-                throw new Exception("Could not create ZIP file");
-            }
-            
-            foreach ($selectedFiles as $file) {
-                $zip->addFromString($file['relative_path'], $file['content']);
-            }
-            
-            $zip->close();
-            
-            // Create final archive with all export files
-            $finalZipPath = $exportPath . '/' . $archiveName . '.zip';
-            $finalZip = new ZipArchive();
-            
-            if ($finalZip->open($finalZipPath, ZipArchive::CREATE) !== true) {
-                throw new Exception("Could not create final archive");
-            }
-            
-            $finalZip->addFile($exportPath . '/manifest.yaml', 'manifest.yaml');
-            $finalZip->addFile($exportPath . '/import-instructions.md', 'import-instructions.md');
-            $finalZip->addFile($zipPath, 'knowledge-base.zip');
-            $finalZip->close();
-            
-            sendJsonResponse(true, [
-                'archive_path' => $finalZipPath,
-                'archive_name' => $archiveName . '.zip',
-                'file_count' => count($selectedFiles),
-                'converted_count' => count(array_filter($selectedFiles, fn($f) => $f['converted'])),
-                'source_version' => $sourceVersion,
-                'target_version' => $targetVersion,
-                'download_url' => '/exports/' . $exportId . '/' . $archiveName . '.zip'
-            ]);
+            sendJsonResponse(true, $result);
             
         } catch (Exception $e) {
             sendJsonResponse(false, [], $e->getMessage());
@@ -237,92 +332,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-/**
- * Generate manifest.yaml
- * MODIFIED: Include version info per file
- */
-function generateManifest($archiveName, $description, $selectedFiles, $sourceVersion, $targetVersion) {
-    $manifest = [
-        'archive' => [
-            'name' => $archiveName,
-            'created' => date('Y-m-d H:i:s'),
-            'description' => $description,
-            'source_version' => $sourceVersion,
-            'target_version' => $targetVersion,
-            'total_files' => count($selectedFiles),
-            'converted_files' => count(array_filter($selectedFiles, fn($f) => $f['converted']))
-        ],
-        'files' => []
-    ];
-    
-    foreach ($selectedFiles as $file) {
-        $manifest['files'][] = [
-            'filename' => $file['filename'],
-            'path' => $file['relative_path'],
-            'original_path' => $file['original_path'],
-            'ref_id' => $file['ref_id'],
-            'category' => $file['category'],
-            'size' => $file['size'],
-            'checksum' => $file['checksum'],
-            'converted' => $file['converted'],
-            'sima_version' => $file['sima_version']
-        ];
-    }
-    
-    $manifest['packages'] = [
-        [
-            'name' => 'knowledge-base.zip',
-            'type' => 'base',
-            'files' => count($selectedFiles)
-        ]
-    ];
-    
-    return arrayToYaml($manifest);
-}
-
-/**
- * Generate import-instructions.md
- * MODIFIED: Include conversion info
- */
-function generateImportInstructions($archiveName, $selectedFiles, $sourceVersion, $targetVersion) {
-    $md = "# Import Instructions - {$archiveName}\n\n";
-    $md .= "**Archive:** {$archiveName}\n";
-    $md .= "**Created:** " . date('Y-m-d') . "\n";
-    $md .= "**Source SIMA Version:** {$sourceVersion}\n";
-    $md .= "**Target SIMA Version:** {$targetVersion}\n";
-    $md .= "**Total Files:** " . count($selectedFiles) . "\n";
-    $md .= "**Converted Files:** " . count(array_filter($selectedFiles, fn($f) => $f['converted'])) . "\n\n";
-    
-    // Group by directory
-    $grouped = [];
-    foreach ($selectedFiles as $file) {
-        $dir = dirname($file['relative_path']);
-        if (!isset($grouped[$dir])) {
-            $grouped[$dir] = [];
-        }
-        $grouped[$dir][] = $file;
-    }
-    
-    $md .= "## Installation State\n\n";
-    $md .= "### Selected for Install (" . count($selectedFiles) . " files)\n\n";
-    
-    foreach ($grouped as $dir => $files) {
-        $md .= "#### {$dir} (" . count($files) . " files)\n";
-        foreach ($files as $file) {
-            $status = $file['converted'] ? 'converted' : 'original';
-            $md .= "- [x] {$file['filename']} → {$file['relative_path']} ({$status})\n";
-        }
-        $md .= "\n";
-    }
-    
-    $md .= "## Import Process\n\n";
-    $md .= "1. Extract knowledge-base.zip\n";
-    $md .= "2. Use SIMA Import Tool to review files\n";
-    $md .= "3. Select target SIMA directory\n";
-    $md .= "4. Verify version compatibility\n";
-    $md .= "5. Import selected files\n\n";
-    
-    return $md;
-}
-
-?>
+// If we get here, show the HTML interface
+require __DIR__ . '/sima-export-ui.php';
