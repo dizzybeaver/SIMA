@@ -3,13 +3,16 @@
  * spec_simav4.1.php
  * 
  * SIMA v4.1 Structure Specification
- * Version: 4.1.0
+ * Version: 4.1.1
  * Date: 2025-11-22
  * Location: /support/php/
+ * 
+ * FIXED: Corrected detectVersion() path markers
+ * FIXED: Made getCategories() domain-aware
  */
 
 class SIMAv4_1_Spec {
-    const VERSION = '4.1.0';
+    const VERSION = '4.1.1';
     const VERSION_SHORT = 'v4.1';
     
     /**
@@ -20,18 +23,26 @@ class SIMAv4_1_Spec {
     }
     
     /**
-     * Get category directories for a domain
+     * Get category directories for domains
+     * Returns domain-keyed array of categories
      */
     public static function getCategories() {
         return [
-            'core',
-            'gateways',
-            'interfaces',
-            'languages',
-            'anti-patterns',
-            'decisions',
-            'lessons',
-            'platforms'
+            'entries' => [
+                'core',
+                'gateways',
+                'interfaces',
+                'languages',
+                'anti-patterns',
+                'decisions',
+                'lessons',
+                'platforms'
+            ],
+            'context' => [],
+            'docs' => [],
+            'integration' => [],
+            'projects' => [],
+            'support' => []
         ];
     }
     
@@ -101,7 +112,8 @@ class SIMAv4_1_Spec {
         ];
         
         if ($domain === 'entries') {
-            foreach (self::getCategories() as $category) {
+            $categories = self::getCategories()['entries'];
+            foreach ($categories as $category) {
                 $base[] = $domain . '/' . $category;
             }
         }
@@ -124,11 +136,12 @@ class SIMAv4_1_Spec {
     
     /**
      * Detect if this is v4.1
+     * FIXED: Removed /simav4 prefix from markers since $basePath already points there
      */
     public static function detectVersion($basePath) {
         $markers = [
-            '/simav4/entries/core',
-            '/simav4/integration'
+            '/entries/core',
+            '/integration'
         ];
         
         foreach ($markers as $marker) {
@@ -138,7 +151,7 @@ class SIMAv4_1_Spec {
         }
         
         // v4.1 should NOT have v4.2 domain structure
-        if (is_dir($basePath . '/simav4/generic')) {
+        if (is_dir($basePath . '/generic')) {
             return false;
         }
         
