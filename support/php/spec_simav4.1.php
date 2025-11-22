@@ -5,44 +5,22 @@
  * SIMA v4.1 Structure Specification
  * Version: 4.1.0
  * Date: 2025-11-22
- * Base Directory: /simav4/
- * 
- * Defines directory structure for SIMA v4.1 (entries-based organization)
+ * Location: /support/php/
  */
 
 class SIMAv4_1_Spec {
-    const VERSION = 'SIMA v4.1.0';
-    const VERSION_NUMBER = '4.1';
-    const BASE_DIR = '/simav4';
+    const VERSION = '4.1.0';
+    const VERSION_SHORT = 'v4.1';
     
     /**
-     * Detect if directory is v4.1
-     */
-    public static function detectVersion($basePath) {
-        // v4.1 has /entries/ structure
-        $has_entries = is_dir($basePath . self::BASE_DIR . '/entries/core') && 
-                       is_dir($basePath . self::BASE_DIR . '/entries/gateways');
-        
-        // v4.1 does NOT have domain separation
-        $no_domains = !is_dir($basePath . self::BASE_DIR . '/generic') &&
-                      !is_dir($basePath . self::BASE_DIR . '/languages');
-        
-        // v4.1 has integration directory
-        $has_integration = is_dir($basePath . self::BASE_DIR . '/integration');
-        
-        return $has_entries && $no_domains && $has_integration;
-    }
-    
-    /**
-     * Get domains - v4.1 has no domain separation
-     * Returns main directories instead
+     * Get domain directories
      */
     public static function getDomains() {
-        return ['entries'];  // Only one "domain" in v4.1
+        return ['context', 'docs', 'entries', 'integration', 'projects', 'support'];
     }
     
     /**
-     * Get categories under /entries/
+     * Get category directories for a domain
      */
     public static function getCategories() {
         return [
@@ -58,20 +36,7 @@ class SIMAv4_1_Spec {
     }
     
     /**
-     * Get support files/directories
-     */
-    public static function getSupportFiles() {
-        return [
-            'context',
-            'docs',
-            'integration',
-            'projects',
-            'support'
-        ];
-    }
-    
-    /**
-     * Get index patterns for categories
+     * Get index file naming pattern
      */
     public static function getIndexPattern($category) {
         $patterns = [
@@ -86,6 +51,15 @@ class SIMAv4_1_Spec {
         ];
         
         return $patterns[$category] ?? ucfirst($category) . '-Index.md';
+    }
+    
+    /**
+     * Get master index locations
+     */
+    public static function getMasterIndexes() {
+        return [
+            'root' => 'Master-Index-of-Indexes.md'
+        ];
     }
     
     /**
@@ -119,41 +93,56 @@ class SIMAv4_1_Spec {
     }
     
     /**
-     * Get required directories
+     * Get required directories for a domain
      */
-    public static function getRequiredDirectories() {
+    public static function getRequiredDirectories($domain) {
+        $base = [
+            $domain
+        ];
+        
+        if ($domain === 'entries') {
+            foreach (self::getCategories() as $category) {
+                $base[] = $domain . '/' . $category;
+            }
+        }
+        
+        return $base;
+    }
+    
+    /**
+     * Get support files
+     */
+    public static function getSupportFiles() {
         return [
-            self::BASE_DIR . '/context',
-            self::BASE_DIR . '/docs',
-            self::BASE_DIR . '/entries',
-            self::BASE_DIR . '/entries/core',
-            self::BASE_DIR . '/entries/gateways',
-            self::BASE_DIR . '/entries/interfaces',
-            self::BASE_DIR . '/entries/languages',
-            self::BASE_DIR . '/entries/anti-patterns',
-            self::BASE_DIR . '/entries/decisions',
-            self::BASE_DIR . '/entries/lessons',
-            self::BASE_DIR . '/integration',
-            self::BASE_DIR . '/projects',
-            self::BASE_DIR . '/support'
+            'context',
+            'docs', 
+            'integration',
+            'projects',
+            'support'
         ];
     }
     
     /**
-     * Get master indexes
+     * Detect if this is v4.1
      */
-    public static function getMasterIndexes() {
-        return [
-            'root' => 'Master-Index-of-Indexes.md',
-            'entries' => 'entries/Index-of-Indexes.md'
+    public static function detectVersion($basePath) {
+        $markers = [
+            '/simav4/entries/core',
+            '/simav4/integration'
         ];
-    }
-    
-    /**
-     * Get category path
-     */
-    public static function getCategoryPath($category) {
-        return self::BASE_DIR . '/entries/' . $category;
+        
+        foreach ($markers as $marker) {
+            if (!is_dir($basePath . $marker)) {
+                return false;
+            }
+        }
+        
+        // v4.1 should NOT have v4.2 domain structure
+        if (is_dir($basePath . '/simav4/generic')) {
+            return false;
+        }
+        
+        return true;
     }
     
     /**
@@ -163,19 +152,17 @@ class SIMAv4_1_Spec {
         return [
             'directory_mapping' => [
                 'entries/core' => 'generic/core',
+                'entries/gateways' => 'generic/core',
+                'entries/interfaces' => 'generic/core',
                 'entries/anti-patterns' => 'generic/anti-patterns',
                 'entries/decisions' => 'generic/decisions',
                 'entries/lessons' => 'generic/lessons',
-                'entries/gateways' => 'generic/core',
-                'entries/interfaces' => 'generic/core',
                 'entries/languages' => 'languages/python',
                 'entries/platforms' => 'platforms/aws'
             ],
             'metadata_transform' => [
-                'add_fields' => [
-                    '**Domain:**'
-                ],
-                'remove_fields' => []
+                'remove_fields' => [],
+                'add_fields' => []
             ],
             'filename_transform' => [],
             'ref_id_mapping' => []
@@ -196,14 +183,11 @@ class SIMAv4_1_Spec {
                 'platforms/aws' => 'entries/platforms'
             ],
             'metadata_transform' => [
-                'add_fields' => [],
-                'remove_fields' => ['**Domain:**']
+                'remove_fields' => [],
+                'add_fields' => []
             ],
             'filename_transform' => [],
             'ref_id_mapping' => []
         ];
     }
 }
-
-// No output - this is a class definition only
-// The version utils will call the methods
