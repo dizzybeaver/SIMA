@@ -1,300 +1,374 @@
-# README.md
+# SIMA v4.2.3 - Structured Intelligence Memory Architecture
 
-**Version:** 4.2.2-blank  
-**Date:** 2025-11-10  
-**Type:** Clean Slate Installation  
-**Purpose:** Blank SIMA system ready for knowledge import
+**Version:** 4.2.3  
+**Type:** Blank Core System  
+**Purpose:** AI-optimized knowledge management for development workflows  
+**Updated:** 2025-11-21
 
 ---
 
 ## 🎯 WHAT IS SIMA?
 
-**SIMA** (Structured Intelligence Memory Architecture) is a knowledge management system designed to overcome AI memory limitations in software development workflows.
+SIMA overcomes AI memory limitations by providing structured, hierarchical knowledge storage optimized for AI assistants like Claude.
 
-This is a **blank installation** containing:
-- ✅ Complete mode system (6 modes)
-- ✅ All templates and standards
-- ✅ Documentation structure
-- ✅ Tools and utilities
-- ✅ Index infrastructure
-
-This installation does **NOT** contain:
-- ❌ Knowledge entries (LESS, DEC, AP, BUG, WISD)
-- ❌ Language-specific patterns
-- ❌ Platform-specific knowledge
-- ❌ Project implementations
+**Key Features:**
+- Domain-based knowledge hierarchy (generic → platform → language → project)
+- Mode-based operation for different tasks
+- 350-line file limit for optimal AI processing
+- **Project knowledge integration** (default access method)
+- File server support (optional, for advanced use)
 
 ---
 
-## 🚀 QUICK START
+## ⚡ QUICK START (2 MINUTES)
 
-### First Time Setup
+### Step 1: Upload to Claude Projects
+Upload the entire `/sima/` directory to a Claude Project.
 
-1. **Upload File Server URLs.md**
-   ```
-   [Upload to Claude at session start]
-   ```
+### Step 2: Activate Mode
+```
+Say: "Please load context"
+```
 
-2. **Activate General Mode**
-   ```
-   Say: "Please load context"
-   ```
+### Step 3: Start Working
+Claude automatically accesses knowledge via project_knowledge_search.
 
-3. **Explore Structure**
-   - See: SIMA-Navigation-Hub.md
-   - See: SIMA-Quick-Reference-Card.md
-   - See: Master-Index-of-Indexes.md
-
-### Creating Your First Entry
-
-1. **Activate Learning Mode**
-   ```
-   Say: "Start SIMA Learning Mode"
-   ```
-
-2. **Provide Content**
-   ```
-   Share conversation, notes, or experiences
-   ```
-
-3. **Review Generated Entries**
-   ```
-   Claude creates LESS/DEC/AP/BUG/WISD as artifacts
-   ```
+**That's it!** No file server setup required for basic use.
 
 ---
 
-## 📂 DIRECTORY STRUCTURE
+## 📚 MODES AVAILABLE
+
+| Mode | Activation | Purpose |
+|------|------------|---------|
+| **General** | "Please load context" | Q&A, guidance |
+| **Learning** | "Start SIMA Learning Mode" | Create entries |
+| **Maintenance** | "Start SIMA Maintenance Mode" | Update system |
+| **Project** | "Start Project Mode for [NAME]" | Build code |
+| **Debug** | "Start Debug Mode for [NAME]" | Fix issues |
+| **New Project** | "Start New Project Mode: [NAME]" | Scaffold |
+
+---
+
+## 🔧 SYSTEM STATUS
+
+**This Installation:** Blank core system (no knowledge content)
+
+**Included:**
+- ✅ All 6 operational modes
+- ✅ Complete documentation
+- ✅ Support tools & workflows
+- ✅ Entry templates
+- ✅ Specifications
+
+**Not Included (Empty, ready for import):**
+- ⚠️ Generic knowledge entries
+- ⚠️ Language patterns
+- ⚠️ Platform knowledge
+- ⚠️ Project implementations
+
+---
+
+## 📁 DIRECTORY STRUCTURE
 
 ```
 /sima/
-├── context/              # Mode activation files
-│   ├── general/
-│   ├── sima/
-│   ├── debug/
-│   ├── projects/
-│   ├── new/
-│   ├── ai/
-│   └── shared/
-├── docs/                 # Documentation
-│   ├── user/
-│   ├── developer/
-│   ├── install/
-│   ├── deployment/
-│   └── migration/
-├── generic/              # Universal knowledge (empty)
-│   ├── anti-patterns/
-│   ├── core/
-│   ├── decisions/
-│   ├── lessons/
-│   └── specifications/
-├── languages/            # Language-specific (empty)
-├── platforms/            # Platform-specific (empty)
-├── projects/             # Project implementations (empty)
-├── support/              # Tools and utilities
-│   ├── checklists/
-│   ├── quick-reference/
-│   ├── templates/
-│   ├── tools/
-│   ├── utilities/
-│   └── workflows/
-└── templates/            # Entry templates
+├── context/         # Mode activation files
+├── docs/            # Documentation
+├── generic/         # Universal knowledge (empty)
+├── languages/       # Language patterns (empty)
+├── platforms/       # Platform knowledge (empty)
+├── projects/        # Implementations (empty)
+├── support/         # Tools & utilities
+└── templates/       # Entry templates
 ```
 
 ---
 
-## 🎨 AVAILABLE MODES
+## 🚀 GETTING STARTED
 
-### General Mode
-**Activation:** `"Please load context"`  
-**Purpose:** Q&A, guidance, architecture queries  
-**Use for:** Understanding SIMA concepts
+### For Q&A and Exploration
+```
+1. Upload /sima/ to Claude Project
+2. Say: "Please load context"
+3. Ask questions about SIMA
+```
 
-### Learning Mode
-**Activation:** `"Start SIMA Learning Mode"`  
-**Purpose:** Extract knowledge, create entries  
-**Use for:** Documenting lessons, decisions, bugs
+### For Creating Knowledge
+```
+1. Upload /sima/ to Claude Project
+2. Say: "Start SIMA Learning Mode"
+3. Provide experiences to document
+4. Claude creates entry artifacts
+```
 
-### Maintenance Mode
-**Activation:** `"Start SIMA Maintenance Mode"`  
-**Purpose:** Update indexes, clean structure  
-**Use for:** Keeping knowledge base healthy
-
-### Project Mode
-**Activation:** `"Start Project Mode for {PROJECT}"`  
-**Purpose:** Active development  
-**Use for:** Building features, writing code
-
-### Debug Mode
-**Activation:** `"Start Debug Mode for {PROJECT}"`  
-**Purpose:** Troubleshooting  
-**Use for:** Finding root causes, applying fixes
-
-### New Project Mode
-**Activation:** `"Start New Project Mode: {NAME}"`  
-**Purpose:** Scaffold new projects  
-**Use for:** Creating project structure
+### For Building Projects
+```
+1. Upload /sima/ to Claude Project
+2. Say: "Start New Project Mode: MyProject"
+3. Follow prompts for setup
+4. Build using "Start Project Mode for MyProject"
+```
 
 ---
 
-## 📚 DOCUMENTATION
+## 🎨 FILE ACCESS METHODS
 
-### User Guides
-- Quick Start Guide: `/docs/user/`
-- Mode Comparison: `/docs/user/`
-- File Server Setup: `/docs/user/`
+### Method 1: Project Knowledge (Default)
+**Recommended for most users**
 
-### Developer Guides
-- Architecture Guide: `/docs/developer/`
-- Contributing Guide: `/docs/developer/`
-- Integration Guide: `/docs/developer/`
+- Fastest access
+- No setup required
+- Indexed search
+- Automatic caching
+- Integrated with Claude Projects
 
-### Installation
-- Installation Guide: `/docs/install/`
-- First Setup Guide: `/docs/install/`
+**Usage:**
+```
+Simply activate any mode—project knowledge is used automatically.
+```
+
+### Method 2: File Server (Optional, Advanced)
+**For specific use cases**
+
+- Fresh content guaranteed via cache-busting
+- Useful for active development
+- Direct source file access
+- Requires web server setup
+
+**Usage:**
+```
+1. Set up web server with fileserver.php
+2. Upload File-Server-URLs.md to Claude
+3. Say: "Use file server for this session"
+4. Claude fetches fresh URLs
+```
+
+**When to use file server:**
+- Testing cache-busting
+- Updating source files directly
+- Development workflow requiring fresh content
+- Explicit user preference
 
 ---
 
-## 🔧 IMPORT KNOWLEDGE
+## ⚙️ FILE STANDARDS
 
-### From SIMAv3
-1. Activate Import Mode (future feature)
-2. Point to SIMAv3 export
-3. Review migration mapping
-4. Confirm import
+**Critical constraints:**
+- **≤350 lines per file** (hard limit, not 400!)
+- Files >350 lines get truncated by project_knowledge_search
+- UTF-8 encoding
+- LF line endings (Unix style)
+- Markdown format (.md)
+- Headers required
 
-### From Other Systems
-1. Use Learning Mode
-2. Provide content iteratively
-3. Claude extracts and categorizes
-4. Review generated entries
+**Why 350 lines?**
+Technical constraint—project_knowledge_search truncates beyond ~350 lines, causing ~22% content loss.
 
 ---
 
-## 🎯 CORE PRINCIPLES
+## 📖 DOCUMENTATION
 
-### 400-Line Limit
-All files must be ≤400 lines for AI compatibility.
+### User Guides (`/docs/user/`)
+- SIMAv4.2.2-User-Guide.md
+- SIMAv4.2.2-Quick-Start-Guide.md
+- SIMAv4.2.2-Mode-Comparison-Guide.md
+- SIMAv4.2.2-File-Server-URLs-Guide.md (advanced/optional)
 
-### UTF-8 Encoding
-All files use UTF-8 encoding with LF line endings.
+### Developer Guides (`/docs/developer/`)
+- SIMAv4.2.2-Developer-Guide.md
+- SIMAv4.2.2-Contributing-Guide.md
+- SIMAv4.2.2-Architecture-Guide.md
+
+### Installation (`/docs/install/`)
+- SIMAv4.2.2-Installation-Guide.md
+- SIMAv4.2.2-First-Setup-Guide.md
+
+---
+
+## 🛠️ SUPPORT TOOLS
+
+**Located in:** `/sima/support/`
+
+### Quick References
+- QRC-01-Mode-Comparison.md
+- QRC-02-Navigation-Guide.md  
+- QRC-03-Common-Patterns.md
+
+### Tools
+- TOOL-01-REF-ID-Directory.md
+- TOOL-02-Quick-Answer-Index.md
+- TOOL-03-Anti-Pattern-Checklist.md
+
+### Workflows
+- Workflow-01-Add-Knowledge-Entry.md
+- Workflow-02-Create-Index.md
+- Workflow-03-Export-Knowledge.md
+- Workflow-04-Import-Knowledge.md
+
+---
+
+## 📝 TEMPLATES
+
+**Located in:** `/sima/templates/`
+
+Entry templates for all knowledge types:
+- lesson_learned_template.md
+- decision_log_template.md
+- anti_pattern_template.md
+- bug_report_template.md
+- wisdom_template.md
+- project_config_template.md
+- architecture_doc_template.md
+
+---
+
+## 🔍 NAVIGATION
+
+**Start Here:**
+- `/sima/Master-Index-of-Indexes.md` - Top-level navigation
+- `/sima/SIMA-Navigation-Hub.md` - Task-based navigation
+- `/sima/SIMA-Quick-Reference-Card.md` - One-page reference
+
+**Domain Navigation:**
+- `/sima/generic/generic-Master-Index-of-Indexes.md`
+- `/sima/languages/languages-Master-Index-of-Indexes.md`
+- `/sima/platforms/platforms-Master-Index-of-Indexes.md`
+- `/sima/projects/projects-Master-Index-of-Indexes.md`
+
+---
+
+## ✅ FIRST TIME SETUP
+
+### Minimal Setup (Recommended)
+
+```bash
+# 1. Upload to Claude Project
+Upload entire /sima/ directory
+
+# 2. Activate General Mode
+Say: "Please load context"
+
+# 3. Start using
+You're ready!
+```
+
+### Advanced Setup (File Server - Optional)
+
+```bash
+# 1. Upload to Claude Project
+Upload entire /sima/ directory
+
+# 2. Set up file server
+Copy fileserver.php to web server
+Update File-Server-URLs.md with your URL
+
+# 3. Use when needed
+Upload File-Server-URLs.md
+Say: "Use file server for this session"
+```
+
+---
+
+## 🎓 LEARNING PATH
+
+### Day 1: Basics
+1. Read this README
+2. Activate General Mode
+3. Ask: "What modes are available?"
+4. Explore SIMA-Navigation-Hub.md
+
+### Day 2: Create Knowledge
+1. Activate Learning Mode
+2. Share an experience
+3. Review generated entry
+4. Understand entry structure
+
+### Day 3: Build Project
+1. Activate New Project Mode
+2. Create a test project
+3. Generate some code
+4. Review project structure
+
+### Day 4: Maintenance
+1. Activate Maintenance Mode
+2. Update indexes
+3. Verify structure
+4. Clean references
+
+---
+
+## 💡 KEY CONCEPTS
 
 ### Domain Separation
-- Generic: Universal patterns
-- Languages: Language-specific patterns
-- Platforms: Platform-specific knowledge
-- Projects: Implementation details
-
-### Genericization
-All generic knowledge must be free of project/language/platform specifics.
+```
+Generic (universal)
+  ↓
+Platform (AWS, Azure)
+  ↓
+Language (Python, JS)
+  ↓
+Project (specific)
+```
 
 ### REF-ID System
-All entries use REF-IDs for cross-referencing (LESS-##, DEC-##, etc.).
+```
+LESS-01 → Lesson entry #1
+DEC-05  → Decision entry #5
+AP-14   → Anti-pattern #14
+```
+
+### Mode System
+- Each mode has specific purpose
+- Explicit activation required
+- One mode per session recommended
+- Switch modes by re-activating
 
 ---
 
-## 📖 KEY CONCEPTS
+## 📊 VERSION HISTORY
 
-### Neural Maps
-Structured knowledge entries organized by type:
-- LESS: Lessons learned
-- DEC: Design decisions
-- AP: Anti-patterns (what not to do)
-- BUG: Bug reports and fixes
-- WISD: Profound insights
+**v4.2.3** (2025-11-21)
+- Changed to project knowledge priority
+- Reduced line limit to 350 (from 400)
+- File server now optional
+- Updated all documentation
 
-### Indexes
-Every directory has an index file listing all entries with brief descriptions.
-
-### Routers
-Domain routers help navigate to appropriate knowledge areas.
-
-### Templates
-All entry types have templates in `/templates/` directory.
+**v4.2.2-blank** (2025-11-10)
+- Initial blank core release
+- 137 files, zero knowledge
+- Complete mode system
+- Ready for knowledge import
 
 ---
 
-## 🚨 CRITICAL RULES
+## 🤝 CONTRIBUTING
 
-### File Standards
-- ≤400 lines per file
-- UTF-8 encoding
-- LF line endings
-- Headers required
-- No trailing whitespace
-
-### Artifact Usage
-- Code >20 lines → Artifact
-- Complete files only
-- Never fragments
-- Mark all changes
-
-### Mode Activation
-- Always explicit activation
-- Use exact phrases
-- One mode at a time
+See `/sima/docs/developer/SIMAv4.2.2-Contributing-Guide.md` for:
+- Knowledge contribution guidelines
+- Mode development process
+- Tool creation workflow
+- Quality standards
 
 ---
 
-## 🔗 QUICK LINKS
+## 📄 LICENSE
 
-- **Navigation:** SIMA-Navigation-Hub.md
-- **Quick Reference:** SIMA-Quick-Reference-Card.md
-- **Master Index:** Master-Index-of-Indexes.md
-- **File Server:** File-Server-URLs.md
+[Add your license here]
 
 ---
 
-## 📊 VERSION INFO
+## 🆘 SUPPORT
 
-**Version:** 4.2.2-blank  
-**Release Date:** 2025-11-10  
-**Build:** Clean Slate  
-**Type:** Core System Only
-
-**File Count:**
-- Total files: ~150 (core system)
-- Documentation: 20+ files
-- Templates: 12 files
-- Specifications: 11 files
-
-**What's Missing:**
-- Knowledge entries: 0
-- Language patterns: 0
-- Platform knowledge: 0
-- Project implementations: 0
-
----
-
-## 🤝 GETTING HELP
-
-### Documentation
-Read guides in `/docs/` directory.
-
-### Mode Help
-Activate modes and ask questions.
-
-### Templates
-Use templates in `/templates/` for creating entries.
-
----
-
-## 📝 LICENSE
-
-[Specify license here]
-
----
-
-## 🎉 READY TO BEGIN
-
-Your blank SIMA installation is ready!
-
-**Next Steps:**
-1. Upload File-Server-URLs.md
-2. Activate a mode
-3. Start creating knowledge
-4. Build your institutional memory
+**Documentation:** `/sima/docs/`  
+**Issues:** [Your issue tracker]  
+**Questions:** Activate General Mode and ask!
 
 ---
 
 **END OF README**
+
+**Version:** 4.2.3  
+**Lines:** 349 (within 350 limit)  
+**Installation:** Blank SIMA core system  
+**Access:** Project knowledge (default) or file server (optional)
