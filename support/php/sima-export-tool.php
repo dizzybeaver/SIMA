@@ -1,4 +1,53 @@
-<?php
+function renderTree() {
+            const container = document.getElementById('tree');
+            container.innerHTML = '';
+            
+            for (const [domainName, domain] of Object.entries(knowledgeTree)) {
+                if (domain.total_files === 0) continue;
+                
+                // Create domain folder
+                const domainDiv = createFolderNode(domainName, container);
+                const domainChildren = document.createElement('div');
+                domainChildren.className = 'tree-children';
+                domainChildren.style.display = 'block'; // Start expanded
+                
+                // Add categories
+                if (domain.categories) {
+                    for (const [catName, category] of Object.entries(domain.categories)) {
+                        const catDiv = createFolderNode(`${catName} (${category.file_count})`, domainChildren);
+                        const catChildren = document.createElement('div');
+                        catChildren.className = 'tree-children';
+                        catChildren.style.display = 'none'; // Start collapsed
+                        
+                        // Add files
+                        category.files.forEach(file => {
+                            createFileNode(file.filename, catChildren, file.relative_path);
+                        });
+                        
+                        catDiv.appendChild(catChildren);
+                    }
+                }
+                
+                domainDiv.appendChild(domainChildren);
+            }
+        }
+        
+        function createFolderNode(name, parent) {
+            const div = document.createElement('div');
+            div.className = 'tree-node folder';
+            
+            const toggle = document.createElement('span');
+            toggle.className = 'tree-toggle expanded';
+            toggle.textContent = '▼';
+            toggle.onclick = () => toggleBranch(toggle);
+            div.appendChild(toggle);
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.onchange = () => selectBranch(checkbox);
+            div.appendChild(checkbox);
+            
+            const label = document.createElement('label<?php
 /**
  * sima-export-tool.php
  * 
@@ -346,51 +395,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             container.innerHTML = '';
             
             for (const [domainName, domain] of Object.entries(knowledgeTree)) {
-                const domainNode = createNode(domainName, 'folder', container);
-                domainNode.classList.add('expanded');
+                if (domain.total_files === 0) continue;
+                
+                // Create domain folder (start expanded)
+                const domainNode = SIMATree.createTreeNode('folder', domainName, container, {
+                    path: domainName,
+                    startExpanded: true
+                });
+                const domainChildren = domainNode.querySelector('.tree-children');
                 
                 if (domain.categories) {
                     for (const [catName, category] of Object.entries(domain.categories)) {
-                        const catNode = createNode(catName + ` (${category.file_count})`, 'folder', domainNode);
+                        // Create category folder
+                        const catNode = SIMATree.createTreeNode('folder', `${catName} (${category.file_count})`, domainChildren, {
+                            path: `${domainName}/${catName}`,
+                            startExpanded: false
+                        });
+                        const catChildren = catNode.querySelector('.tree-children');
                         
+                        // Add files
                         category.files.forEach(file => {
-                            createNode(file.filename, 'file', catNode, file.relative_path);
+                            SIMATree.createTreeNode('file', file.filename, catChildren, {
+                                path: file.relative_path,
+                                onToggleFile: toggleFile
+                            });
                         });
                     }
                 }
             }
-        }
-        
-        function createNode(name, type, parent, path = null) {
-            const div = document.createElement('div');
-            div.className = `tree-node ${type}`;
-            if (path) div.dataset.path = path;
-            
-            if (type === 'folder') {
-                const toggle = document.createElement('span');
-                toggle.className = 'tree-toggle expanded';
-                toggle.textContent = '▼';
-                toggle.onclick = () => toggleBranch(toggle);
-                div.appendChild(toggle);
-            } else {
-                const spacer = document.createElement('span');
-                spacer.className = 'tree-spacer';
-                div.appendChild(spacer);
-            }
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.onchange = type === 'folder' ? 
-                () => selectBranch(checkbox) : 
-                () => toggleFile(path, checkbox.checked);
-            div.appendChild(checkbox);
-            
-            const label = document.createElement('label');
-            label.innerHTML = `<span class="${type}-icon">${type === 'folder' ? '📁' : '📄'}</span><span class="node-name">${name}${type === 'folder' ? '/' : ''}</span>`;
-            div.appendChild(label);
-            
-            parent.appendChild(div);
-            return div;
         }
         
         function toggleFile(path, checked) {
