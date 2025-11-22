@@ -3,15 +3,19 @@
  * sima-version-utils.php
  * 
  * SIMA Version Detection and Conversion Utilities
- * Version: 1.0.0
- * Date: 2025-11-21
+ * Version: 2.0.0
+ * Date: 2025-11-22
  * Location: /support/php/
  * 
+ * MODIFIED: Added SIMA v3.0 support
+ * 
  * Handles version detection and conversion between SIMA versions
+ * Supports: v3.0, v4.1, v4.2
  */
 
-require_once __DIR__ . '/spec_simav4.2.php';
+require_once __DIR__ . '/spec_simav3.php';
 require_once __DIR__ . '/spec_simav4.1.php';
+require_once __DIR__ . '/spec_simav4.2.php';
 
 class SIMAVersionUtils {
     
@@ -19,7 +23,7 @@ class SIMAVersionUtils {
      * Auto-detect SIMA version from directory
      */
     public static function detectVersion($basePath) {
-        // Try v4.2 first
+        // Try v4.2 first (most recent)
         if (SIMAv4_2_Spec::detectVersion($basePath)) {
             return '4.2';
         }
@@ -29,15 +33,15 @@ class SIMAVersionUtils {
             return '4.1';
         }
         
+        // Try v3.0
+        if (SIMAv3_Spec::detectVersion($basePath)) {
+            return '3.0';
+        }
+        
         // Check for generic v4 markers
         if (file_exists($basePath . '/generic') && 
             file_exists($basePath . '/platforms')) {
-            return '4.0';  // Generic v4
-        }
-        
-        // Check for v3
-        if (file_exists($basePath . '/entries')) {
-            return '3.0';
+            return '4.0';
         }
         
         return 'unknown';
@@ -54,6 +58,9 @@ class SIMAVersionUtils {
             case '4.1':
             case '4.1.0':
                 return 'SIMAv4_1_Spec';
+            case '3.0':
+            case '3':
+                return 'SIMAv3_Spec';
             default:
                 return null;
         }
@@ -65,7 +72,8 @@ class SIMAVersionUtils {
     public static function getAvailableVersions() {
         return [
             '4.2' => 'SIMA v4.2 (Latest)',
-            '4.1' => 'SIMA v4.1'
+            '4.1' => 'SIMA v4.1',
+            '3.0' => 'SIMA v3.0 (Neural Maps)'
         ];
     }
     
@@ -89,6 +97,8 @@ class SIMAVersionUtils {
             $rules = SIMAv4_1_Spec::getConversionToV42();
         } elseif ($fromVersion === '4.2' && $toVersion === '4.1') {
             $rules = SIMAv4_2_Spec::getConversionToV41();
+        } elseif ($fromVersion === '3.0' && $toVersion === '4.2') {
+            $rules = SIMAv3_Spec::getConversionToV42();
         }
         
         if (!$rules) {
@@ -135,6 +145,8 @@ class SIMAVersionUtils {
             $rules = SIMAv4_1_Spec::getConversionToV42();
         } elseif ($fromVersion === '4.2' && $toVersion === '4.1') {
             $rules = SIMAv4_2_Spec::getConversionToV41();
+        } elseif ($fromVersion === '3.0' && $toVersion === '4.2') {
+            $rules = SIMAv3_Spec::getConversionToV42();
         }
         
         if (!$rules || !isset($rules['filename_transform'])) {
@@ -158,6 +170,8 @@ class SIMAVersionUtils {
             $rules = SIMAv4_1_Spec::getConversionToV42();
         } elseif ($fromVersion === '4.2' && $toVersion === '4.1') {
             $rules = SIMAv4_2_Spec::getConversionToV41();
+        } elseif ($fromVersion === '3.0' && $toVersion === '4.2') {
+            $rules = SIMAv3_Spec::getConversionToV42();
         }
         
         if (!$rules || !isset($rules['directory_mapping'])) {
@@ -182,6 +196,8 @@ class SIMAVersionUtils {
             $rules = SIMAv4_1_Spec::getConversionToV42();
         } elseif ($fromVersion === '4.2' && $toVersion === '4.1') {
             $rules = SIMAv4_2_Spec::getConversionToV41();
+        } elseif ($fromVersion === '3.0' && $toVersion === '4.2') {
+            $rules = SIMAv3_Spec::getConversionToV42();
         }
         
         if (!$rules || !isset($rules['index_mapping'])) {
@@ -197,7 +213,8 @@ class SIMAVersionUtils {
     public static function canConvert($fromVersion, $toVersion) {
         $supported = [
             '4.1' => ['4.2'],
-            '4.2' => ['4.1']
+            '4.2' => ['4.1'],
+            '3.0' => ['4.2']  // ADDED: v3 to v4.2 conversion
         ];
         
         return isset($supported[$fromVersion]) && 
@@ -246,59 +263,65 @@ class SIMAVersionUtils {
         
         foreach ($domains as $domain) {
             $domainPath = $basePath . '/' . $domain;
-            if (!is_dir($domainPath)) continue;
             
-            $tree[$domain] = self::scanDomain($domainPath, $domain, $categories, $basePath);
+            if (!is_dir($domainPath)) {
+                continue;
+            }
+            
+            $tree[$domain] = [
+                'total_files' => 0,
+                'categories' => []
+            ];
+            
+            // Scan for files in domain
+            if (isset($categories[$domain])) {
+                foreach ($categories[$domain] as $category) {
+                    $categoryPath = $domainPath . '/' . $category;
+                    
+                    if (is_dir($categoryPath)) {
+                        $files = glob($categoryPath . '/*.md');
+                    } else {
+                        // For v3, categories might be part of filename
+                        $files = glob($domainPath . '/*' . $category . '*.md');
+                    }
+                    
+                    if (!empty($files)) {
+                        $tree[$domain]['categories'][$category] = [
+                            'file_count' => count($files),
+                            'files' => []
+                        ];
+                        
+                        foreach ($files as $file) {
+                            $relativePath = str_replace($basePath . '/', '', $file);
+                            $tree[$domain]['categories'][$category]['files'][] = [
+                                'filename' => basename($file),
+                                'relative_path' => $relativePath
+                            ];
+                            $tree[$domain]['total_files']++;
+                        }
+                    }
+                }
+            } else {
+                // Scan all files in domain directly
+                $files = glob($domainPath . '/*.md');
+                if (!empty($files)) {
+                    $tree[$domain]['categories']['root'] = [
+                        'file_count' => count($files),
+                        'files' => []
+                    ];
+                    
+                    foreach ($files as $file) {
+                        $relativePath = str_replace($basePath . '/', '', $file);
+                        $tree[$domain]['categories']['root']['files'][] = [
+                            'filename' => basename($file),
+                            'relative_path' => $relativePath
+                        ];
+                        $tree[$domain]['total_files']++;
+                    }
+                }
+            }
         }
         
         return $tree;
-    }
-    
-    /**
-     * Scan domain directory
-     */
-    private static function scanDomain($domainPath, $domainName, $categories, $basePath) {
-        $domain = [
-            'name' => $domainName,
-            'path' => $domainPath,
-            'categories' => [],
-            'total_files' => 0
-        ];
-        
-        foreach ($categories as $category) {
-            $categoryPath = $domainPath . '/' . $category;
-            if (!is_dir($categoryPath)) continue;
-            
-            $files = glob($categoryPath . '/*.md');
-            $fileList = [];
-            
-            foreach ($files as $file) {
-                $filename = basename($file);
-                
-                // Skip index files
-                if (stripos($filename, 'index') !== false || 
-                    stripos($filename, 'master') !== false) {
-                    continue;
-                }
-                
-                $fileList[] = [
-                    'filename' => $filename,
-                    'path' => $file,
-                    'relative_path' => str_replace($basePath . '/', '', $file)
-                ];
-            }
-            
-            if (!empty($fileList)) {
-                $domain['categories'][$category] = [
-                    'name' => $category,
-                    'path' => $categoryPath,
-                    'files' => $fileList,
-                    'file_count' => count($fileList)
-                ];
-                $domain['total_files'] += count($fileList);
-            }
-        }
-        
-        return $domain;
     }
 }
