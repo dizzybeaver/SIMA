@@ -10,6 +10,9 @@
  * Location: /support/php/
  */
 
+// Start output buffering to catch any stray output
+ob_start();
+
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
 ini_set('log_errors', '1');
@@ -83,6 +86,22 @@ function loadRequiredFiles() {
 }
 
 /**
+ * Fallback JSON response if sima-common.php not loaded
+ */
+function fallbackJsonResponse($success, $data = [], $error = null) {
+    ob_clean();
+    header('Content-Type: application/json');
+    $response = ['success' => $success];
+    if ($success) {
+        $response = array_merge($response, $data);
+    } else {
+        $response['error'] = $error;
+    }
+    echo json_encode($response);
+    exit;
+}
+
+/**
  * Get asset paths
  */
 function getAssetPaths() {
@@ -106,6 +125,8 @@ $ASSET_PATHS = getAssetPaths();
 
 // Handle AJAX requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Clear any buffered output
+    ob_clean();
     header('Content-Type: application/json');
     
     try {
@@ -132,8 +153,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 loadRequiredFiles();
             } catch (Exception $e) {
-                throw new Exception("Setup error: " . $e->getMessage());
+                fallbackJsonResponse(false, [], "Setup error: " . $e->getMessage());
             }
+            
+            // Use sendJsonResponse if available, fallback otherwise
+            $jsonFunc = function_exists('sendJsonResponse') ? 'sendJsonResponse' : 'fallbackJsonResponse';
             
             // Detect version
             $detectedVersion = SIMAVersionUtils::detectVersion($validatedDir);
@@ -145,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tree = SIMAVersionUtils::scanWithVersion($validatedDir, $versionInfo['version']);
             $stats = SIMAVersionUtils::getStats($validatedDir, $versionInfo['version']);
             
-            sendJsonResponse(true, [
+            $jsonFunc(true, [
                 'tree' => $tree,
                 'base_path' => $validatedDir,
                 'version_info' => $versionInfo,
@@ -196,11 +220,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
     } catch (Exception $e) {
-        sendJsonResponse(false, [], $e->getMessage());
+        ob_clean();
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+        exit;
     }
     
     exit;
 }
+
+// End output buffering for HTML page
+ob_end_clean();
 
 $defaultPath = $AUTO_DETECTED_ROOT ?? '/home/joe/sima';
 $autoDetectMsg = $AUTO_DETECTED_ROOT 
