@@ -123,12 +123,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $validatedDir = realpath($directory);
             
-            if (!file_exists($validatedDir . '/generic') || 
-                !file_exists($validatedDir . '/platforms')) {
-                throw new Exception("This doesn't appear to be a SIMA directory (missing generic/ or platforms/)");
+            // Try to load required files - this validates it's a SIMA directory
+            try {
+                loadRequiredFiles($validatedDir);
+            } catch (Exception $e) {
+                throw new Exception("Not a valid SIMA directory: " . $e->getMessage());
             }
             
-            loadRequiredFiles($validatedDir);
+            // Detect version
+            $detectedVersion = SIMAVersionUtils::detectVersion($validatedDir);
+            if ($detectedVersion === 'unknown') {
+                throw new Exception("Could not detect SIMA version");
+            }
             
             $versionInfo = SIMAVersionUtils::getVersionInfo($validatedDir);
             $tree = SIMAVersionUtils::scanWithVersion($validatedDir, $versionInfo['version']);
