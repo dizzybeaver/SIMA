@@ -3,40 +3,34 @@
  * sima-export-tool.php
  * 
  * SIMA Knowledge Export Tool
- * Version: 4.3.0
+ * Version: 4.3.1
  * Date: 2025-11-23
  * 
- * Purpose: Export SIMA knowledge with version awareness
+ * FIXED: Proper scanner integration, no inline JS/CSS
  * Location: /support/php/
- * 
- * MODIFIED: 
- * - Extracted JS to sima-export.js
- * - Extracted CSS to sima-styles.css
- * - Smart path detection for CSS/JS loading
- * - Directory validation on scan (not on load)
- * - ≤350 lines
  */
 
-// Disable error display for clean JSON responses
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
 ini_set('log_errors', '1');
 
+if (!defined('EXPORT_DIR')) {
+    define('EXPORT_DIR', __DIR__ . '/../../exports');
+}
+
 /**
- * Auto-detect SIMA root (optional - doesn't block UI)
+ * Auto-detect SIMA root
  */
 function findSIMARoot($startPath = null) {
     if ($startPath === null) {
         $startPath = __DIR__;
     }
     
-    // Check current directory
     if (file_exists($startPath . '/generic') && 
         file_exists($startPath . '/platforms')) {
         return $startPath;
     }
     
-    // Check parent directories (up to 5 levels)
     $current = $startPath;
     for ($i = 0; $i < 5; $i++) {
         $parent = dirname($current);
@@ -71,30 +65,21 @@ function loadRequiredFiles($simaRoot) {
         throw new Exception("Support directory not found: {$phpDir}");
     }
     
-    $missing = [];
     foreach ($required as $file) {
         $filepath = $phpDir . '/' . $file;
         if (!file_exists($filepath)) {
-            $missing[] = $file;
+            throw new Exception("Missing file: {$file}");
         }
-    }
-    
-    if (!empty($missing)) {
-        throw new Exception("Missing files: " . implode(', ', $missing));
-    }
-    
-    foreach ($required as $file) {
-        require_once $phpDir . '/' . $file;
+        require_once $filepath;
     }
 }
 
 /**
- * Detect asset paths (CSS/JS) based on script location
+ * Detect asset paths
  */
 function getAssetPaths() {
     $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
     
-    // If in /support/php/ directory
     if (strpos($scriptDir, '/support/php') !== false) {
         return [
             'css' => $scriptDir . '/css/',
@@ -102,14 +87,12 @@ function getAssetPaths() {
         ];
     }
     
-    // If in root or other location
     return [
         'css' => '/css/',
         'js' => '/js/'
     ];
 }
 
-// Try to auto-detect, but don't block if it fails
 $AUTO_DETECTED_ROOT = findSIMARoot();
 $ASSET_PATHS = getAssetPaths();
 
@@ -127,7 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("Please enter a SIMA directory path");
             }
             
-            // Validate directory
             $directory = rtrim($directory, '/');
             if (!is_dir($directory)) {
                 throw new Exception("Directory not found: {$directory}");
@@ -138,19 +120,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $validatedDir = realpath($directory);
             
-            // Check if it looks like SIMA
             if (!file_exists($validatedDir . '/generic') || 
                 !file_exists($validatedDir . '/platforms')) {
-                throw new Exception("This doesn't appear to be a SIMA directory (missing generic/ or platforms/)");
+                throw new Exception("Not a SIMA directory (missing generic/ or platforms/)");
             }
             
-            // Load required files
             loadRequiredFiles($validatedDir);
             
-            // Scan
+            // Use proper scanner
             $versionInfo = SIMAVersionUtils::getVersionInfo($validatedDir);
             $tree = SIMAVersionUtils::scanWithVersion($validatedDir, $versionInfo['version']);
-            $stats = SIMAVersionUtils::getStats($validatedDir, $versionInfo['version']);
+            
+            // Get stats
+            $scanResult = SIMAScanner::scanComplete($validatedDir);
+            $stats = SIMATreeFormatter::generateStats($scanResult);
             
             sendJsonResponse(true, [
                 'tree' => $tree,
@@ -167,8 +150,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             $validatedBase = realpath($baseDir);
-            
-            // Load required files
             loadRequiredFiles($validatedBase);
             
             $archiveName = $_POST['archive_name'] ?? 'SIMA-Export';
@@ -213,11 +194,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// Show HTML UI
 $defaultPath = $AUTO_DETECTED_ROOT ?? '/home/joe/sima';
 $autoDetectMsg = $AUTO_DETECTED_ROOT 
     ? "✓ Auto-detected: {$AUTO_DETECTED_ROOT}" 
-    : "⚠ Could not auto-detect SIMA location - please enter path manually";
+    : "⚠ Could not auto-detect - please enter path manually";
 $autoDetectClass = $AUTO_DETECTED_ROOT ? 'success-msg' : 'warning-msg';
 ?>
 <!DOCTYPE html>
@@ -250,7 +230,7 @@ $autoDetectClass = $AUTO_DETECTED_ROOT ? 'success-msg' : 'warning-msg';
                        id="simaDirectory" 
                        value="<?= htmlspecialchars($defaultPath) ?>" 
                        placeholder="/home/joe/sima">
-                <small>Enter the full path to your SIMA installation (must contain generic/ and platforms/ directories)</small>
+                <small>Enter full path (must contain generic/ and platforms/)</small>
             </div>
             <div class="form-group">
                 <label for="sourceVersion">Source Version:</label>
