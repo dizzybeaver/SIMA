@@ -2,16 +2,11 @@
  * sima-export.js
  * 
  * JavaScript for SIMA Export Tool
- * Version: 4.3.0
+ * Version: 4.3.1
  * Date: 2025-11-23
  * 
- * Purpose: Client-side logic for SIMA knowledge export
+ * FIXED: Properly handles scanner output
  * Location: /support/php/js/
- * 
- * MODIFIED:
- * - Extracted from sima-export-tool.php
- * - Universal/reusable functions
- * - ≤350 lines
  */
 
 // Global state
