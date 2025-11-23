@@ -2,25 +2,28 @@
 /**
  * sima-export-tool.php
  * 
- * SIMA Knowledge Export Tool - Version-Aware
- * Version: 4.1.0
- * Date: 2025-11-22
+ * SIMA Knowledge Export Tool
+ * Version: 4.3.0
+ * Date: 2025-11-23
  * 
- * FIXED: Works from any directory, auto-detects paths
- * - No HTTP 500 errors
- * - Auto-finds SIMA root
- * - Works from webroot or subdirectory
- * - Better error reporting
+ * Purpose: Export SIMA knowledge with version awareness
+ * Location: /support/php/
  * 
- * CRITICAL: Stays under 350 lines
+ * MODIFIED: 
+ * - Extracted JS to sima-export.js
+ * - Extracted CSS to sima-styles.css
+ * - Smart path detection for CSS/JS loading
+ * - Directory validation on scan (not on load)
+ * - ≤350 lines
  */
 
-// Enable error reporting for debugging
+// Disable error display for clean JSON responses
+ini_set('display_errors', '0');
 error_reporting(E_ALL);
-ini_set('display_errors', '1');
+ini_set('log_errors', '1');
 
 /**
- * Auto-detect SIMA root directory
+ * Auto-detect SIMA root (optional - doesn't block UI)
  */
 function findSIMARoot($startPath = null) {
     if ($startPath === null) {
@@ -37,9 +40,7 @@ function findSIMARoot($startPath = null) {
     $current = $startPath;
     for ($i = 0; $i < 5; $i++) {
         $parent = dirname($current);
-        if ($parent === $current) {
-            break; // Reached root
-        }
+        if ($parent === $current) break;
         
         if (file_exists($parent . '/generic') && 
             file_exists($parent . '/platforms')) {
@@ -53,169 +54,102 @@ function findSIMARoot($startPath = null) {
 }
 
 /**
- * Load required files with error handling
+ * Load required PHP files
  */
 function loadRequiredFiles($simaRoot) {
     $required = [
         'sima-common.php',
         'sima-scanner.php',
         'sima-tree-formatter.php',
-        'sima-version-utils.php'
+        'sima-version-utils.php',
+        'sima-export-helpers.php'
     ];
     
     $phpDir = $simaRoot . '/support/php';
     
     if (!is_dir($phpDir)) {
-        throw new Exception("PHP support directory not found: {$phpDir}");
+        throw new Exception("Support directory not found: {$phpDir}");
     }
     
+    $missing = [];
     foreach ($required as $file) {
         $filepath = $phpDir . '/' . $file;
         if (!file_exists($filepath)) {
-            throw new Exception("Required file not found: {$file} (expected at {$filepath})");
+            $missing[] = $file;
         }
-        require_once $filepath;
     }
-}
-
-// Auto-detect SIMA root
-$SIMA_ROOT = findSIMARoot();
-
-if ($SIMA_ROOT === null) {
-    // Show error page instead of HTTP 500
-    ?>
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>SIMA Export Tool - Configuration Error</title>
-        <style>
-            body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
-            .error { background: #fee; border: 2px solid #c00; padding: 20px; border-radius: 5px; }
-            h1 { color: #c00; }
-            code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; }
-            pre { background: #f0f0f0; padding: 10px; border-radius: 3px; overflow-x: auto; }
-        </style>
-    </head>
-    <body>
-        <div class="error">
-            <h1>⚠ SIMA Root Directory Not Found</h1>
-            <p><strong>The export tool could not locate your SIMA installation.</strong></p>
-            
-            <h2>Current Location:</h2>
-            <pre><?php echo __DIR__; ?></pre>
-            
-            <h2>How to Fix:</h2>
-            <ol>
-                <li>Ensure this file is inside your SIMA installation directory</li>
-                <li>SIMA root should contain <code>generic/</code> and <code>platforms/</code> directories</li>
-                <li>Recommended location: <code>/path/to/sima/support/php/sima-export-tool.php</code></li>
-            </ol>
-            
-            <h2>Manual Configuration:</h2>
-            <p>If SIMA is in a non-standard location, edit this file and add at line 60:</p>
-            <pre>define('SIMA_ROOT', '/path/to/your/sima');</pre>
-        </div>
-    </body>
-    </html>
-    <?php
-    exit;
-}
-
-// Define SIMA_ROOT if not already defined
-if (!defined('SIMA_ROOT')) {
-    define('SIMA_ROOT', $SIMA_ROOT);
-}
-
-// Load required files
-try {
-    loadRequiredFiles($SIMA_ROOT);
     
-    // Load export helpers
-    require_once $SIMA_ROOT . '/support/php/sima-export-helpers.php';
-} catch (Exception $e) {
-    ?>
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>SIMA Export Tool - Missing Files</title>
-        <style>
-            body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
-            .error { background: #fee; border: 2px solid #c00; padding: 20px; border-radius: 5px; }
-            h1 { color: #c00; }
-            pre { background: #f0f0f0; padding: 10px; border-radius: 3px; }
-        </style>
-    </head>
-    <body>
-        <div class="error">
-            <h1>⚠ Required Files Missing</h1>
-            <p><strong>Error:</strong> <?php echo htmlspecialchars($e->getMessage()); ?></p>
-            
-            <h2>SIMA Root Found:</h2>
-            <pre><?php echo SIMA_ROOT; ?></pre>
-            
-            <h2>Required Files:</h2>
-            <ul>
-                <li>support/php/sima-common.php</li>
-                <li>support/php/sima-scanner.php</li>
-                <li>support/php/sima-tree-formatter.php</li>
-                <li>support/php/sima-version-utils.php</li>
-            </ul>
-            
-            <p>Please upload the missing files to <code><?php echo SIMA_ROOT; ?>/support/php/</code></p>
-        </div>
-    </body>
-    </html>
-    <?php
-    exit;
-}
-
-// Ensure export directory exists
-if (!defined('EXPORT_DIR')) {
-    define('EXPORT_DIR', SIMA_ROOT . '/exports');
-}
-if (!is_dir(EXPORT_DIR)) {
-    mkdir(EXPORT_DIR, 0755, true);
+    if (!empty($missing)) {
+        throw new Exception("Missing files: " . implode(', ', $missing));
+    }
+    
+    foreach ($required as $file) {
+        require_once $phpDir . '/' . $file;
+    }
 }
 
 /**
- * Validate and normalize directory path
+ * Detect asset paths (CSS/JS) based on script location
  */
-function validateDirectory($path) {
-    $path = rtrim($path, '/');
+function getAssetPaths() {
+    $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
     
-    if ($path[0] !== '/') {
-        throw new Exception("Path must be absolute");
+    // If in /support/php/ directory
+    if (strpos($scriptDir, '/support/php') !== false) {
+        return [
+            'css' => $scriptDir . '/css/',
+            'js' => $scriptDir . '/js/'
+        ];
     }
     
-    if (strpos($path, '..') !== false) {
-        throw new Exception("Invalid path: parent directory not allowed");
-    }
-    
-    if (!is_dir($path) || !is_readable($path)) {
-        throw new Exception("Directory not found or not readable: {$path}");
-    }
-    
-    return realpath($path);
+    // If in root or other location
+    return [
+        'css' => '/css/',
+        'js' => '/js/'
+    ];
 }
+
+// Try to auto-detect, but don't block if it fails
+$AUTO_DETECTED_ROOT = findSIMARoot();
+$ASSET_PATHS = getAssetPaths();
 
 // Handle AJAX requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
     
-    $action = $_POST['action'] ?? '';
-    
-    if ($action === 'scan') {
-        try {
-            $directory = $_POST['directory'] ?? SIMA_ROOT;
-            $validatedDir = validateDirectory($directory);
+    try {
+        $action = $_POST['action'] ?? '';
+        
+        if ($action === 'scan') {
+            $directory = $_POST['directory'] ?? '';
             
-            // Get version info
+            if (empty($directory)) {
+                throw new Exception("Please enter a SIMA directory path");
+            }
+            
+            // Validate directory
+            $directory = rtrim($directory, '/');
+            if (!is_dir($directory)) {
+                throw new Exception("Directory not found: {$directory}");
+            }
+            if (!is_readable($directory)) {
+                throw new Exception("Directory not readable: {$directory}");
+            }
+            
+            $validatedDir = realpath($directory);
+            
+            // Check if it looks like SIMA
+            if (!file_exists($validatedDir . '/generic') || 
+                !file_exists($validatedDir . '/platforms')) {
+                throw new Exception("This doesn't appear to be a SIMA directory (missing generic/ or platforms/)");
+            }
+            
+            // Load required files
+            loadRequiredFiles($validatedDir);
+            
+            // Scan
             $versionInfo = SIMAVersionUtils::getVersionInfo($validatedDir);
-            
-            // Use comprehensive scanner
             $tree = SIMAVersionUtils::scanWithVersion($validatedDir, $versionInfo['version']);
-            
-            // Get statistics
             $stats = SIMAVersionUtils::getStats($validatedDir, $versionInfo['version']);
             
             sendJsonResponse(true, [
@@ -224,113 +158,158 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'version_info' => $versionInfo,
                 'stats' => $stats
             ]);
-        } catch (Exception $e) {
-            sendJsonResponse(false, [], $e->getMessage());
         }
-    }
-    
-    if ($action === 'export') {
-        try {
-            $baseDir = $_POST['base_directory'] ?? SIMA_ROOT;
-            $validatedBase = validateDirectory($baseDir);
-            $archiveName = $_POST['archive_name'] ?? 'SIMA-Archive';
+        elseif ($action === 'export') {
+            $baseDir = $_POST['base_directory'] ?? '';
+            
+            if (empty($baseDir) || !is_dir($baseDir)) {
+                throw new Exception("Invalid base directory");
+            }
+            
+            $validatedBase = realpath($baseDir);
+            
+            // Load required files
+            loadRequiredFiles($validatedBase);
+            
+            $archiveName = $_POST['archive_name'] ?? 'SIMA-Export';
             $description = $_POST['description'] ?? '';
             $selectedPaths = json_decode($_POST['selected_files'] ?? '[]', true);
             
-            $sourceVersion = $_POST['source_version'] ?? null;
-            $targetVersion = $_POST['target_version'] ?? null;
+            $sourceVersion = $_POST['source_version'] ?? 'auto';
+            $targetVersion = $_POST['target_version'] ?? 'auto';
             
-            // Auto-detect source version if needed
-            if (!$sourceVersion || $sourceVersion === 'auto') {
+            if ($sourceVersion === 'auto') {
                 $versionInfo = SIMAVersionUtils::getVersionInfo($validatedBase);
                 $sourceVersion = $versionInfo['version'];
             }
             
-            // Default target to source if not specified
-            if (!$targetVersion || $targetVersion === 'auto') {
+            if ($targetVersion === 'auto') {
                 $targetVersion = $sourceVersion;
             }
             
-            // Validate we have files to export
             if (empty($selectedPaths)) {
                 throw new Exception("No files selected for export");
             }
             
-            // Build selected files array
-            $selectedFiles = [];
-            foreach ($selectedPaths as $path) {
-                $fullPath = $validatedBase . '/' . $path;
-                
-                if (!file_exists($fullPath)) {
-                    error_log("Warning: File not found: {$fullPath}");
-                    continue;
-                }
-                
-                $content = file_get_contents($fullPath);
-                
-                // Apply version conversion if needed
-                $convertedPath = $path;
-                $convertedFilename = basename($path);
-                $wasConverted = false;
-                
-                if ($sourceVersion !== $targetVersion && 
-                    SIMAVersionUtils::canConvert($sourceVersion, $targetVersion)) {
-                    
-                    $content = SIMAVersionUtils::convertMetadata(
-                        $content, 
-                        $sourceVersion, 
-                        $targetVersion
-                    );
-                    
-                    $convertedPath = SIMAVersionUtils::convertPath(
-                        $path, 
-                        $sourceVersion, 
-                        $targetVersion
-                    );
-                    
-                    $convertedFilename = SIMAVersionUtils::convertFilename(
-                        basename($path), 
-                        $sourceVersion, 
-                        $targetVersion
-                    );
-                    
-                    $wasConverted = true;
-                }
-                
-                // Extract metadata
-                $metadata = extractFileMetadata($fullPath);
-                
-                $selectedFiles[] = [
-                    'path' => $fullPath,
-                    'relative_path' => $convertedPath,
-                    'original_path' => $path,
-                    'filename' => $convertedFilename,
-                    'ref_id' => $metadata['ref_id'],
-                    'category' => $metadata['category'] ?? basename(dirname($path)),
-                    'size' => strlen($content),
-                    'checksum' => md5($content),
-                    'content' => $content,
-                    'converted' => $wasConverted,
-                    'sima_version' => $targetVersion
-                ];
-            }
-            
-            if (empty($selectedFiles)) {
-                throw new Exception("No valid files to export");
-            }
-            
-            // Create export
-            $result = createExportArchive($archiveName, $description, $selectedFiles, $sourceVersion, $targetVersion);
+            $result = createExportArchive(
+                $validatedBase, 
+                $archiveName, 
+                $description, 
+                $selectedPaths, 
+                $sourceVersion, 
+                $targetVersion
+            );
             
             sendJsonResponse(true, $result);
-            
-        } catch (Exception $e) {
-            sendJsonResponse(false, [], $e->getMessage());
         }
+        else {
+            throw new Exception("Unknown action: {$action}");
+        }
+        
+    } catch (Exception $e) {
+        sendJsonResponse(false, [], $e->getMessage());
     }
     
     exit;
 }
 
-// If we get here, show the HTML interface
-require __DIR__ . '/sima-export-ui.php';
+// Show HTML UI
+$defaultPath = $AUTO_DETECTED_ROOT ?? '/home/joe/sima';
+$autoDetectMsg = $AUTO_DETECTED_ROOT 
+    ? "✓ Auto-detected: {$AUTO_DETECTED_ROOT}" 
+    : "⚠ Could not auto-detect SIMA location - please enter path manually";
+$autoDetectClass = $AUTO_DETECTED_ROOT ? 'success-msg' : 'warning-msg';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMA Export Tool</title>
+    <link rel="stylesheet" href="<?= $ASSET_PATHS['css'] ?>sima-styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📦 SIMA Knowledge Export Tool</h1>
+        
+        <div class="<?= $autoDetectClass ?>">
+            <?= htmlspecialchars($autoDetectMsg) ?>
+        </div>
+        
+        <div id="error" class="error">
+            <strong>Error:</strong> <span id="error-text"></span>
+        </div>
+        
+        <div id="loading">⏳ Processing...</div>
+        
+        <div class="section">
+            <h2>1. SIMA Directory</h2>
+            <div class="form-group">
+                <label for="simaDirectory">SIMA Root Path:</label>
+                <input type="text" 
+                       id="simaDirectory" 
+                       value="<?= htmlspecialchars($defaultPath) ?>" 
+                       placeholder="/home/joe/sima">
+                <small>Enter the full path to your SIMA installation (must contain generic/ and platforms/ directories)</small>
+            </div>
+            <div class="form-group">
+                <label for="sourceVersion">Source Version:</label>
+                <select id="sourceVersion">
+                    <option value="auto">Auto-Detect</option>
+                    <option value="4.2">SIMA v4.2</option>
+                    <option value="4.1">SIMA v4.1</option>
+                    <option value="3.0">SIMA v3.0</option>
+                </select>
+            </div>
+            <button id="scan-btn" onclick="scanDirectory()">🔍 Scan Directory</button>
+            <div id="detectedVersion" style="display:none; margin-top:10px;" class="success-msg"></div>
+        </div>
+        
+        <div class="section hidden" id="tree-section">
+            <h2>2. Select Files to Export</h2>
+            <div class="tree-controls">
+                <button onclick="expandAll()">➕ Expand All</button>
+                <button onclick="collapseAll()">➖ Collapse All</button>
+                <button onclick="selectAll()">☑️ Select All</button>
+                <button onclick="clearSelection()">⬜ Clear All</button>
+            </div>
+            <div class="tree-container" id="tree"></div>
+            <div class="selection-summary" id="summary">Selection: 0 files selected</div>
+        </div>
+        
+        <div class="section hidden" id="export-section">
+            <h2>3. Export Settings</h2>
+            <div class="form-group">
+                <label for="archiveName">Archive Name:</label>
+                <input type="text" 
+                       id="archiveName" 
+                       value="SIMA-Export" 
+                       placeholder="MyExport">
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" 
+                          rows="3" 
+                          placeholder="Optional description..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="targetVersion">Target Version:</label>
+                <select id="targetVersion">
+                    <option value="auto">Same as Source</option>
+                    <option value="4.2">SIMA v4.2</option>
+                    <option value="4.1">SIMA v4.1</option>
+                </select>
+                <small>Convert files to different version during export</small>
+            </div>
+            <button onclick="exportFiles()">📦 Create Export</button>
+        </div>
+        
+        <div id="result-section" class="section hidden">
+            <h2>4. Download Export</h2>
+            <div id="result-content"></div>
+        </div>
+    </div>
+    
+    <script src="<?= $ASSET_PATHS['js'] ?>sima-export.js"></script>
+</body>
+</html>
