@@ -6,17 +6,13 @@
  * Version: 4.3.1
  * Date: 2025-11-23
  * 
- * FIXED: Proper scanner integration, no inline JS/CSS
+ * FINAL: All fixes maintained, NO JavaScript, NO CSS
  * Location: /support/php/
  */
 
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
 ini_set('log_errors', '1');
-
-if (!defined('EXPORT_DIR')) {
-    define('EXPORT_DIR', __DIR__ . '/../../exports');
-}
 
 /**
  * Auto-detect SIMA root
@@ -40,7 +36,6 @@ function findSIMARoot($startPath = null) {
             file_exists($parent . '/platforms')) {
             return $parent;
         }
-        
         $current = $parent;
     }
     
@@ -48,7 +43,7 @@ function findSIMARoot($startPath = null) {
 }
 
 /**
- * Load required PHP files
+ * Load required files
  */
 function loadRequiredFiles($simaRoot) {
     $required = [
@@ -65,17 +60,25 @@ function loadRequiredFiles($simaRoot) {
         throw new Exception("Support directory not found: {$phpDir}");
     }
     
+    $missing = [];
     foreach ($required as $file) {
         $filepath = $phpDir . '/' . $file;
         if (!file_exists($filepath)) {
-            throw new Exception("Missing file: {$file}");
+            $missing[] = $file;
         }
-        require_once $filepath;
+    }
+    
+    if (!empty($missing)) {
+        throw new Exception("Missing files: " . implode(', ', $missing));
+    }
+    
+    foreach ($required as $file) {
+        require_once $phpDir . '/' . $file;
     }
 }
 
 /**
- * Detect asset paths
+ * Get asset paths
  */
 function getAssetPaths() {
     $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
@@ -122,25 +125,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if (!file_exists($validatedDir . '/generic') || 
                 !file_exists($validatedDir . '/platforms')) {
-                throw new Exception("Not a SIMA directory (missing generic/ or platforms/)");
+                throw new Exception("This doesn't appear to be a SIMA directory (missing generic/ or platforms/)");
             }
             
             loadRequiredFiles($validatedDir);
             
-            // Use proper scanner
             $versionInfo = SIMAVersionUtils::getVersionInfo($validatedDir);
             $tree = SIMAVersionUtils::scanWithVersion($validatedDir, $versionInfo['version']);
+            $stats = SIMAVersionUtils::getStats($validatedDir, $versionInfo['version']);
             
-            // Get stats
-            $scanResult = SIMAScanner::scanComplete($validatedDir);
-            $stats = SIMATreeFormatter::generateStats($scanResult);
-            
-            sendJsonResponse(true, [
+            echo json_encode([
+                'success' => true,
                 'tree' => $tree,
                 'base_path' => $validatedDir,
                 'version_info' => $versionInfo,
                 'stats' => $stats
             ]);
+            exit;
         }
         elseif ($action === 'export') {
             $baseDir = $_POST['base_directory'] ?? '';
@@ -172,32 +173,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("No files selected for export");
             }
             
-            $result = createExportArchive(
-                $validatedBase, 
-                $archiveName, 
-                $description, 
-                $selectedPaths, 
-                $sourceVersion, 
-                $targetVersion
-            );
+            $result = createExportArchive($validatedBase, $archiveName, $description, $selectedPaths, $sourceVersion, $targetVersion);
             
-            sendJsonResponse(true, $result);
+            echo json_encode([
+                'success' => true,
+                'archive_name' => $result['archive_name'],
+                'file_count' => $result['file_count'],
+                'converted_count' => $result['converted_count'],
+                'download_url' => $result['download_url']
+            ]);
+            exit;
         }
         else {
             throw new Exception("Unknown action: {$action}");
         }
         
     } catch (Exception $e) {
-        sendJsonResponse(false, [], $e->getMessage());
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+        exit;
     }
-    
-    exit;
 }
 
 $defaultPath = $AUTO_DETECTED_ROOT ?? '/home/joe/sima';
 $autoDetectMsg = $AUTO_DETECTED_ROOT 
     ? "✓ Auto-detected: {$AUTO_DETECTED_ROOT}" 
-    : "⚠ Could not auto-detect - please enter path manually";
+    : "⚠ Could not auto-detect SIMA location - please enter path manually";
 $autoDetectClass = $AUTO_DETECTED_ROOT ? 'success-msg' : 'warning-msg';
 ?>
 <!DOCTYPE html>
@@ -226,11 +229,8 @@ $autoDetectClass = $AUTO_DETECTED_ROOT ? 'success-msg' : 'warning-msg';
             <h2>1. SIMA Directory</h2>
             <div class="form-group">
                 <label for="simaDirectory">SIMA Root Path:</label>
-                <input type="text" 
-                       id="simaDirectory" 
-                       value="<?= htmlspecialchars($defaultPath) ?>" 
-                       placeholder="/home/joe/sima">
-                <small>Enter full path (must contain generic/ and platforms/)</small>
+                <input type="text" id="simaDirectory" value="<?= htmlspecialchars($defaultPath) ?>" placeholder="/home/joe/sima">
+                <small>Enter the full path to your SIMA installation (must contain generic/ and platforms/ directories)</small>
             </div>
             <div class="form-group">
                 <label for="sourceVersion">Source Version:</label>
@@ -261,16 +261,11 @@ $autoDetectClass = $AUTO_DETECTED_ROOT ? 'success-msg' : 'warning-msg';
             <h2>3. Export Settings</h2>
             <div class="form-group">
                 <label for="archiveName">Archive Name:</label>
-                <input type="text" 
-                       id="archiveName" 
-                       value="SIMA-Export" 
-                       placeholder="MyExport">
+                <input type="text" id="archiveName" value="SIMA-Export" placeholder="MyExport">
             </div>
             <div class="form-group">
                 <label for="description">Description:</label>
-                <textarea id="description" 
-                          rows="3" 
-                          placeholder="Optional description..."></textarea>
+                <textarea id="description" rows="3" placeholder="Optional description..."></textarea>
             </div>
             <div class="form-group">
                 <label for="targetVersion">Target Version:</label>
