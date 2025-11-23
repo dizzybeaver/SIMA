@@ -14,6 +14,14 @@ ini_set('display_errors', '0');
 error_reporting(E_ALL);
 ini_set('log_errors', '1');
 
+// Define export directory
+if (!defined('EXPORT_DIR')) {
+    define('EXPORT_DIR', __DIR__ . '/../../exports');
+    if (!is_dir(EXPORT_DIR)) {
+        mkdir(EXPORT_DIR, 0755, true);
+    }
+}
+
 /**
  * Auto-detect SIMA root
  */
@@ -43,9 +51,9 @@ function findSIMARoot($startPath = null) {
 }
 
 /**
- * Load required files
+ * Load required files from same directory
  */
-function loadRequiredFiles($simaRoot) {
+function loadRequiredFiles() {
     $required = [
         'sima-common.php',
         'sima-scanner.php',
@@ -54,11 +62,8 @@ function loadRequiredFiles($simaRoot) {
         'sima-export-helpers.php'
     ];
     
-    $phpDir = $simaRoot . '/support/php';
-    
-    if (!is_dir($phpDir)) {
-        throw new Exception("Support directory not found: {$phpDir}");
-    }
+    // Files are in same directory as this script
+    $phpDir = __DIR__;
     
     $missing = [];
     foreach ($required as $file) {
@@ -123,11 +128,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $validatedDir = realpath($directory);
             
-            // Try to load required files - this validates it's a SIMA directory
+            // Try to load required files - this validates setup
             try {
-                loadRequiredFiles($validatedDir);
+                loadRequiredFiles();
             } catch (Exception $e) {
-                throw new Exception("Not a valid SIMA directory: " . $e->getMessage());
+                throw new Exception("Setup error: " . $e->getMessage());
             }
             
             // Detect version
@@ -140,14 +145,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tree = SIMAVersionUtils::scanWithVersion($validatedDir, $versionInfo['version']);
             $stats = SIMAVersionUtils::getStats($validatedDir, $versionInfo['version']);
             
-            echo json_encode([
-                'success' => true,
+            sendJsonResponse(true, [
                 'tree' => $tree,
                 'base_path' => $validatedDir,
                 'version_info' => $versionInfo,
                 'stats' => $stats
             ]);
-            exit;
         }
         elseif ($action === 'export') {
             $baseDir = $_POST['base_directory'] ?? '';
@@ -157,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             $validatedBase = realpath($baseDir);
-            loadRequiredFiles($validatedBase);
+            loadRequiredFiles();
             
             $archiveName = $_POST['archive_name'] ?? 'SIMA-Export';
             $description = $_POST['description'] ?? '';
@@ -181,26 +184,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $result = createExportArchive($validatedBase, $archiveName, $description, $selectedPaths, $sourceVersion, $targetVersion);
             
-            echo json_encode([
-                'success' => true,
+            sendJsonResponse(true, [
                 'archive_name' => $result['archive_name'],
                 'file_count' => $result['file_count'],
                 'converted_count' => $result['converted_count'],
                 'download_url' => $result['download_url']
             ]);
-            exit;
         }
         else {
             throw new Exception("Unknown action: {$action}");
         }
         
     } catch (Exception $e) {
-        echo json_encode([
-            'success' => false,
-            'error' => $e->getMessage()
-        ]);
-        exit;
+        sendJsonResponse(false, [], $e->getMessage());
     }
+    
+    exit;
 }
 
 $defaultPath = $AUTO_DETECTED_ROOT ?? '/home/joe/sima';
