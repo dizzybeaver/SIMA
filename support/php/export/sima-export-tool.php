@@ -2,11 +2,11 @@
 /**
  * sima-export-tool.php
  * 
- * Version: 1.6.0
+ * Version: 1.6.1
  * Date: 2025-11-23
  * Purpose: SIMA directory scanner and export tool
  * 
- * FIXED: open_basedir violations, proper file structure
+ * FIXED: Proper modular structure, version detection, and file organization
  */
 
 // Buffer all output
@@ -24,18 +24,16 @@ if (!defined('EXPORT_DIR')) {
 
 /**
  * Load required PHP helper files
- * CRITICAL: Loads sima-common.php FIRST
  */
 function loadRequiredFiles() {
     $required = [
-        'sima-common.php',        // FIRST - has sendJsonResponse()
+        'sima-common.php',        // Shared functions
         'sima-scanner.php',       // Recursive directory scanning
         'sima-tree-formatter.php', // Tree formatting for UI
-        'sima-version-utils.php', // Version detection (needs spec files)
+        'sima-version-utils.php', // Version detection and conversion
         'sima-export-helpers.php' // Export archive creation
     ];
     
-    // All files in same directory as this script
     $phpDir = __DIR__;
     
     // Check all files exist first
@@ -47,26 +45,114 @@ function loadRequiredFiles() {
         }
     }
     
-    // If any missing, return clean JSON error
     if (!empty($missing)) {
-        ob_clean();
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => false,
-            'error' => 'Missing required files: ' . implode(', ', $missing)
-        ]);
-        exit;
+        return ['success' => false, 'error' => 'Missing required files: ' . implode(', ', $missing)];
     }
     
     // Load all files
     foreach ($required as $file) {
         require_once $phpDir . '/' . $file;
     }
+    
+    return ['success' => true];
 }
 
 /**
- * Detect asset paths based on script location
- * js/ and css/ are subdirectories adjacent to PHP files
+ * Handle scan action
+ */
+function handleScanAction($directory) {
+    $directory = rtrim($directory, '/');
+    
+    // Validate directory exists and is readable
+    if (!is_dir($directory)) {
+        return ['success' => false, 'error' => "Directory not found: {$directory}"];
+    }
+    if (!is_readable($directory)) {
+        return ['success' => false, 'error' => "Directory not readable: {$directory}"];
+    }
+    
+    $validatedDir = realpath($directory);
+    
+    // Detect SIMA version
+    $version = SIMAVersionUtils::detectVersion($validatedDir);
+    
+    if ($version === 'unknown') {
+        return ['success' => false, 'error' => 'Could not detect SIMA version (not a valid SIMA directory)'];
+    }
+    
+    // Scan directory with version awareness
+    $scanResult = SIMAVersionUtils::scanWithVersion($validatedDir, $version);
+    
+    // Get statistics
+    $stats = SIMAVersionUtils::getStats($validatedDir, $version);
+    
+    // Format for UI
+    $formattedTree = SIMATreeFormatter::formatForUI($scanResult);
+    
+    return [
+        'success' => true,
+        'version_info' => [
+            'version' => $version,
+            'version_string' => SIMAVersionUtils::getSpec($version) ? SIMAVersionUtils::getSpec($version)::VERSION : 'Unknown'
+        ],
+        'base_path' => $validatedDir,
+        'stats' => $stats,
+        'tree' => $formattedTree
+    ];
+}
+
+/**
+ * Handle export action
+ */
+function handleExportAction($postData) {
+    $directory = $postData['base_directory'] ?? '';
+    $archiveName = $postData['archive_name'] ?? 'SIMA-Export';
+    $description = $postData['description'] ?? '';
+    $sourceVersion = $postData['source_version'] ?? '4.2';
+    $targetVersion = $postData['target_version'] ?? '4.2';
+    $selectedFiles = json_decode($postData['selected_files'] ?? '[]', true);
+    
+    if (empty($directory)) {
+        return ['success' => false, 'error' => 'No directory specified'];
+    }
+    
+    $validatedDir = realpath($directory);
+    if (!$validatedDir || !is_dir($validatedDir)) {
+        return ['success' => false, 'error' => 'Invalid directory'];
+    }
+    
+    // Create export directory if needed
+    if (!is_dir(EXPORT_DIR)) {
+        if (!mkdir(EXPORT_DIR, 0777, true)) {
+            return ['success' => false, 'error' => 'Could not create export directory'];
+        }
+    }
+    
+    // Generate export archive
+    try {
+        $exportResult = createExportArchive(
+            $validatedDir,
+            $archiveName,
+            $description,
+            $selectedFiles,
+            $sourceVersion,
+            $targetVersion
+        );
+        
+        return [
+            'success' => true,
+            'archive_name' => $exportResult['archive_name'],
+            'file_count' => $exportResult['file_count'],
+            'converted_count' => $exportResult['converted_count'],
+            'download_url' => $exportResult['download_url']
+        ];
+    } catch (Exception $e) {
+        return ['success' => false, 'error' => $e->getMessage()];
+    }
+}
+
+/**
+ * Get asset paths based on script location
  */
 function getAssetPaths() {
     $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
@@ -86,108 +172,35 @@ function getAssetPaths() {
     ];
 }
 
-$ASSET_PATHS = getAssetPaths();
-
 // Handle AJAX requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ob_clean();
     header('Content-Type: application/json');
     
+    // Load helper files
+    $loadResult = loadRequiredFiles();
+    if (!$loadResult['success']) {
+        echo json_encode($loadResult);
+        exit;
+    }
+    
+    $action = $_POST['action'] ?? '';
+    
     try {
-        // Load helper files FIRST (includes sima-common.php with sendJsonResponse)
-        loadRequiredFiles();
-        
-        $action = $_POST['action'] ?? '';
-        
         if ($action === 'scan') {
             $directory = $_POST['directory'] ?? '';
-            
-            if (empty($directory)) {
-                sendJsonResponse(false, 'Please enter a SIMA directory path');
-            }
-            
-            $directory = rtrim($directory, '/');
-            
-            // Validate directory exists and is readable
-            if (!is_dir($directory)) {
-                sendJsonResponse(false, "Directory not found: {$directory}");
-            }
-            if (!is_readable($directory)) {
-                sendJsonResponse(false, "Directory not readable: {$directory}");
-            }
-            
-            $validatedDir = realpath($directory);
-            
-            // Detect SIMA version (uses spec files)
-            $version = SIMAVersionUtils::detectVersion($validatedDir);
-            
-            if ($version === 'unknown') {
-                sendJsonResponse(false, 'Could not detect SIMA version (not a valid SIMA directory)');
-            }
-            
-            // Scan directory with version awareness
-            $scanResult = SIMAVersionUtils::scanWithVersion($validatedDir, $version);
-            
-            // Get statistics
-            $stats = SIMAVersionUtils::getStats($scanResult);
-            
-            // Format for UI
-            $formattedTree = SIMATreeFormatter::formatForUI($scanResult);
-            
-            sendJsonResponse(true, 'Scan complete', [
-                'version' => $version,
-                'path' => $validatedDir,
-                'stats' => $stats,
-                'tree' => $formattedTree
-            ]);
+            $result = handleScanAction($directory);
+            echo json_encode($result);
             
         } elseif ($action === 'export') {
-            $directory = $_POST['directory'] ?? '';
-            $format = $_POST['format'] ?? 'zip';
-            $selectedItems = json_decode($_POST['selectedItems'] ?? '[]', true);
-            
-            if (empty($directory)) {
-                sendJsonResponse(false, 'No directory specified');
-            }
-            
-            $validatedDir = realpath($directory);
-            if (!$validatedDir || !is_dir($validatedDir)) {
-                sendJsonResponse(false, 'Invalid directory');
-            }
-            
-            // Create export directory if needed
-            if (!is_dir(EXPORT_DIR)) {
-                if (!mkdir(EXPORT_DIR, 0777, true)) {
-                    sendJsonResponse(false, 'Could not create export directory');
-                }
-            }
-            
-            // Generate export archive
-            $exportFile = SIMAExportHelpers::createExport(
-                $validatedDir,
-                $selectedItems,
-                $format,
-                EXPORT_DIR
-            );
-            
-            if (!$exportFile) {
-                sendJsonResponse(false, 'Export creation failed');
-            }
-            
-            $downloadUrl = '/tmp/sima-exports/' . basename($exportFile);
-            
-            sendJsonResponse(true, 'Export created successfully', [
-                'file' => basename($exportFile),
-                'downloadUrl' => $downloadUrl,
-                'format' => $format
-            ]);
+            $result = handleExportAction($_POST);
+            echo json_encode($result);
             
         } else {
-            sendJsonResponse(false, "Unknown action: {$action}");
+            echo json_encode(['success' => false, 'error' => "Unknown action: {$action}"]);
         }
-        
     } catch (Exception $e) {
-        sendJsonResponse(false, $e->getMessage());
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
     
     exit;
@@ -195,6 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Render HTML interface
 ob_clean();
+$ASSET_PATHS = getAssetPaths();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -217,65 +231,85 @@ ob_clean();
                        id="simaDirectory" 
                        placeholder="/full/path/to/sima" 
                        class="directory-input">
-                <button onclick="scanDirectory()" class="btn-primary">Scan Directory</button>
+                <button onclick="scanDirectory()" id="scan-btn" class="btn-primary">Scan Directory</button>
             </div>
             <p class="help-text">
                 Enter the full absolute path to your SIMA directory<br>
                 Examples: /home/joe/sima, /home/joe/simav4, /home/joe/simav3
             </p>
+            <div id="detectedVersion" class="version-info" style="display: none;"></div>
         </div>
         
         <!-- Status Messages -->
-        <div id="statusMessage" class="status-message" style="display: none;"></div>
+        <div id="error" class="error-message">
+            <div id="error-text"></div>
+        </div>
+        
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <div>Scanning directory...</div>
+        </div>
         
         <!-- Scan Results -->
-        <div id="scanResults" style="display: none;">
-            <div class="section">
-                <h2>2. Scan Results</h2>
-                <div id="versionInfo" class="info-box"></div>
-                <div id="statsInfo" class="stats-grid"></div>
+        <div id="tree-section" class="section hidden">
+            <h2>2. Select Files to Export</h2>
+            <div class="selection-controls">
+                <button onclick="selectAll()" class="btn-secondary">Select All</button>
+                <button onclick="clearSelection()" class="btn-secondary">Clear Selection</button>
+                <span id="summary" class="selection-summary">Selection: 0 files selected</span>
             </div>
-            
-            <!-- File Tree -->
-            <div class="section">
-                <h2>3. Select Files to Export</h2>
-                <div class="tree-controls">
-                    <button onclick="selectAll()" class="btn-secondary">Select All</button>
-                    <button onclick="deselectAll()" class="btn-secondary">Deselect All</button>
-                    <button onclick="expandAll()" class="btn-secondary">Expand All</button>
-                    <button onclick="collapseAll()" class="btn-secondary">Collapse All</button>
+            <div id="tree" class="tree-container"></div>
+        </div>
+        
+        <!-- Export Options -->
+        <div id="export-section" class="section hidden">
+            <h2>3. Export Options</h2>
+            <div class="export-form">
+                <div class="form-group">
+                    <label for="archiveName">Archive Name:</label>
+                    <input type="text" id="archiveName" value="SIMA-Export" class="form-control">
                 </div>
-                <div id="fileTree" class="file-tree"></div>
-            </div>
-            
-            <!-- Export Options -->
-            <div class="section">
-                <h2>4. Export Options</h2>
-                <div class="export-options">
-                    <label>
-                        <input type="radio" name="format" value="zip" checked> 
-                        ZIP Archive
-                    </label>
-                    <label>
-                        <input type="radio" name="format" value="tar"> 
-                        TAR Archive
-                    </label>
-                    <label>
-                        <input type="radio" name="format" value="json"> 
-                        JSON Manifest
-                    </label>
+                
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" placeholder="Optional description of this export" class="form-control"></textarea>
                 </div>
-                <button onclick="exportSelected()" class="btn-success">Export Selected Files</button>
+                
+                <div class="version-selection">
+                    <div class="form-group">
+                        <label for="sourceVersion">Source Version:</label>
+                        <select id="sourceVersion" class="form-control">
+                            <option value="4.2">SIMA v4.2</option>
+                            <option value="4.1">SIMA v4.1</option>
+                            <option value="3.0">SIMA v3.0</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="targetVersion">Target Version:</label>
+                        <select id="targetVersion" class="form-control">
+                            <option value="4.2">SIMA v4.2</option>
+                            <option value="4.1">SIMA v4.1</option>
+                            <option value="3.0">SIMA v3.0</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="exportFiles()" class="btn-success">Create Export</button>
             </div>
         </div>
         
-        <!-- Progress Indicator -->
-        <div id="progressIndicator" class="progress" style="display: none;">
-            <div class="progress-bar"></div>
-            <div class="progress-text">Processing...</div>
+        <!-- Results Section -->
+        <div id="result-section" class="section hidden">
+            <h2>Export Results</h2>
+            <div id="result-content"></div>
         </div>
     </div>
     
-    <script src="<?php echo $ASSET_PATHS['js']; ?>sima-export-tool.js"></script>
+    <!-- JavaScript Files -->
+    <script src="<?php echo $ASSET_PATHS['js']; ?>sima-export-scan.js"></script>
+    <script src="<?php echo $ASSET_PATHS['js']; ?>sima-export-render.js"></script>
+    <script src="<?php echo $ASSET_PATHS['js']; ?>sima-export-selection.js"></script>
+    <script src="<?php echo $ASSET_PATHS['js']; ?>sima-export-export.js"></script>
 </body>
 </html>
