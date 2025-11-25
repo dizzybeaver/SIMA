@@ -3,17 +3,12 @@
  * sima-common.php
  * 
  * Shared functions for SIMA PHP tools
- * Version: 2.0.0
- * Date: 2025-11-21
+ * Version: 2.0.1
+ * Date: 2025-11-23
  * Location: /support/php/
  * 
- * MODIFIED: Added missing functions for export/import tools
+ * FIXED: Added missing sendJsonResponse function
  */
-
-// Define SIMA root if not already defined
-if (!defined('SIMA_ROOT')) {
-    define('SIMA_ROOT', '/home/joe/sima');
-}
 
 // Define SIMA version
 if (!defined('SIMA_VERSION')) {
@@ -361,3 +356,4 @@ function parseImportInstructions($content) {
         'unselected' => $unselectedByCategory
     ];
 }
+?>
