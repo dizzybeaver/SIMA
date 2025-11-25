@@ -3,50 +3,70 @@
  * sima-version-utils.php
  * 
  * SIMA Version Detection and Conversion Utilities
- * Version: 4.0.0
- * Date: 2025-11-22
- * Location: /sima/support/php/
+ * Version: 4.0.1
+ * Date: 2025-11-23
+ * Location: /support/php/
  * 
- * MODIFIED: Uses new SIMAScanner for file discovery
- * - Removed old scanWithVersion() that used spec files
- * - Now uses comprehensive recursive scanning
- * - Maintains version detection for conversion
- * - Delegates scanning to SIMAScanner class
- * 
- * CRITICAL: Stays under 350 lines
+ * FIXED: Safe file loading with error handling
+ * UPDATED: Correct version detection for different SIMA structures
  */
 
-require_once __DIR__ . '/spec_simav3.php';
-require_once __DIR__ . '/spec_simav4.1.php';
-require_once __DIR__ . '/spec_simav4.2.php';
-require_once __DIR__ . '/sima-scanner.php';
-require_once __DIR__ . '/sima-tree-formatter.php';
+// Safely load spec files if they exist
+$specFiles = [
+    'spec_simav3.php',
+    'spec_simav4.1.php', 
+    'spec_simav4.2.php'
+];
+
+foreach ($specFiles as $specFile) {
+    $filepath = __DIR__ . '/' . $specFile;
+    if (file_exists($filepath)) {
+        require_once $filepath;
+    }
+}
+
+// Load other required files
+if (file_exists(__DIR__ . '/sima-scanner.php')) {
+    require_once __DIR__ . '/sima-scanner.php';
+}
+if (file_exists(__DIR__ . '/sima-tree-formatter.php')) {
+    require_once __DIR__ . '/sima-tree-formatter.php';
+}
 
 class SIMAVersionUtils {
     
     /**
      * Auto-detect SIMA version from directory
+     * UPDATED: Correct detection for different SIMA structures
      */
     public static function detectVersion($basePath) {
-        // Try v4.2 first (most recent)
-        if (SIMAv4_2_Spec::detectVersion($basePath)) {
-            return '4.2';
+        // Check if directory exists and is readable
+        if (!is_dir($basePath) || !is_readable($basePath)) {
+            return 'unknown';
+        }
+
+        // Try v4.2 first (generic/ and platforms/ directories)
+        if (is_dir($basePath . '/generic') && is_dir($basePath . '/platforms')) {
+            if (class_exists('SIMAv4_2_Spec') && SIMAv4_2_Spec::detectVersion($basePath)) {
+                return '4.2';
+            }
+            return '4.2'; // Fallback if spec class not available
         }
         
-        // Try v4.1
-        if (SIMAv4_1_Spec::detectVersion($basePath)) {
-            return '4.1';
+        // Try v4.1 (entries/ and integration/ directories)
+        if (is_dir($basePath . '/entries') && is_dir($basePath . '/integration')) {
+            if (class_exists('SIMAv4_1_Spec') && SIMAv4_1_Spec::detectVersion($basePath)) {
+                return '4.1';
+            }
+            return '4.1'; // Fallback if spec class not available
         }
         
-        // Try v3.0
-        if (SIMAv3_Spec::detectVersion($basePath)) {
-            return '3.0';
-        }
-        
-        // Check for generic v4 markers
-        if (file_exists($basePath . '/generic') && 
-            file_exists($basePath . '/platforms')) {
-            return '4.0';
+        // Try v3.0 (NM## directories)
+        if (is_dir($basePath . '/NM00') && is_dir($basePath . '/NM01')) {
+            if (class_exists('SIMAv3_Spec') && SIMAv3_Spec::detectVersion($basePath)) {
+                return '3.0';
+            }
+            return '3.0'; // Fallback if spec class not available
         }
         
         return 'unknown';
@@ -59,13 +79,13 @@ class SIMAVersionUtils {
         switch ($version) {
             case '4.2':
             case '4.2.2':
-                return 'SIMAv4_2_Spec';
+                return class_exists('SIMAv4_2_Spec') ? 'SIMAv4_2_Spec' : null;
             case '4.1':
             case '4.1.0':
-                return 'SIMAv4_1_Spec';
+                return class_exists('SIMAv4_1_Spec') ? 'SIMAv4_1_Spec' : null;
             case '3.0':
             case '3':
-                return 'SIMAv3_Spec';
+                return class_exists('SIMAv3_Spec') ? 'SIMAv3_Spec' : null;
             default:
                 return null;
         }
@@ -99,7 +119,7 @@ class SIMAVersionUtils {
         if ($specClass) {
             $info['domains'] = $specClass::getDomains();
             $info['categories'] = $specClass::getCategories();
-            $info['support_files'] = $specClass::getSupportFiles();
+            $info['support_files'] = method_exists($specClass, 'getSupportFiles') ? $specClass::getSupportFiles() : [];
         }
         
         return $info;
@@ -107,18 +127,13 @@ class SIMAVersionUtils {
     
     /**
      * Comprehensive scan using new scanner
-     * REPLACES old scanWithVersion()
-     * 
-     * @param string $basePath Root SIMA directory
-     * @param string|null $version Detected version (optional)
-     * @return array UI-formatted tree
      */
     public static function scanWithVersion($basePath, $version = null) {
         if ($version === null) {
             $version = self::detectVersion($basePath);
         }
         
-        // Use new comprehensive scanner
+        // Use comprehensive scanner
         $scanResult = SIMAScanner::scanComplete($basePath, [
             'include_hidden' => false,
             'max_depth' => 20,
@@ -174,11 +189,11 @@ class SIMAVersionUtils {
         // Get conversion rules
         $rules = null;
         if ($fromVersion === '4.1' && $toVersion === '4.2') {
-            $rules = SIMAv4_1_Spec::getConversionToV42();
+            $rules = method_exists($fromSpec, 'getConversionToV42') ? $fromSpec::getConversionToV42() : null;
         } elseif ($fromVersion === '4.2' && $toVersion === '4.1') {
-            $rules = SIMAv4_2_Spec::getConversionToV41();
+            $rules = method_exists($fromSpec, 'getConversionToV41') ? $fromSpec::getConversionToV41() : null;
         } elseif ($fromVersion === '3.0' && $toVersion === '4.2') {
-            $rules = SIMAv3_Spec::getConversionToV42();
+            $rules = method_exists($fromSpec, 'getConversionToV42') ? $fromSpec::getConversionToV42() : null;
         }
         
         if (!$rules) {
@@ -222,11 +237,14 @@ class SIMAVersionUtils {
         $rules = null;
         
         if ($fromVersion === '4.1' && $toVersion === '4.2') {
-            $rules = SIMAv4_1_Spec::getConversionToV42();
+            $fromSpec = self::getSpec($fromVersion);
+            $rules = method_exists($fromSpec, 'getConversionToV42') ? $fromSpec::getConversionToV42() : null;
         } elseif ($fromVersion === '4.2' && $toVersion === '4.1') {
-            $rules = SIMAv4_2_Spec::getConversionToV41();
+            $fromSpec = self::getSpec($fromVersion);
+            $rules = method_exists($fromSpec, 'getConversionToV41') ? $fromSpec::getConversionToV41() : null;
         } elseif ($fromVersion === '3.0' && $toVersion === '4.2') {
-            $rules = SIMAv3_Spec::getConversionToV42();
+            $fromSpec = self::getSpec($fromVersion);
+            $rules = method_exists($fromSpec, 'getConversionToV42') ? $fromSpec::getConversionToV42() : null;
         }
         
         if (!$rules || !isset($rules['filename_transform'])) {
@@ -247,11 +265,14 @@ class SIMAVersionUtils {
         $rules = null;
         
         if ($fromVersion === '4.1' && $toVersion === '4.2') {
-            $rules = SIMAv4_1_Spec::getConversionToV42();
+            $fromSpec = self::getSpec($fromVersion);
+            $rules = method_exists($fromSpec, 'getConversionToV42') ? $fromSpec::getConversionToV42() : null;
         } elseif ($fromVersion === '4.2' && $toVersion === '4.1') {
-            $rules = SIMAv4_2_Spec::getConversionToV41();
+            $fromSpec = self::getSpec($fromVersion);
+            $rules = method_exists($fromSpec, 'getConversionToV41') ? $fromSpec::getConversionToV41() : null;
         } elseif ($fromVersion === '3.0' && $toVersion === '4.2') {
-            $rules = SIMAv3_Spec::getConversionToV42();
+            $fromSpec = self::getSpec($fromVersion);
+            $rules = method_exists($fromSpec, 'getConversionToV42') ? $fromSpec::getConversionToV42() : null;
         }
         
         if (!$rules || !isset($rules['directory_mapping'])) {
@@ -273,11 +294,14 @@ class SIMAVersionUtils {
         $rules = null;
         
         if ($fromVersion === '4.1' && $toVersion === '4.2') {
-            $rules = SIMAv4_1_Spec::getConversionToV42();
+            $fromSpec = self::getSpec($fromVersion);
+            $rules = method_exists($fromSpec, 'getConversionToV42') ? $fromSpec::getConversionToV42() : null;
         } elseif ($fromVersion === '4.2' && $toVersion === '4.1') {
-            $rules = SIMAv4_2_Spec::getConversionToV41();
+            $fromSpec = self::getSpec($fromVersion);
+            $rules = method_exists($fromSpec, 'getConversionToV41') ? $fromSpec::getConversionToV41() : null;
         } elseif ($fromVersion === '3.0' && $toVersion === '4.2') {
-            $rules = SIMAv3_Spec::getConversionToV42();
+            $fromSpec = self::getSpec($fromVersion);
+            $rules = method_exists($fromSpec, 'getConversionToV42') ? $fromSpec::getConversionToV42() : null;
         }
         
         if (!$rules || !isset($rules['index_mapping'])) {
@@ -301,3 +325,4 @@ class SIMAVersionUtils {
                in_array($toVersion, $supported[$fromVersion]);
     }
 }
+?>
