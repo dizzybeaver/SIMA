@@ -3,21 +3,20 @@
  * sima-export-tool.php
  * 
  * SIMA Knowledge Export Tool - Fixed Modular Version
- * Version: 4.4.0
+ * Version: 4.4.1
  * Date: 2025-11-23
  * 
- * FIXED: open_basedir issues, missing functions, file loading
- * MODULAR: All PHP logic moved to separate files
- * CONFIG: Base directory configuration for auto-search
+ * FIXED: JSON response issues, clean output buffering
  */
 
 // Configuration - Set this to your base search directory
 $BASE_SEARCH_DIR = '/home/joe';
 
-// Start output buffering
+// Start output buffering with error suppression
+if (ob_get_level()) ob_end_clean();
 ob_start();
 
-// Error handling
+// Error handling - suppress display but log
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
 ini_set('log_errors', '1');
@@ -32,6 +31,9 @@ require_once __DIR__ . '/sima-export-handler.php';
 
 // Handle AJAX requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Clear any previous output
+    while (ob_get_level()) ob_end_clean();
+    
     $handler = new SIMAExportHandler($BASE_SEARCH_DIR);
     $handler->handleRequest();
     exit;
