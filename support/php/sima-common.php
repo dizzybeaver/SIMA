@@ -3,11 +3,11 @@
  * sima-common.php
  * 
  * Shared functions for SIMA PHP tools
- * Version: 2.1.0
+ * Version: 2.2.0
  * Date: 2025-11-27
  * 
- * UPDATED: Made generateManifest() generic for import/export/update
- * FIXED: Removed duplicate function conflict
+ * UPDATED: Made functions generic for import/export/update
+ * FIXED: No duplicate function conflicts
  */
 
 // Define SIMA version
@@ -185,6 +185,77 @@ function generateManifest($operation, $archiveName, $description, $files, $sourc
 }
 
 /**
+ * Generate generic import instructions for any SIMA operation
+ */
+function generateImportInstructions($operation, $archiveName, $files, $sourceVersion = null, $targetVersion = null) {
+    $md = "# Import Instructions - {$archiveName}\n\n";
+    $md .= "**Archive:** {$archiveName}\n";
+    $md .= "**Created:** " . date('Y-m-d') . "\n";
+    $md .= "**Operation:** " . ucfirst($operation) . "\n";
+    
+    if ($sourceVersion) {
+        $md .= "**Source Version:** {$sourceVersion}\n";
+    }
+    if ($targetVersion) {
+        $md .= "**Target Version:** {$targetVersion}\n";
+    }
+    
+    $md .= "**Total Files:** " . count($files) . "\n";
+    
+    // Count converted files if available
+    $convertedCount = 0;
+    foreach ($files as $file) {
+        if (isset($file['converted']) && $file['converted']) {
+            $convertedCount++;
+        }
+    }
+    if ($convertedCount > 0) {
+        $md .= "**Converted Files:** {$convertedCount}\n";
+    }
+    
+    $md .= "\n";
+    
+    // Group by directory
+    $grouped = [];
+    foreach ($files as $file) {
+        $dir = dirname($file['relative_path'] ?? $file['path'] ?? '');
+        if (!isset($grouped[$dir])) {
+            $grouped[$dir] = [];
+        }
+        $grouped[$dir][] = $file;
+    }
+    
+    $md .= "## Installation State\n\n";
+    $md .= "### Selected for Install (" . count($files) . " files)\n\n";
+    
+    foreach ($grouped as $dir => $dirFiles) {
+        $md .= "#### {$dir} (" . count($dirFiles) . " files)\n";
+        foreach ($dirFiles as $file) {
+            $filename = $file['filename'] ?? basename($file['path'] ?? '');
+            $targetPath = $file['relative_path'] ?? $file['path'] ?? '';
+            $status = (isset($file['converted']) && $file['converted']) ? 'converted' : 'original';
+            $md .= "- [x] {$filename} → {$targetPath} ({$status})\n";
+        }
+        $md .= "\n";
+    }
+    
+    $md .= "## Import Process\n\n";
+    $md .= "1. Extract knowledge-base.zip\n";
+    $md .= "2. Use SIMA Import Tool to review files\n";
+    $md .= "3. Select target SIMA directory\n";
+    
+    if ($sourceVersion && $targetVersion && $sourceVersion !== $targetVersion) {
+        $md .= "4. Verify version conversion from {$sourceVersion} to {$targetVersion}\n";
+    } else {
+        $md .= "4. Verify version compatibility\n";
+    }
+    
+    $md .= "5. Import selected files\n\n";
+    
+    return $md;
+}
+
+/**
  * Convert array to YAML format manually
  */
 function arrayToYaml($array, $indent = 0) {
@@ -204,56 +275,6 @@ function arrayToYaml($array, $indent = 0) {
     }
     
     return $yaml;
-}
-
-/**
- * Generate import-instructions.md
- */
-function generateImportInstructions($archiveName, $selectedFiles) {
-    $md = "# Import Instructions - {$archiveName}\n\n";
-    $md .= "**Archive:** {$archiveName}\n";
-    $md .= "**Created:** " . date('Y-m-d') . "\n";
-    $md .= "**SIMA Version:** " . SIMA_VERSION . "\n";
-    $md .= "**Total Files:** " . count($selectedFiles) . "\n";
-    $md .= "**Selected:** " . count($selectedFiles) . "\n\n";
-    
-    $md .= "## Installation State\n\n";
-    $md .= "### Selected for Install (" . count($selectedFiles) . " files)\n\n";
-    
-    // Group by category
-    $grouped = [];
-    foreach ($selectedFiles as $file) {
-        $category = dirname($file['relative_path']);
-        if (!isset($grouped[$category])) {
-            $grouped[$category] = [];
-        }
-        $grouped[$category][] = $file;
-    }
-    
-    foreach ($grouped as $category => $files) {
-        $md .= "#### {$category} (" . count($files) . " files)\n";
-        foreach ($files as $file) {
-            $targetPath = $file['relative_path'];
-            $status = isset($file['converted']) && $file['converted'] ? 'converted' : 'new';
-            $md .= "- [x] {$file['filename']} → {$targetPath} ({$status})\n";
-        }
-        $md .= "\n";
-    }
-    
-    $md .= "### Not Selected for Install (0 files)\n\n";
-    $md .= "(None - all files selected in initial export)\n\n";
-    
-    $md .= "## Packages\n\n";
-    $md .= "- Base: knowledge-base.zip (" . count($selectedFiles) . " files)\n\n";
-    
-    $md .= "## Import Process\n\n";
-    $md .= "1. Extract knowledge-base.zip\n";
-    $md .= "2. Copy files to target locations\n";
-    $md .= "3. Use SIMA Import Tool to select files\n";
-    $md .= "4. Verify checksums against manifest\n";
-    $md .= "5. Update indexes as needed\n";
-    
-    return $md;
 }
 
 /**
