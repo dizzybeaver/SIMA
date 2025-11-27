@@ -19,45 +19,61 @@ class SIMAExportHandler {
         $this->assetPaths = $this->getAssetPaths();
     }
 
-    /**
-     * Auto-detect SIMA root within base search directory ONLY
-     */
-    private function findSIMARoot() {
-        // Only check directories within the allowed base directory
-        $possibleDirs = [
-            $this->baseSearchDir . '/sima',
-            $this->baseSearchDir . '/simav4',
-            $this->baseSearchDir . '/simav4.2',
-            $this->baseSearchDir . '/simav4.1',
-            $this->baseSearchDir . '/simav3',
-            $this->baseSearchDir // The base directory itself
-        ];
-
-        foreach ($possibleDirs as $dir) {
-            // Only check if directory exists within our allowed path
-            if (is_dir($dir)) {
-                // Check for SIMA v4.2+ structure
-                if (is_dir($dir . '/generic') && is_dir($dir . '/platforms')) {
-                    return $dir;
-                }
-                // Check for SIMA v4.1 structure
-                if (is_dir($dir . '/entries') && is_dir($dir . '/integration')) {
-                    return $dir;
-                }
-                // Check for SIMA v3 structure
-                if (is_dir($dir . '/NM00') && is_dir($dir . '/NM01')) {
-                    return $dir;
-                }
-                // Check if this is already a SIMA knowledge directory
-                if ($this->isSIMAKnowledgeDir($dir)) {
-                    return $dir;
-                }
+/**
+ * Find SIMA root by searching base directory and subdirectories
+ * 
+ * @return string|null Path to SIMA root or null if not found
+ */
+private function findSIMARoot() {
+    // Get all possible directories (base + subdirectories)
+    $possibleDirs = [$this->baseSearchDir];
+    
+    if (is_dir($this->baseSearchDir) && is_readable($this->baseSearchDir)) {
+        $entries = scandir($this->baseSearchDir);
+        
+        foreach ($entries as $entry) {
+            if ($entry === '.' || $entry === '..') {
+                continue;
+            }
+            
+            // Skip hidden directories
+            if ($entry[0] === '.') {
+                continue;
+            }
+            
+            $fullPath = $this->baseSearchDir . '/' . $entry;
+            
+            if (is_dir($fullPath) && is_readable($fullPath)) {
+                $possibleDirs[] = $fullPath;
             }
         }
-
-        return null;
     }
-
+    
+    // Check each directory for SIMA structure
+    foreach ($possibleDirs as $dir) {
+        // Only check if directory exists
+        if (is_dir($dir)) {
+            // Check for SIMA v4.2+ structure
+            if (is_dir($dir . '/generic') && is_dir($dir . '/platforms')) {
+                return $dir;
+            }
+            // Check for SIMA v4.1 structure
+            if (is_dir($dir . '/entries') && is_dir($dir . '/integration')) {
+                return $dir;
+            }
+            // Check for SIMA v3 structure
+            if (is_dir($dir . '/NM00') && is_dir($dir . '/NM01')) {
+                return $dir;
+            }
+            // Check if this is already a SIMA knowledge directory
+            if ($this->isSIMAKnowledgeDir($dir)) {
+                return $dir;
+            }
+        }
+    }
+    
+    return null;
+}
     /**
      * Check if directory contains SIMA knowledge files
      */
@@ -693,3 +709,4 @@ private function getAssetPaths() {
     }
 }
 ?>
+
