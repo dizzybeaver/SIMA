@@ -22,7 +22,7 @@
 
 ## KEY WORKFLOWS
 
-1. **Add Entry** - Create knowledge file (≤400 lines)
+1. **Add Entry** - Create knowledge file (≤350 lines)
 2. **Update Index** - Scan and update indexes
 3. **Create Domain** - New domain structure
 4. **Migrate Format** - Update to standards
@@ -34,18 +34,19 @@
 ✅ **Always:**
 - Check duplicates (fileserver.php)
 - Genericize appropriately
-- ≤400 lines per file
+- ≤350 lines per file
 - Update indexes
 - UTF-8 encoding
 
 ❌ **Never:**
 - Project-specifics in generic
-- Files >400 lines
+- Files >350 lines
 - Skip index updates
 - Break REF-IDs
 
 ---
 
 **END OF QUICK CONTEXT**
+
 
 **Lines:** 50 (compact)
