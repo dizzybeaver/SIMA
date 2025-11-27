@@ -2,45 +2,26 @@
 /**
  * sima-export-instructions.php
  * 
- * Import Instructions Generation
+ * Export-Specific Instructions Generation
  * Version: 1.0.0
  * Date: 2025-11-27
  */
 
 /**
- * Generate import-instructions.md
+ * Generate export-specific import instructions
  */
-function generateImportInstructions($archiveName, $selectedFiles, $sourceVersion, $targetVersion) {
-    $md = "# Import Instructions - {$archiveName}\n\n";
-    $md .= "**Archive:** {$archiveName}\n";
-    $md .= "**Created:** " . date('Y-m-d') . "\n";
-    $md .= "**Source SIMA Version:** {$sourceVersion}\n";
-    $md .= "**Target SIMA Version:** {$targetVersion}\n";
-    $md .= "**Total Files:** " . count($selectedFiles) . "\n";
-    $md .= "**Converted Files:** " . count(array_filter($selectedFiles, fn($f) => $f['converted'])) . "\n\n";
-    
-    // Group by directory
-    $grouped = _groupFilesByDirectory($selectedFiles);
-    
-    $md .= "## Installation State\n\n";
-    $md .= "### Selected for Install (" . count($selectedFiles) . " files)\n\n";
-    
-    foreach ($grouped as $dir => $files) {
-        $md .= "#### {$dir} (" . count($files) . " files)\n";
-        foreach ($files as $file) {
-            $status = $file['converted'] ? 'converted' : 'original';
-            $md .= "- [x] {$file['filename']} → {$file['relative_path']} ({$status})\n";
-        }
-        $md .= "\n";
-    }
-    
-    $md .= _generateImportProcess();
-    
-    return $md;
+function generateExportInstructions($archiveName, $selectedFiles, $sourceVersion, $targetVersion) {
+    return generateImportInstructions(
+        'export',
+        $archiveName, 
+        $selectedFiles, 
+        $sourceVersion, 
+        $targetVersion
+    );
 }
 
 /**
- * Group files by directory
+ * Group files by directory (export-specific helper)
  */
 function _groupFilesByDirectory($selectedFiles) {
     $grouped = [];
@@ -52,17 +33,5 @@ function _groupFilesByDirectory($selectedFiles) {
         $grouped[$dir][] = $file;
     }
     return $grouped;
-}
-
-/**
- * Generate import process section
- */
-function _generateImportProcess() {
-    return "## Import Process\n\n" .
-           "1. Extract knowledge-base.zip\n" .
-           "2. Use SIMA Import Tool to review files\n" .
-           "3. Select target SIMA directory\n" .
-           "4. Verify version compatibility\n" .
-           "5. Import selected files\n\n";
 }
 ?>
