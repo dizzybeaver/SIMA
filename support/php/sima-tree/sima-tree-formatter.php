@@ -3,11 +3,11 @@
  * sima-tree-formatter.php
  * 
  * Convert Scanner Output to UI Tree Format
- * Version: 1.0.1
+ * Version: 1.0.2
  * Date: 2025-11-23
  * Location: /sima/support/php/
  * 
- * FIXED: Proper handling of root-level directories
+ * FIXED: Proper handling of root-level directories - context no longer shows under generic
  * Converts SIMAScanner output into format expected by sima-tree.js
  * Maintains compatibility with existing UI components
  * 
@@ -30,6 +30,10 @@ class SIMATreeFormatter {
         
         $uiTree = [];
         
+        // Define domain directories and support directories
+        $domainDirs = ['generic', 'platforms', 'languages', 'projects'];
+        $supportDirs = ['context', 'docs', 'support', 'templates'];
+        
         // Process each top-level directory
         foreach ($scanTree['directories'] as $dirName => $dirData) {
             if ($dirName === 'root') {
@@ -40,23 +44,52 @@ class SIMATreeFormatter {
                 continue;
             }
             
-            // Check if this is a domain directory or support directory
-            $isDomainDir = in_array($dirName, ['generic', 'platforms', 'languages', 'projects']);
-            $isSupportDir = in_array($dirName, ['context', 'docs', 'support', 'templates']);
+            // Check if this directory should be a top-level node
+            $isTopLevelDir = in_array($dirName, $domainDirs) || 
+                            in_array($dirName, $supportDirs) ||
+                            !self::isSubdirectoryOfAny($dirName, array_merge($domainDirs, $supportDirs), $scanTree['directories']);
             
-            if ($isDomainDir || $isSupportDir) {
+            if ($isTopLevelDir) {
                 // Format as top-level directory
-                $dirNode = self::formatDirectory($dirName, $dirData);
-                $uiTree[] = $dirNode;
-            } else {
-                // This might be a subdirectory that should be handled differently
-                // For now, include it but we might need additional logic
                 $dirNode = self::formatDirectory($dirName, $dirData);
                 $uiTree[] = $dirNode;
             }
         }
         
         return $uiTree;
+    }
+    
+    /**
+     * Check if a directory is actually a subdirectory of any other directory
+     */
+    private static function isSubdirectoryOfAny($dirName, $parentDirs, $allDirectories) {
+        foreach ($parentDirs as $parentDir) {
+            if (isset($allDirectories[$parentDir])) {
+                $parentData = $allDirectories[$parentDir];
+                if (self::hasSubdirectory($parentData, $dirName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Check if directory data contains a specific subdirectory
+     */
+    private static function hasSubdirectory($dirData, $subdirName) {
+        if (!empty($dirData['subdirectories'])) {
+            foreach ($dirData['subdirectories'] as $existingSubdirName => $subdirData) {
+                if ($existingSubdirName === $subdirName) {
+                    return true;
+                }
+                // Check recursively
+                if (self::hasSubdirectory($subdirData, $subdirName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     /**
