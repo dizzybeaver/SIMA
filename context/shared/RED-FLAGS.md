@@ -35,9 +35,9 @@
 
 ---
 
-### ðŸš« Files > 400 Lines
+### ðŸš« Files > 350 Lines
 
-**Never:** Create files exceeding 400 lines  
+**Never:** Create files exceeding 350 lines  
 **Always:** Split into focused separate files
 
 **Why:** AI processing constraints, readability
@@ -176,7 +176,7 @@
 **Before suggesting any solution, check:**
 1. âŒ Code in chat?
 2. âŒ File fragment?
-3. âŒ >400 lines?
+3. âŒ >350 lines?
 4. âŒ Missing header?
 5. âŒ Skip fileserver.php?
 6. âŒ Bare except?
@@ -204,4 +204,5 @@
 
 **END OF FILE**
 
-**Summary:** Never suggest code in chat, fragments, >400 lines, bare except, skip verification, multiple changes, condense topics. Check platform/architecture knowledge for specific constraints.
+
+**Summary:** Never suggest code in chat, fragments, >350 lines, bare except, skip verification, multiple changes, condense topics. Check platform/architecture knowledge for specific constraints.
