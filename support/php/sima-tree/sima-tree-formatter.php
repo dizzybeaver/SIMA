@@ -3,13 +3,13 @@
  * sima-tree-formatter.php
  * 
  * Convert Scanner Output to UI Tree Format
- * Version: 1.0.2
+ * Version: 1.1.0
  * Date: 2025-11-23
  * Location: /sima/support/php/
  * 
- * FIXED: Proper handling of root-level directories - context no longer shows under generic
+ * ADDED: Directory-level selection functionality
+ * FIXED: Proper handling of root-level directories
  * Converts SIMAScanner output into format expected by sima-tree.js
- * Maintains compatibility with existing UI components
  * 
  * CRITICAL: Stays under 350 lines
  */
@@ -18,7 +18,7 @@ class SIMATreeFormatter {
     
     /**
      * Convert scanner tree to UI format
-     * FIXED: Proper handling of root-level directories
+     * ADDED: Directory selection data
      * 
      * @param array $scanTree Output from SIMAScanner::scanComplete()
      * @return array UI-compatible tree structure
@@ -94,11 +94,16 @@ class SIMATreeFormatter {
     
     /**
      * Format directory node recursively
+     * ADDED: Directory selection data
      */
     private static function formatDirectory($name, $data) {
         $fileCount = count($data['files'] ?? []);
         $subdirCount = count($data['subdirectories'] ?? []);
         $totalFiles = self::countAllFiles($data);
+        
+        // Get all file paths for directory selection
+        $allFilePaths = [];
+        self::collectAllFilePaths($data, $allFilePaths);
         
         $node = [
             'type' => 'directory',
@@ -106,6 +111,7 @@ class SIMATreeFormatter {
             'path' => $data['path'],
             'file_count' => $fileCount,
             'total_files' => $totalFiles,
+            'all_file_paths' => $allFilePaths, // ADDED: All file paths for directory selection
             'children' => []
         ];
         
@@ -137,6 +143,22 @@ class SIMATreeFormatter {
             'category' => $file['category'] ?? null,
             'purpose' => $file['purpose'] ?? null
         ];
+    }
+    
+    /**
+     * Collect all file paths in directory tree for selection
+     * ADDED: New method for directory selection
+     */
+    private static function collectAllFilePaths($data, &$filePaths) {
+        // Add files from current directory
+        foreach ($data['files'] ?? [] as $file) {
+            $filePaths[] = $file['relative_path'];
+        }
+        
+        // Recurse into subdirectories
+        foreach ($data['subdirectories'] ?? [] as $subdirData) {
+            self::collectAllFilePaths($subdirData, $filePaths);
+        }
     }
     
     /**
