@@ -30,7 +30,7 @@
 1. Identify entry type (LESS, DEC, AP, SPEC, etc.)
 2. Check for duplicates (via fileserver.php)
 3. Genericize content appropriately
-4. Create entry (≤400 lines)
+4. Create entry (≤350 lines)
 5. Update indexes
 6. Add cross-references
 
@@ -53,7 +53,7 @@
 1. Fetch entry via fileserver.php
 2. Check against SPEC standards
 3. Fix header, encoding, naming
-4. Split if >400 lines
+4. Split if >350 lines
 5. Output migrated entry
 6. Update indexes
 
@@ -89,4 +89,5 @@
 
 **Version:** 4.2.2-blank  
 **Lines:** 100 (target achieved)  
+
 **Combine with:** Base context + Project Mode Context (base)
