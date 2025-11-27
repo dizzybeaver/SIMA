@@ -3,9 +3,9 @@
  * sima-export-archive.php
  * 
  * Archive Creation Functions
- * Version: 1.1.0
+ * Version: 1.2.0
  * Date: 2025-11-27
- * UPDATED: Uses export-specific manifest function
+ * UPDATED: Uses export-specific functions
  */
 
 /**
@@ -118,7 +118,8 @@ function _generateExportDocumentation($exportPath, $archiveName, $description, $
     $manifestContent = generateExportManifest($archiveName, $description, $selectedFiles, $sourceVersion, $targetVersion);
     file_put_contents($exportPath . '/manifest.yaml', $manifestContent);
     
-    $instructionsContent = generateImportInstructions($archiveName, $selectedFiles, $sourceVersion, $targetVersion);
+    // Use export-specific instructions function
+    $instructionsContent = generateExportInstructions($archiveName, $selectedFiles, $sourceVersion, $targetVersion);
     file_put_contents($exportPath . '/import-instructions.md', $instructionsContent);
 }
 
