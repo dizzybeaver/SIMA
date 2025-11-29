@@ -29,11 +29,11 @@ ini_set('log_errors', '1');
 // Get base directory (where this script is located)
 define('TOOL_BASE_DIR', __DIR__);
 define('MODULES_DIR', TOOL_BASE_DIR . '/modules');
-define('EXPORT_DIR', TOOL_BASE_DIR . '/../../exports');
+define('EXPORT_DIR', '/tmp/sima-exports');
 
 // Create export directory if needed
 if (!is_dir(EXPORT_DIR)) {
-    mkdir(EXPORT_DIR, 0755, true);
+    @mkdir(EXPORT_DIR, 0755, true);
 }
 
 /**
@@ -77,26 +77,35 @@ function findSIMARoot($startPath = null) {
         $startPath = TOOL_BASE_DIR;
     }
     
+    // List of allowed base directories from open_basedir
+    $allowedBases = [
+        '/home/joe/web/claude.dizzybeaver.com/public_html',
+        '/tmp'
+    ];
+    
     // Check if current directory has SIMA structure
-    if (file_exists($startPath . '/generic') && 
-        file_exists($startPath . '/platforms')) {
-        return $startPath;
-    }
-    
-    // Walk up directory tree
-    $current = $startPath;
-    for ($i = 0; $i < 5; $i++) {
-        $parent = dirname($current);
-        if ($parent === $current) break;
-        
-        if (file_exists($parent . '/generic') && 
-            file_exists($parent . '/platforms')) {
-            return $parent;
+    foreach ($allowedBases as $base) {
+        if (is_dir($base . '/generic') && is_dir($base . '/platforms')) {
+            return $base;
         }
-        $current = $parent;
     }
     
-    return null;
+    // Try subdirectories of allowed bases
+    foreach ($allowedBases as $base) {
+        if (is_dir($base)) {
+            $subdirs = @glob($base . '/*', GLOB_ONLYDIR);
+            if ($subdirs) {
+                foreach ($subdirs as $subdir) {
+                    if (is_dir($subdir . '/generic') && is_dir($subdir . '/platforms')) {
+                        return $subdir;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Default fallback
+    return '/home/joe/web/claude.dizzybeaver.com/public_html';
 }
 
 /**
@@ -204,8 +213,7 @@ class SIMAExportHandler {
         ]);
         
         // Generate download URL
-        $downloadUrl = dirname($_SERVER['SCRIPT_NAME']) . '/../../exports/' . 
-                       $result['archive_name'];
+        $downloadUrl = '/tmp/sima-exports/' . $result['archive_name'];
         
         ajax_sendJsonResponse([
             'archive_name' => $result['archive_name'],
@@ -314,11 +322,13 @@ try {
     // Load all modules
     loadModules();
     
+    // Configure file module to use /tmp/sima-exports
+    if (class_exists('FileConfig')) {
+        FileConfig::setConfig('export_directory', EXPORT_DIR);
+    }
+    
     // Find SIMA root
     $simaRoot = findSIMARoot();
-    if (!$simaRoot) {
-        $simaRoot = dirname(TOOL_BASE_DIR, 2); // Default to 2 levels up
-    }
     
     // Create handler and process request
     $handler = new SIMAExportHandler($simaRoot);
