@@ -6,16 +6,7 @@
  * Date: 2025-11-28
  * Purpose: SIMA Knowledge Export Tool - Main entry point
  * 
- * REFACTORED: Now uses modular system
- * - SIMA-tree for scanning
- * - SIMA-file for file operations
- * - SIMA-manifest for manifest generation
- * - SIMA-instructions for import instructions
- * - SIMA-version for version detection
- * - SIMA-validation for security
- * - SIMA-packaging for export packaging
- * - SIMA-ajax for JSON responses
- * - SIMA-ui for interface generation
+ * REFACTORED: Now uses modular system with CORRECT API calls
  */
 
 // Start output buffering
@@ -100,18 +91,18 @@ function findSIMARoot($startPath = null) {
     
     // Check if current directory has SIMA structure
     foreach ($allowedBases as $base) {
-        if (is_dir($base . '/generic') && is_dir($base . '/platforms')) {
+        if (@is_dir($base . '/generic') && @is_dir($base . '/platforms')) {
             return $base;
         }
     }
     
     // Try subdirectories of allowed bases
     foreach ($allowedBases as $base) {
-        if (is_dir($base)) {
+        if (@is_dir($base)) {
             $subdirs = @glob($base . '/*', GLOB_ONLYDIR);
             if ($subdirs) {
                 foreach ($subdirs as $subdir) {
-                    if (is_dir($subdir . '/generic') && is_dir($subdir . '/platforms')) {
+                    if (@is_dir($subdir . '/generic') && @is_dir($subdir . '/platforms')) {
                         return $subdir;
                     }
                 }
@@ -128,9 +119,31 @@ function findSIMARoot($startPath = null) {
  */
 class SIMAExportHandler {
     private $baseSearchDir;
+    private $validation;
+    private $tree;
+    private $version;
+    private $packaging;
+    private $ajax;
     
     public function __construct($baseSearchDir) {
         $this->baseSearchDir = $baseSearchDir;
+        
+        // Initialize modules
+        if (class_exists('ValidationModule')) {
+            $this->validation = new ValidationModule();
+        }
+        if (class_exists('TreeModule')) {
+            $this->tree = new TreeModule();
+        }
+        if (class_exists('VersionModule')) {
+            $this->version = new VersionModule();
+        }
+        if (class_exists('PackagingModule')) {
+            $this->packaging = new PackagingModule();
+        }
+        if (class_exists('AjaxModule')) {
+            $this->ajax = new AjaxModule();
+        }
     }
     
     public function handleRequest() {
@@ -146,9 +159,17 @@ class SIMAExportHandler {
             }
         } catch (Exception $e) {
             error_log("SIMA Export Error: " . $e->getMessage());
-            ajax_sendJsonResponse([
-                'error' => $e->getMessage()
-            ], 500);
+            
+            if ($this->ajax) {
+                $this->ajax->sendError($e->getMessage());
+            } else {
+                http_response_code(500);
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => false,
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
     }
     
@@ -160,29 +181,29 @@ class SIMAExportHandler {
         }
         
         // Validate path
-        $validatedPath = validation_validatePath($directory, $this->baseSearchDir);
-        if (!$validatedPath) {
-            throw new Exception("Invalid directory path");
+        if ($this->validation) {
+            $pathResult = $this->validation->validatePath($directory, $this->baseSearchDir);
+            if (!$pathResult['valid']) {
+                throw new Exception("Invalid directory path: " . implode(', ', $pathResult['errors']));
+            }
         }
         
-        // Auto-detect version
-        $versionInfo = version_detect($validatedPath);
+        // Use the validated/real path
+        $validatedPath = realpath($directory);
+        if (!$validatedPath || !is_dir($validatedPath)) {
+            throw new Exception("Directory does not exist or is not accessible");
+        }
         
-        // Scan directory
-        $scanResult = version_scanDirectory($validatedPath);
+        // Scan with version detection
+        $result = $this->tree->scanWithVersion($validatedPath);
         
-        // Format as tree
-        $treeHtml = tree_formatAsTree($scanResult['files'], [
-            'show_checkboxes' => true,
-            'show_ref_ids' => true,
-            'show_versions' => true
-        ]);
-        
-        ajax_sendJsonResponse([
-            'tree' => $treeHtml,
-            'version' => $versionInfo,
-            'stats' => $scanResult['stats']
-        ]);
+        // Send JSON response
+        if ($this->ajax) {
+            $this->ajax->sendSuccess($result);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(array_merge(['success' => true], $result));
+        }
     }
     
     private function handleExport() {
@@ -198,9 +219,17 @@ class SIMAExportHandler {
         }
         
         // Validate path
-        $validatedPath = validation_validatePath($directory, $this->baseSearchDir);
-        if (!$validatedPath) {
-            throw new Exception("Invalid directory path");
+        if ($this->validation) {
+            $pathResult = $this->validation->validatePath($directory, $this->baseSearchDir);
+            if (!$pathResult['valid']) {
+                throw new Exception("Invalid directory path: " . implode(', ', $pathResult['errors']));
+            }
+        }
+        
+        // Use the validated/real path
+        $validatedPath = realpath($directory);
+        if (!$validatedPath || !is_dir($validatedPath)) {
+            throw new Exception("Directory does not exist or is not accessible");
         }
         
         if (empty($selectedFiles)) {
@@ -208,9 +237,9 @@ class SIMAExportHandler {
         }
         
         // Auto-detect versions if needed
-        if ($sourceVersion === 'auto') {
-            $versionInfo = version_detect($validatedPath);
-            $sourceVersion = $versionInfo['version'];
+        if ($sourceVersion === 'auto' && $this->version) {
+            $versionInfo = $this->version->detect($validatedPath);
+            $sourceVersion = $versionInfo['version'] ?? 'unknown';
         }
         
         if ($targetVersion === 'auto') {
@@ -218,25 +247,30 @@ class SIMAExportHandler {
         }
         
         // Create export package
-        $result = packaging_createPackage($validatedPath, [
-            'name' => $archiveName,
+        $result = $this->packaging->createExportPackage($selectedFiles, $archiveName, [
             'description' => $description,
-            'files' => $selectedFiles,
             'source_version' => $sourceVersion,
-            'target_version' => $targetVersion,
-            'output_dir' => EXPORT_DIR
+            'target_version' => $targetVersion
         ]);
         
-        // Generate download URL (using export directory from config)
-        $exportDir = defined('EXPORT_DIR') ? EXPORT_DIR : FileConfig::getConfig('export_directory');
+        // Generate download URL
+        $exportDir = defined('EXPORT_DIR') ? EXPORT_DIR : '/tmp/sima-exports';
         $downloadUrl = $exportDir . '/' . $result['archive_name'];
         
-        ajax_sendJsonResponse([
+        // Send JSON response
+        $responseData = [
             'archive_name' => $result['archive_name'],
-            'file_count' => $result['file_count'],
+            'file_count' => $result['file_count'] ?? count($selectedFiles),
             'converted_count' => $result['converted_count'] ?? 0,
             'download_url' => $downloadUrl
-        ]);
+        ];
+        
+        if ($this->ajax) {
+            $this->ajax->sendSuccess($responseData);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(array_merge(['success' => true], $responseData));
+        }
     }
     
     private function showInterface() {
