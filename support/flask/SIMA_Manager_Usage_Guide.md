@@ -6,21 +6,68 @@
 
 ---
 
+## Directory Structure
+
+```
+sima-manager/
+├── sima_manager.py           # Main entry point (22 lines)
+├── requirements.txt          # Dependencies
+├── modules/                  # Core modules (all ≤350 lines)
+│   ├── __init__.py          # Empty (make package)
+│   ├── config.py            # Configuration (43 lines)
+│   ├── knowledge.py         # File parsing (216 lines)
+│   ├── managers.py          # Export/import logic (195 lines)
+│   ├── routes.py            # Flask routes (260 lines)
+│   └── templates.py         # HTML template (343 lines)
+├── exports/                 # JSON exports saved here (auto-created)
+├── archives/                # Future use (auto-created)
+└── sima/                    # Your SIMA knowledge base
+    ├── generic/
+    ├── platforms/
+    ├── languages/
+    └── projects/
+```
+
+**File Compliance:**
+- ✅ Main: 22 lines
+- ✅ Config: 43 lines
+- ✅ Knowledge: 216 lines
+- ✅ Managers: 195 lines
+- ✅ Routes: 260 lines
+- ✅ Templates: 343 lines (under 350-line limit)
+
+---
+
 ## Quick Start
 
-### 1. Install Dependencies
+### 1. Setup
+
+```bash
+# Create directory structure
+mkdir -p sima-manager/modules
+cd sima-manager
+
+# Create empty __init__.py
+touch modules/__init__.py
+
+# Place all module files in modules/
+# Place sima_manager.py in root
+# Place requirements.txt in root
+```
+
+### 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Run the Application
+### 3. Run Application
 
 ```bash
 python sima_manager.py
 ```
 
-### 3. Open Browser
+### 4. Open Browser
 
 Navigate to: `http://localhost:5000`
 
