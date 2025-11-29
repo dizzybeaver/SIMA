@@ -1,6 +1,8 @@
-# SIMA-ui Module
+# README.md
 
 **Version:** 1.0.0  
+**Date:** 2025-11-28  
+**Module:** SIMA-ui  
 **Purpose:** UI component generation and asset management  
 **Type:** Generic/Reusable Module
 
@@ -46,11 +48,12 @@ echo ui_generatePage('Registration', $content);
 modules/ui/
 ├── ui_module.php          # Public API (all external calls)
 ├── ui_config.php          # Configuration constants
-├── ui_components.php      # Core UI components
-├── ui_forms.php          # Form builders
-├── ui_assets.php         # Asset management
-├── ui_layouts.php        # Layout components
-└── README.md             # This file
+├── internal/
+│   ├── ui_components.php  # Core UI components
+│   ├── ui_forms.php       # Form builders
+│   ├── ui_assets.php      # Asset management
+│   └── ui_layouts.php     # Layout components
+└── README.md              # This file
 ```
 
 ---
