@@ -29,12 +29,6 @@ ini_set('log_errors', '1');
 // Get base directory (where this script is located)
 define('TOOL_BASE_DIR', __DIR__);
 define('MODULES_DIR', TOOL_BASE_DIR . '/modules');
-define('EXPORT_DIR', '/tmp/sima-exports');
-
-// Create export directory if needed
-if (!is_dir(EXPORT_DIR)) {
-    @mkdir(EXPORT_DIR, 0755, true);
-}
 
 /**
  * Load all required modules
@@ -66,6 +60,27 @@ function loadModules() {
     
     foreach ($modules as $module) {
         require_once MODULES_DIR . '/' . $module;
+    }
+    
+    // Get export directory from file config
+    if (class_exists('FileConfig')) {
+        $exportDir = FileConfig::getConfig('export_directory');
+        if (!defined('EXPORT_DIR')) {
+            define('EXPORT_DIR', $exportDir);
+        }
+        
+        // Ensure export directory exists
+        if (!is_dir(EXPORT_DIR)) {
+            @mkdir(EXPORT_DIR, 0755, true);
+        }
+    } else {
+        // Fallback if FileConfig not available
+        if (!defined('EXPORT_DIR')) {
+            define('EXPORT_DIR', '/tmp/sima-exports');
+        }
+        if (!is_dir(EXPORT_DIR)) {
+            @mkdir(EXPORT_DIR, 0755, true);
+        }
     }
 }
 
@@ -212,8 +227,9 @@ class SIMAExportHandler {
             'output_dir' => EXPORT_DIR
         ]);
         
-        // Generate download URL
-        $downloadUrl = '/tmp/sima-exports/' . $result['archive_name'];
+        // Generate download URL (using export directory from config)
+        $exportDir = defined('EXPORT_DIR') ? EXPORT_DIR : FileConfig::getConfig('export_directory');
+        $downloadUrl = $exportDir . '/' . $result['archive_name'];
         
         ajax_sendJsonResponse([
             'archive_name' => $result['archive_name'],
@@ -319,13 +335,8 @@ class SIMAExportHandler {
 
 // Main execution
 try {
-    // Load all modules
+    // Load all modules (this also sets EXPORT_DIR from FileConfig)
     loadModules();
-    
-    // Configure file module to use /tmp/sima-exports
-    if (class_exists('FileConfig')) {
-        FileConfig::setConfig('export_directory', EXPORT_DIR);
-    }
     
     // Find SIMA root
     $simaRoot = findSIMARoot();
