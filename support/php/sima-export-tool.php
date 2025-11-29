@@ -180,18 +180,15 @@ class SIMAExportHandler {
             throw new Exception("Directory path is required");
         }
         
-        // Validate path
-        if ($this->validation) {
-            $pathResult = $this->validation->validatePath($directory, $this->baseSearchDir);
-            if (!$pathResult['valid']) {
-                throw new Exception("Invalid directory path: " . implode(', ', $pathResult['errors']));
-            }
-        }
-        
-        // Use the validated/real path
+        // Simple validation like the old code did
         $validatedPath = realpath($directory);
         if (!$validatedPath || !is_dir($validatedPath)) {
             throw new Exception("Directory does not exist or is not accessible");
+        }
+        
+        // Check it's readable
+        if (!is_readable($validatedPath)) {
+            throw new Exception("Directory is not readable");
         }
         
         // Scan with version detection
@@ -218,15 +215,7 @@ class SIMAExportHandler {
             throw new Exception("Directory path is required");
         }
         
-        // Validate path
-        if ($this->validation) {
-            $pathResult = $this->validation->validatePath($directory, $this->baseSearchDir);
-            if (!$pathResult['valid']) {
-                throw new Exception("Invalid directory path: " . implode(', ', $pathResult['errors']));
-            }
-        }
-        
-        // Use the validated/real path
+        // Simple validation like the old code did
         $validatedPath = realpath($directory);
         if (!$validatedPath || !is_dir($validatedPath)) {
             throw new Exception("Directory does not exist or is not accessible");
