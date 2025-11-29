@@ -3,334 +3,30 @@ sima_manager.py
 
 Version: 1.0.0
 Date: 2025-11-29
-Purpose: Flask application for SIMA knowledge management
+Purpose: Flask application for SIMA knowledge management (main entry point)
 Project: SIMA
 
-ADDED: Complete SIMA management system with export/import/archive
-ADDED: Language detection from code blocks
-ADDED: JSON format support with MD conversion
-ADDED: Index generation and updates
+MODIFIED: Split into modules to comply with 350-line limit
 """
 
-from flask import Flask, request, jsonify, render_template_string, send_file
+from flask import Flask
 from pathlib import Path
-import json
-import re
-import yaml
-from datetime import datetime
-from typing import Dict, List, Set, Optional
-import hashlib
-import zipfile
-import io
+
+# MODIFIED: Import from modules
+from modules.config import Config
+from modules.routes import register_routes
 
 app = Flask(__name__)
 
-# ADDED: Configuration
-class Config:
-    SIMA_ROOT = Path("./sima")
-    EXPORT_DIR = Path("./exports")
-    ARCHIVE_DIR = Path("./archives")
-    MAX_FILE_LINES = 350
-    SUPPORTED_FORMATS = ["md", "json"]
-    
+# ADDED: Initialize directories
 Config.EXPORT_DIR.mkdir(exist_ok=True)
 Config.ARCHIVE_DIR.mkdir(exist_ok=True)
 
-# ADDED: Language detection patterns
-LANGUAGE_PATTERNS = {
-    'python': r'```python\n',
-    'javascript': r'```(?:javascript|js)\n',
-    'typescript': r'```(?:typescript|ts)\n',
-    'java': r'```java\n',
-    'go': r'```go\n',
-    'rust': r'```rust\n',
-    'c': r'```c\n',
-    'cpp': r'```(?:cpp|c\+\+)\n',
-    'csharp': r'```(?:csharp|cs)\n',
-    'ruby': r'```ruby\n',
-    'php': r'```php\n',
-    'swift': r'```swift\n',
-    'kotlin': r'```kotlin\n',
-    'sql': r'```sql\n',
-    'bash': r'```(?:bash|sh)\n',
-    'yaml': r'```ya?ml\n',
-}
+# ADDED: Register all routes
+register_routes(app)
 
-# ADDED: Knowledge file parser
-class KnowledgeFile:
-    def __init__(self, path: Path):
-        self.path = path
-        self.content = path.read_text(encoding='utf-8')
-        self.metadata = {}
-        self.languages = set()
-        self.parse()
-    
-    def parse(self):
-        """Parse MD file and extract metadata"""
-        lines = self.content.split('\n')
-        
-        # Extract metadata from header
-        for line in lines[:20]:
-            if line.startswith('**Version:**'):
-                self.metadata['version'] = line.split('**Version:**')[1].strip()
-            elif line.startswith('**Date:**'):
-                self.metadata['date'] = line.split('**Date:**')[1].strip()
-            elif line.startswith('**Purpose:**'):
-                self.metadata['purpose'] = line.split('**Purpose:**')[1].strip()
-            elif line.startswith('**Category:**'):
-                self.metadata['category'] = line.split('**Category:**')[1].strip()
-            elif line.startswith('**REF-ID:**'):
-                self.metadata['ref_id'] = line.split('**REF-ID:**')[1].strip()
-        
-        # Detect languages
-        self.languages = self.detect_languages()
-    
-    def detect_languages(self) -> Set[str]:
-        """Detect programming languages from code blocks"""
-        detected = set()
-        for lang, pattern in LANGUAGE_PATTERNS.items():
-            if re.search(pattern, self.content):
-                detected.add(lang)
-        return detected
-    
-    def to_json(self) -> Dict:
-        """Convert to JSON format"""
-        # ADDED: Extract title from first heading
-        title_match = re.search(r'^# (.+)$', self.content, re.MULTILINE)
-        title = title_match.group(1) if title_match else self.path.stem
-        
-        # ADDED: Extract keywords if present
-        keywords_match = re.search(r'\*\*Keywords:\*\* (.+)$', self.content, re.MULTILINE)
-        keywords = []
-        if keywords_match:
-            keywords = [k.strip() for k in keywords_match.group(1).split(',')]
-        
-        # ADDED: Extract related refs
-        related_match = re.search(r'\*\*Related:\*\* (.+)$', self.content, re.MULTILINE)
-        related = []
-        if related_match:
-            related = [r.strip() for r in related_match.group(1).split(',')]
-        
-        return {
-            "format_version": "1.0.0",
-            "sima_version": "4.2.2",
-            "title": title,
-            "ref_id": self.metadata.get('ref_id', ''),
-            "metadata": {
-                "version": self.metadata.get('version', '1.0.0'),
-                "date": self.metadata.get('date', datetime.now().strftime('%Y-%m-%d')),
-                "purpose": self.metadata.get('purpose', ''),
-                "category": self.metadata.get('category', ''),
-                "created": datetime.now().isoformat(),
-                "modified": datetime.now().isoformat()
-            },
-            "languages": sorted(list(self.languages)),
-            "keywords": keywords,
-            "related": related,
-            "content": {
-                "markdown": self.content,
-                "sections": self.extract_sections()
-            },
-            "flags": {
-                "has_code": len(self.languages) > 0,
-                "line_count": len(self.content.split('\n')),
-                "exceeds_limit": len(self.content.split('\n')) > Config.MAX_FILE_LINES
-            }
-        }
-    
-    def extract_sections(self) -> List[Dict]:
-        """Extract markdown sections"""
-        sections = []
-        current_section = None
-        current_content = []
-        
-        for line in self.content.split('\n'):
-            if line.startswith('## '):
-                if current_section:
-                    sections.append({
-                        "heading": current_section,
-                        "content": '\n'.join(current_content)
-                    })
-                current_section = line[3:].strip()
-                current_content = []
-            elif current_section:
-                current_content.append(line)
-        
-        if current_section:
-            sections.append({
-                "heading": current_section,
-                "content": '\n'.join(current_content)
-            })
-        
-        return sections
-
-# ADDED: JSON to MD converter
-class JSONToMD:
-    @staticmethod
-    def convert(data: Dict) -> str:
-        """Convert JSON format to MD"""
-        md_lines = []
-        
-        # Title
-        md_lines.append(f"# {data['title']}")
-        md_lines.append("")
-        
-        # Metadata
-        meta = data['metadata']
-        md_lines.append(f"**Version:** {meta.get('version', '1.0.0')}")
-        md_lines.append(f"**Date:** {meta.get('date', datetime.now().strftime('%Y-%m-%d'))}")
-        md_lines.append(f"**Purpose:** {meta.get('purpose', '')}")
-        
-        if meta.get('category'):
-            md_lines.append(f"**Category:** {meta['category']}")
-        
-        if data.get('ref_id'):
-            md_lines.append(f"**REF-ID:** {data['ref_id']}")
-        
-        md_lines.append("")
-        md_lines.append("---")
-        md_lines.append("")
-        
-        # Content sections
-        if 'sections' in data.get('content', {}):
-            for section in data['content']['sections']:
-                md_lines.append(f"## {section['heading']}")
-                md_lines.append("")
-                md_lines.append(section['content'])
-                md_lines.append("")
-        elif 'markdown' in data.get('content', {}):
-            # Extract body (skip header)
-            content = data['content']['markdown']
-            lines = content.split('\n')
-            in_header = True
-            for line in lines:
-                if in_header and line == '---':
-                    in_header = False
-                    continue
-                if not in_header:
-                    md_lines.append(line)
-        
-        # Footer metadata
-        if data.get('keywords'):
-            md_lines.append("")
-            md_lines.append(f"**Keywords:** {', '.join(data['keywords'])}")
-        
-        if data.get('related'):
-            md_lines.append(f"**Related:** {', '.join(data['related'])}")
-        
-        if data.get('languages'):
-            md_lines.append(f"**Languages:** {', '.join(data['languages'])}")
-        
-        return '\n'.join(md_lines)
-
-# ADDED: Index generator
-class IndexGenerator:
-    @staticmethod
-    def generate(directory: Path, title: str = "Index") -> str:
-        """Generate index MD file for directory"""
-        md_lines = [
-            f"# {title}",
-            "",
-            f"**Version:** 1.0.0",
-            f"**Date:** {datetime.now().strftime('%Y-%m-%d')}",
-            f"**Purpose:** Auto-generated index",
-            "",
-            "---",
-            ""
-        ]
-        
-        # Group by category
-        entries = {}
-        for file_path in sorted(directory.rglob("*.md")):
-            if file_path.name.endswith('-Index.md'):
-                continue
-            
-            try:
-                kf = KnowledgeFile(file_path)
-                category = kf.metadata.get('category', 'Uncategorized')
-                
-                if category not in entries:
-                    entries[category] = []
-                
-                rel_path = file_path.relative_to(directory)
-                ref_id = kf.metadata.get('ref_id', '')
-                purpose = kf.metadata.get('purpose', '')
-                langs = ', '.join(sorted(kf.languages)) if kf.languages else ''
-                
-                entry = {
-                    'path': rel_path,
-                    'ref_id': ref_id,
-                    'purpose': purpose,
-                    'languages': langs
-                }
-                entries[category].append(entry)
-            except Exception as e:
-                print(f"Error processing {file_path}: {e}")
-        
-        # Write entries
-        for category in sorted(entries.keys()):
-            md_lines.append(f"## {category}")
-            md_lines.append("")
-            
-            for entry in entries[category]:
-                ref_id = f"[{entry['ref_id']}] " if entry['ref_id'] else ""
-                langs = f" `{entry['languages']}`" if entry['languages'] else ""
-                md_lines.append(f"- {ref_id}[{entry['path'].stem}]({entry['path']}){langs} - {entry['purpose']}")
-            
-            md_lines.append("")
-        
-        md_lines.append("---")
-        md_lines.append(f"**Total Files:** {sum(len(e) for e in entries.values())}")
-        
-        return '\n'.join(md_lines)
-
-# ADDED: Export manager
-class ExportManager:
-    @staticmethod
-    def export_to_json(source_dir: Path, output_file: Path):
-        """Export knowledge files to JSON archive"""
-        export_data = {
-            "manifest": {
-                "version": "1.0.0",
-                "sima_version": "4.2.2",
-                "created": datetime.now().isoformat(),
-                "source": str(source_dir),
-                "file_count": 0
-            },
-            "files": []
-        }
-        
-        for file_path in source_dir.rglob("*.md"):
-            try:
-                kf = KnowledgeFile(file_path)
-                json_data = kf.to_json()
-                json_data['path'] = str(file_path.relative_to(source_dir))
-                export_data['files'].append(json_data)
-            except Exception as e:
-                print(f"Error exporting {file_path}: {e}")
-        
-        export_data['manifest']['file_count'] = len(export_data['files'])
-        
-        output_file.write_text(json.dumps(export_data, indent=2), encoding='utf-8')
-        return export_data['manifest']
-    
-    @staticmethod
-    def import_from_json(json_file: Path, target_dir: Path):
-        """Import JSON archive to MD files"""
-        data = json.loads(json_file.read_text(encoding='utf-8'))
-        
-        imported = []
-        for file_data in data['files']:
-            try:
-                md_content = JSONToMD.convert(file_data)
-                target_path = target_dir / file_data['path']
-                target_path.parent.mkdir(parents=True, exist_ok=True)
-                target_path.write_text(md_content, encoding='utf-8')
-                imported.append(str(target_path))
-            except Exception as e:
-                print(f"Error importing {file_data.get('path', 'unknown')}: {e}")
-        
-        return imported
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
 
 # ADDED: Flask routes
 @app.route('/')
@@ -342,69 +38,275 @@ def index():
 <head>
     <title>SIMA Knowledge Manager</title>
     <style>
-        body { font-family: Arial; margin: 40px; background: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; }
-        h1 { color: #333; }
-        .section { margin: 30px 0; padding: 20px; background: #f9f9f9; border-radius: 4px; }
+        body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; }
+        .tab { padding: 10px 20px; cursor: pointer; background: #f0f0f0; border: none; }
+        .tab.active { background: #007bff; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .split-view { display: flex; gap: 20px; }
+        .tree-panel { flex: 1; background: #f9f9f9; padding: 15px; border-radius: 4px; max-height: 600px; overflow-y: auto; }
+        .selection-panel { flex: 1; background: #f9f9f9; padding: 15px; border-radius: 4px; }
+        .tree-item { margin-left: 20px; cursor: pointer; user-select: none; }
+        .tree-folder { font-weight: bold; color: #333; }
+        .tree-folder::before { content: '📁 '; }
+        .tree-file { color: #666; }
+        .tree-file::before { content: '📄 '; }
+        .tree-file.selected { background: #e7f3ff; }
         .button { 
             background: #007bff; color: white; padding: 10px 20px; 
             border: none; border-radius: 4px; cursor: pointer; margin: 5px;
         }
         .button:hover { background: #0056b3; }
-        input[type="text"], input[type="file"] { padding: 8px; margin: 5px; width: 300px; }
+        .button.secondary { background: #6c757d; }
+        .button.success { background: #28a745; }
+        input[type="text"] { padding: 8px; margin: 5px; width: 300px; }
         .result { margin-top: 15px; padding: 10px; background: #e7f3ff; border-radius: 4px; }
         .language-tag { 
-            display: inline-block; padding: 3px 8px; margin: 2px; 
-            background: #28a745; color: white; border-radius: 3px; font-size: 12px;
+            display: inline-block; padding: 2px 6px; margin: 2px; 
+            background: #28a745; color: white; border-radius: 3px; font-size: 11px;
         }
+        .selected-list { max-height: 400px; overflow-y: auto; }
+        .selected-item { padding: 8px; margin: 5px 0; background: white; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; }
+        .remove-btn { background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; }
+        .stats { background: #fff3cd; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .collapse-toggle { cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🗂️ SIMA Knowledge Manager</h1>
         
-        <div class="section">
-            <h2>Export to JSON</h2>
-            <p>Export knowledge files to universal JSON format</p>
-            <input type="text" id="export-path" placeholder="Directory path (e.g., ./sima/generic)" />
-            <button class="button" onclick="exportToJSON()">Export</button>
-            <div id="export-result" class="result" style="display:none;"></div>
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('export')">Export</button>
+            <button class="tab" onclick="showTab('import')">Import</button>
+            <button class="tab" onclick="showTab('tools')">Tools</button>
         </div>
         
-        <div class="section">
-            <h2>Import from JSON</h2>
-            <p>Import JSON archive and convert to MD files</p>
-            <input type="file" id="import-file" accept=".json" />
-            <input type="text" id="import-target" placeholder="Target directory" />
-            <button class="button" onclick="importFromJSON()">Import</button>
-            <div id="import-result" class="result" style="display:none;"></div>
+        <div id="export-tab" class="tab-content active">
+            <h2>📤 Export Files</h2>
+            <div class="split-view">
+                <div class="tree-panel">
+                    <h3>Browse Files</h3>
+                    <input type="text" id="export-root" placeholder="Root path (e.g., ./sima)" value="./sima" />
+                    <button class="button" onclick="loadExportTree()">Load</button>
+                    <div id="export-tree" style="margin-top: 15px;"></div>
+                </div>
+                <div class="selection-panel">
+                    <h3>Selected Files (<span id="export-count">0</span>)</h3>
+                    <div class="stats">
+                        <strong>Total size:</strong> <span id="export-size">0 KB</span><br>
+                        <strong>Languages:</strong> <span id="export-langs">None</span>
+                    </div>
+                    <div class="selected-list" id="export-selected"></div>
+                    <button class="button success" onclick="exportSelected()">Export Selected</button>
+                    <button class="button secondary" onclick="clearExportSelection()">Clear All</button>
+                    <div id="export-result" class="result" style="display:none;"></div>
+                </div>
+            </div>
         </div>
         
-        <div class="section">
-            <h2>Generate Index</h2>
-            <p>Auto-generate index file for directory</p>
-            <input type="text" id="index-path" placeholder="Directory path" />
-            <input type="text" id="index-title" placeholder="Index title" value="Index" />
-            <button class="button" onclick="generateIndex()">Generate</button>
-            <div id="index-result" class="result" style="display:none;"></div>
+        <div id="import-tab" class="tab-content">
+            <h2>📥 Import Files</h2>
+            <div class="split-view">
+                <div class="tree-panel">
+                    <h3>Import Source</h3>
+                    <input type="file" id="import-file" accept=".json" onchange="loadImportPreview()" />
+                    <div id="import-preview" style="margin-top: 15px;"></div>
+                </div>
+                <div class="selection-panel">
+                    <h3>Import Destination</h3>
+                    <input type="text" id="import-root" placeholder="Root path (e.g., ./sima)" value="./sima" />
+                    <button class="button" onclick="loadImportTree()">Browse</button>
+                    <div id="import-tree" style="margin-top: 15px;"></div>
+                    <div class="stats" style="margin-top: 15px;">
+                        <strong>Target:</strong> <span id="import-target">Not selected</span>
+                    </div>
+                    <button class="button success" onclick="importToSelected()">Import to Selected</button>
+                    <label><input type="checkbox" id="update-indexes" checked /> Update indexes after import</label>
+                    <div id="import-result" class="result" style="display:none;"></div>
+                </div>
+            </div>
         </div>
         
-        <div class="section">
-            <h2>Analyze File</h2>
-            <p>Detect languages and extract metadata</p>
-            <input type="text" id="analyze-path" placeholder="File path" />
-            <button class="button" onclick="analyzeFile()">Analyze</button>
-            <div id="analyze-result" class="result" style="display:none;"></div>
+        <div id="tools-tab" class="tab-content">
+            <h2>🔧 Tools</h2>
+            <div class="section">
+                <h3>Generate Index</h3>
+                <input type="text" id="index-path" placeholder="Directory path" />
+                <input type="text" id="index-title" placeholder="Index title" value="Index" />
+                <button class="button" onclick="generateIndex()">Generate</button>
+                <div id="index-result" class="result" style="display:none;"></div>
+            </div>
+            
+            <div class="section" style="margin-top: 20px;">
+                <h3>Analyze File</h3>
+                <input type="text" id="analyze-path" placeholder="File path" />
+                <button class="button" onclick="analyzeFile()">Analyze</button>
+                <div id="analyze-result" class="result" style="display:none;"></div>
+            </div>
         </div>
     </div>
     
     <script>
-        async function exportToJSON() {
-            const path = document.getElementById('export-path').value;
-            const response = await fetch('/api/export', {
+        let exportSelection = new Set();
+        let importPreviewData = null;
+        let importTargetPath = null;
+        
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+        
+        async function loadExportTree() {
+            const path = document.getElementById('export-root').value;
+            const response = await fetch('/api/tree', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({path: path})
+            });
+            const tree = await response.json();
+            renderTree(tree, 'export-tree', true);
+        }
+        
+        async function loadImportTree() {
+            const path = document.getElementById('import-root').value;
+            const response = await fetch('/api/tree', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({path: path})
+            });
+            const tree = await response.json();
+            renderTree(tree, 'import-tree', false);
+        }
+        
+        async function loadImportPreview() {
+            const file = document.getElementById('import-file').files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                importPreviewData = JSON.parse(e.target.result);
+                const div = document.getElementById('import-preview');
+                div.innerHTML = `
+                    <div class="stats">
+                        <strong>Files:</strong> ${importPreviewData.files.length}<br>
+                        <strong>Version:</strong> ${importPreviewData.manifest.sima_version}<br>
+                        <strong>Created:</strong> ${new Date(importPreviewData.manifest.created).toLocaleString()}
+                    </div>
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        ${importPreviewData.files.map(f => `
+                            <div style="padding: 5px; margin: 3px 0; background: white; border-radius: 3px;">
+                                📄 ${f.path}
+                                ${f.languages.map(l => '<span class="language-tag">' + l + '</span>').join('')}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            };
+            reader.readAsText(file);
+        }
+        
+        function renderTree(node, containerId, selectable) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = renderNode(node, selectable);
+        }
+        
+        function renderNode(node, selectable, level = 0) {
+            if (node.type === 'file') {
+                const langs = node.languages ? node.languages.map(l => 
+                    '<span class="language-tag">' + l + '</span>'
+                ).join('') : '';
+                const refId = node.ref_id ? '[' + node.ref_id + '] ' : '';
+                
+                if (selectable) {
+                    const selected = exportSelection.has(node.path) ? 'selected' : '';
+                    return `<div class="tree-item tree-file ${selected}" onclick="toggleExportFile('${node.path}', ${node.size})">
+                        ${refId}${node.name} ${langs}
+                    </div>`;
+                } else {
+                    return `<div class="tree-item tree-file">${refId}${node.name} ${langs}</div>`;
+                }
+            } else {
+                const childrenHtml = node.children ? node.children.map(c => 
+                    renderNode(c, selectable, level + 1)
+                ).join('') : '';
+                
+                const onClick = selectable ? '' : `onclick="selectImportTarget('${node.path}')"`;
+                
+                return `
+                    <div>
+                        <div class="tree-item tree-folder collapse-toggle" onclick="toggleFolder(event)">
+                            ${node.name}
+                        </div>
+                        <div class="tree-children" ${onClick}>
+                            ${childrenHtml}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        function toggleFolder(e) {
+            e.stopPropagation();
+            const children = e.target.nextElementSibling;
+            children.style.display = children.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function toggleExportFile(path, size) {
+            if (exportSelection.has(path)) {
+                exportSelection.delete(path);
+            } else {
+                exportSelection.add(path);
+            }
+            updateExportSelection();
+            loadExportTree();
+        }
+        
+        function selectImportTarget(path) {
+            importTargetPath = path;
+            document.getElementById('import-target').textContent = path;
+        }
+        
+        function updateExportSelection() {
+            const div = document.getElementById('export-selected');
+            const paths = Array.from(exportSelection);
+            
+            div.innerHTML = paths.map(path => `
+                <div class="selected-item">
+                    <span>📄 ${path.split('/').pop()}</span>
+                    <button class="remove-btn" onclick="removeExportFile('${path}')">Remove</button>
+                </div>
+            `).join('');
+            
+            document.getElementById('export-count').textContent = paths.length;
+        }
+        
+        function removeExportFile(path) {
+            exportSelection.delete(path);
+            updateExportSelection();
+            loadExportTree();
+        }
+        
+        function clearExportSelection() {
+            exportSelection.clear();
+            updateExportSelection();
+            loadExportTree();
+        }
+        
+        async function exportSelected() {
+            const paths = Array.from(exportSelection);
+            if (paths.length === 0) {
+                alert('No files selected');
+                return;
+            }
+            
+            const response = await fetch('/api/export-selected', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({paths: paths})
             });
             const result = await response.json();
             const div = document.getElementById('export-result');
@@ -414,22 +316,33 @@ def index():
                             <a href="/download/${result.filename}" class="button">Download</a>`;
         }
         
-        async function importFromJSON() {
-            const file = document.getElementById('import-file').files[0];
-            const target = document.getElementById('import-target').value;
+        async function importToSelected() {
+            if (!importPreviewData) {
+                alert('No import file selected');
+                return;
+            }
+            if (!importTargetPath) {
+                alert('No target directory selected');
+                return;
+            }
             
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('target', target);
+            const updateIndexes = document.getElementById('update-indexes').checked;
             
-            const response = await fetch('/api/import', {
+            const response = await fetch('/api/import-to-target', {
                 method: 'POST',
-                body: formData
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    data: importPreviewData,
+                    target: importTargetPath,
+                    update_indexes: updateIndexes
+                })
             });
             const result = await response.json();
             const div = document.getElementById('import-result');
             div.style.display = 'block';
-            div.innerHTML = `<strong>✅ Imported:</strong> ${result.imported_count} files`;
+            div.innerHTML = `<strong>✅ Imported:</strong> ${result.imported_count} files<br>
+                            ${result.indexes_updated ? '<strong>✅ Indexes updated</strong><br>' : ''}
+                            <strong>Target:</strong> ${result.target}`;
         }
         
         async function generateIndex() {
@@ -474,6 +387,98 @@ def index():
 </body>
 </html>
     ''')
+
+@app.route('/api/tree', methods=['POST'])
+def api_tree():
+    """Get directory tree"""
+    data = request.json
+    root_path = Path(data['path'])
+    
+    if not root_path.exists():
+        return jsonify({'error': 'Path does not exist'}), 404
+    
+    tree = FileBrowser.get_tree(root_path)
+    return jsonify(tree)
+
+@app.route('/api/export-selected', methods=['POST'])
+def api_export_selected():
+    """Export selected files to JSON"""
+    data = request.json
+    paths = [Path(p) for p in data['paths']]
+    
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    output_file = Config.EXPORT_DIR / f"sima_export_{timestamp}.json"
+    
+    export_data = {
+        "manifest": {
+            "version": "1.0.0",
+            "sima_version": "4.2.2",
+            "created": datetime.now().isoformat(),
+            "file_count": 0
+        },
+        "files": []
+    }
+    
+    for file_path in paths:
+        try:
+            kf = KnowledgeFile(file_path)
+            json_data = kf.to_json()
+            json_data['path'] = str(file_path)
+            export_data['files'].append(json_data)
+        except Exception as e:
+            print(f"Error exporting {file_path}: {e}")
+    
+    export_data['manifest']['file_count'] = len(export_data['files'])
+    
+    output_file.write_text(json.dumps(export_data, indent=2), encoding='utf-8')
+    
+    return jsonify({
+        'status': 'success',
+        'file_count': export_data['manifest']['file_count'],
+        'output_file': str(output_file),
+        'filename': output_file.name
+    })
+
+@app.route('/api/import-to-target', methods=['POST'])
+def api_import_to_target():
+    """Import JSON data to target directory"""
+    data = request.json
+    import_data = data['data']
+    target_dir = Path(data['target'])
+    update_indexes = data.get('update_indexes', False)
+    
+    imported = []
+    for file_data in import_data['files']:
+        try:
+            md_content = JSONToMD.convert(file_data)
+            
+            # MODIFIED: Use filename from path
+            filename = Path(file_data['path']).name
+            target_path = target_dir / filename
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            target_path.write_text(md_content, encoding='utf-8')
+            imported.append(str(target_path))
+        except Exception as e:
+            print(f"Error importing {file_data.get('path', 'unknown')}: {e}")
+    
+    # ADDED: Update indexes if requested
+    indexes_updated = False
+    if update_indexes and imported:
+        try:
+            index_content = IndexGenerator.generate(target_dir, f"{target_dir.name} Index")
+            index_file = target_dir / f"{target_dir.name}-Index.md"
+            index_file.write_text(index_content, encoding='utf-8')
+            indexes_updated = True
+        except Exception as e:
+            print(f"Error updating index: {e}")
+    
+    return jsonify({
+        'status': 'success',
+        'imported_count': len(imported),
+        'files': imported,
+        'target': str(target_dir),
+        'indexes_updated': indexes_updated
+    })
 
 @app.route('/api/export', methods=['POST'])
 def api_export():
