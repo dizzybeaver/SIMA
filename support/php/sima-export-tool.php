@@ -1,0 +1,335 @@
+<?php
+/**
+ * sima-export-tool.php
+ * 
+ * Version: 5.0.0
+ * Date: 2025-11-28
+ * Purpose: SIMA Knowledge Export Tool - Main entry point
+ * 
+ * REFACTORED: Now uses modular system
+ * - SIMA-tree for scanning
+ * - SIMA-file for file operations
+ * - SIMA-manifest for manifest generation
+ * - SIMA-instructions for import instructions
+ * - SIMA-version for version detection
+ * - SIMA-validation for security
+ * - SIMA-packaging for export packaging
+ * - SIMA-ajax for JSON responses
+ * - SIMA-ui for interface generation
+ */
+
+// Start output buffering
+ob_start();
+
+// Error handling
+ini_set('display_errors', '0');
+error_reporting(E_ALL);
+ini_set('log_errors', '1');
+
+// Get base directory (where this script is located)
+define('TOOL_BASE_DIR', __DIR__);
+define('MODULES_DIR', TOOL_BASE_DIR . '/modules');
+define('EXPORT_DIR', TOOL_BASE_DIR . '/../../exports');
+
+// Create export directory if needed
+if (!is_dir(EXPORT_DIR)) {
+    mkdir(EXPORT_DIR, 0755, true);
+}
+
+/**
+ * Load all required modules
+ */
+function loadModules() {
+    $modules = [
+        'validation/validation_module.php',
+        'ajax/ajax_module.php',
+        'tree/tree_module.php',
+        'file/file_module.php',
+        'version/version_module.php',
+        'manifest/manifest_module.php',
+        'instructions/instructions_module.php',
+        'packaging/packaging_module.php',
+        'ui/ui_module.php'
+    ];
+    
+    $missing = [];
+    foreach ($modules as $module) {
+        $path = MODULES_DIR . '/' . $module;
+        if (!file_exists($path)) {
+            $missing[] = $module;
+        }
+    }
+    
+    if (!empty($missing)) {
+        throw new Exception("Missing modules: " . implode(', ', $missing));
+    }
+    
+    foreach ($modules as $module) {
+        require_once MODULES_DIR . '/' . $module;
+    }
+}
+
+/**
+ * Auto-detect SIMA root directory
+ */
+function findSIMARoot($startPath = null) {
+    if ($startPath === null) {
+        $startPath = TOOL_BASE_DIR;
+    }
+    
+    // Check if current directory has SIMA structure
+    if (file_exists($startPath . '/generic') && 
+        file_exists($startPath . '/platforms')) {
+        return $startPath;
+    }
+    
+    // Walk up directory tree
+    $current = $startPath;
+    for ($i = 0; $i < 5; $i++) {
+        $parent = dirname($current);
+        if ($parent === $current) break;
+        
+        if (file_exists($parent . '/generic') && 
+            file_exists($parent . '/platforms')) {
+            return $parent;
+        }
+        $current = $parent;
+    }
+    
+    return null;
+}
+
+/**
+ * Main request handler
+ */
+class SIMAExportHandler {
+    private $baseSearchDir;
+    
+    public function __construct($baseSearchDir) {
+        $this->baseSearchDir = $baseSearchDir;
+    }
+    
+    public function handleRequest() {
+        try {
+            $action = $_GET['action'] ?? $_POST['action'] ?? null;
+            
+            if ($action === 'scan') {
+                $this->handleScan();
+            } elseif ($action === 'export') {
+                $this->handleExport();
+            } else {
+                $this->showInterface();
+            }
+        } catch (Exception $e) {
+            error_log("SIMA Export Error: " . $e->getMessage());
+            ajax_sendJsonResponse([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    private function handleScan() {
+        $directory = $_POST['directory'] ?? '';
+        
+        if (empty($directory)) {
+            throw new Exception("Directory path is required");
+        }
+        
+        // Validate path
+        $validatedPath = validation_validatePath($directory, $this->baseSearchDir);
+        if (!$validatedPath) {
+            throw new Exception("Invalid directory path");
+        }
+        
+        // Auto-detect version
+        $versionInfo = version_detect($validatedPath);
+        
+        // Scan directory
+        $scanResult = version_scanDirectory($validatedPath);
+        
+        // Format as tree
+        $treeHtml = tree_formatAsTree($scanResult['files'], [
+            'show_checkboxes' => true,
+            'show_ref_ids' => true,
+            'show_versions' => true
+        ]);
+        
+        ajax_sendJsonResponse([
+            'tree' => $treeHtml,
+            'version' => $versionInfo,
+            'stats' => $scanResult['stats']
+        ]);
+    }
+    
+    private function handleExport() {
+        $directory = $_POST['directory'] ?? '';
+        $archiveName = $_POST['archive_name'] ?? 'SIMA-Export';
+        $description = $_POST['description'] ?? '';
+        $selectedFiles = json_decode($_POST['selected_files'] ?? '[]', true);
+        $sourceVersion = $_POST['source_version'] ?? 'auto';
+        $targetVersion = $_POST['target_version'] ?? 'auto';
+        
+        if (empty($directory)) {
+            throw new Exception("Directory path is required");
+        }
+        
+        // Validate path
+        $validatedPath = validation_validatePath($directory, $this->baseSearchDir);
+        if (!$validatedPath) {
+            throw new Exception("Invalid directory path");
+        }
+        
+        if (empty($selectedFiles)) {
+            throw new Exception("No files selected for export");
+        }
+        
+        // Auto-detect versions if needed
+        if ($sourceVersion === 'auto') {
+            $versionInfo = version_detect($validatedPath);
+            $sourceVersion = $versionInfo['version'];
+        }
+        
+        if ($targetVersion === 'auto') {
+            $targetVersion = $sourceVersion;
+        }
+        
+        // Create export package
+        $result = packaging_createPackage($validatedPath, [
+            'name' => $archiveName,
+            'description' => $description,
+            'files' => $selectedFiles,
+            'source_version' => $sourceVersion,
+            'target_version' => $targetVersion,
+            'output_dir' => EXPORT_DIR
+        ]);
+        
+        // Generate download URL
+        $downloadUrl = dirname($_SERVER['SCRIPT_NAME']) . '/../../exports/' . 
+                       $result['archive_name'];
+        
+        ajax_sendJsonResponse([
+            'archive_name' => $result['archive_name'],
+            'file_count' => $result['file_count'],
+            'converted_count' => $result['converted_count'] ?? 0,
+            'download_url' => $downloadUrl
+        ]);
+    }
+    
+    private function showInterface() {
+        // Generate form
+        $formHtml = ui_generateForm([
+            [
+                'type' => 'text',
+                'name' => 'directory',
+                'label' => 'SIMA Directory Path',
+                'placeholder' => '/path/to/sima',
+                'required' => true,
+                'attributes' => ['id' => 'directory']
+            ],
+            [
+                'type' => 'text',
+                'name' => 'archive_name',
+                'label' => 'Archive Name',
+                'value' => 'SIMA-Export',
+                'attributes' => ['id' => 'archiveName']
+            ],
+            [
+                'type' => 'textarea',
+                'name' => 'description',
+                'label' => 'Description',
+                'rows' => 3,
+                'attributes' => ['id' => 'description']
+            ]
+        ], [
+            'id' => 'exportForm',
+            'submit_text' => 'Scan Directory'
+        ]);
+        
+        // Wrap form in container
+        $content = ui_generateContainer($formHtml, [
+            'title' => 'Step 1: Scan Directory'
+        ]);
+        
+        // Add status container
+        $content .= ui_generateStatusContainer('status');
+        
+        // Add loading indicator
+        $content .= ui_generateLoadingIndicator([
+            'id' => 'loading',
+            'hidden' => true
+        ]);
+        
+        // Add results container
+        $content .= ui_generateContainer('', [
+            'id' => 'results',
+            'title' => 'Step 2: Select Files',
+            'class' => 'hidden'
+        ]);
+        
+        // Add export button container
+        $content .= '<div id="exportButtonContainer" class="hidden">';
+        $content .= ui_generateButton('Export Selected Files', [
+            'id' => 'exportButton',
+            'onclick' => 'exportFiles()',
+            'style' => 'primary'
+        ]);
+        $content .= '</div>';
+        
+        // Generate complete page
+        $page = ui_generatePageHeader('SIMA Export Tool', [
+            'description' => 'Export SIMA knowledge for sharing or backup',
+            'version' => '5.0.0',
+            'include_assets' => true
+        ]);
+        
+        // Add CSS
+        $page .= ui_generateCssIncludes('sima-styles.css', [
+            'base_path' => dirname($_SERVER['SCRIPT_NAME'])
+        ]);
+        
+        $page .= $content;
+        
+        // Add JavaScript
+        $page .= ui_generateJsIncludes([
+            'sima-export-scan.js',
+            'sima-export-render.js',
+            'sima-export-selection.js',
+            'sima-export-export.js'
+        ], [
+            'base_path' => dirname($_SERVER['SCRIPT_NAME']),
+            'defer' => true
+        ]);
+        
+        $page .= ui_generatePageFooter([
+            'show_timestamp' => true
+        ]);
+        
+        ob_clean();
+        echo $page;
+    }
+}
+
+// Main execution
+try {
+    // Load all modules
+    loadModules();
+    
+    // Find SIMA root
+    $simaRoot = findSIMARoot();
+    if (!$simaRoot) {
+        $simaRoot = dirname(TOOL_BASE_DIR, 2); // Default to 2 levels up
+    }
+    
+    // Create handler and process request
+    $handler = new SIMAExportHandler($simaRoot);
+    $handler->handleRequest();
+    
+} catch (Exception $e) {
+    ob_clean();
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
+    exit;
+}
